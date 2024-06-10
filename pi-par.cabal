@@ -1,0 +1,62 @@
+cabal-Version: 0.1
+name: pi-par
+version: 0.1
+
+source-repository head
+  type: git
+  location: https://github.com/chrisbrown1982/pi-par
+
+common shared-properties
+  default-language:
+    GHC2021
+  ghc-options:
+    -Wall -fno-warn-unused-matches -fno-warn-orphans -fno-warn-unused-top-binds -fno-warn-unused-imports -fno-warn-name-shadowing -Wno-unrecognised-pragmas
+  default-extensions: 
+    DefaultSignatures
+    DeriveAnyClass
+    DerivingStrategies 
+     
+  build-depends:  
+    base >= 4 && < 5,
+    parsec >= 3.1.8 && < 3.2,
+    mtl >= 2.2.1,
+    pretty >= 1.0.1.0,
+    unbound-generics >= 0.4.3,
+    transformers,
+    array >= 0.3.0.2 && < 0.6,
+    containers,
+    directory,
+    filepath,
+    HUnit,
+    QuickCheck
+  if !impl(ghc >= 8.0)
+    build-depends: semigroups       
+ 
+
+library
+  import: shared-properties
+  hs-source-dirs: src
+  exposed-modules: 
+    Environment
+    Equal
+    LayoutToken
+    Modules
+    Parser
+    PrettyPrint
+    Syntax
+    TypeCheck
+    Arbitrary
+  
+executable pi-par
+  import: shared-properties
+  build-depends: pi-par
+  hs-source-dirs: app
+  main-is: Main.hs
+
+test-suite test-pi-par
+  import: shared-properties
+  build-depends: pi-par
+    , QuickCheck >= 2.13.2
+  type: exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is: Main.hs
