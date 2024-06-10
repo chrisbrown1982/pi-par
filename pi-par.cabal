@@ -1,6 +1,13 @@
-cabal-Version: 0.1
+cabal-Version: 2.2
 name: pi-par
 version: 0.1
+
+
+build-type: Simple
+tested-with: GHC == 8.10.7
+category: Compilers/Interpreters
+homepage: https://github.com/chrisbrown1982/pi-par
+synopsis: Demo implementation of typechecker for dependently-typed language
 
 source-repository head
   type: git
