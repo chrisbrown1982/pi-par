@@ -1,0 +1,23 @@
+module Ping where
+
+import Concurrency
+import Nat
+
+data PP : Type where 
+   Ping 
+   Pong
+
+data PingMsg : Type where 
+    Finished 
+    Msg of (n : Nat) (t : Type) (p : PP) (c : Channel n t)
+
+ping : [pid : Nat] -> (i : Nat) -> (pong_id : Channel pid PingMsg) -> IO Unit 
+
+
+main : IO Unit 
+main = spawn [Z] 
+             [PingMsg]
+             [[pid : Nat] -> (i : Nat) -> (pong_id : Channel pid PingMsg)]
+             [IO]
+             Channel Z PingMsg
+             ping 

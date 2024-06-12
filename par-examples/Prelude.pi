@@ -1,0 +1,13 @@
+module Prelude where
+
+import Fin 
+
+data Vec (a:Type) (i : Nat) : Type where
+   Nil  of (i = zero) 
+   Cons of (j : Nat) (i = succ j) (a) (Vec a j)
+
+head : (a:Type) -> (i : Nat) -> Vec a (succ i) -> a
+head = \ a i v. case v of 
+           Nil p -> contra p
+           Cons j p hd tl -> hd
+

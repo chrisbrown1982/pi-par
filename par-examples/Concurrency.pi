@@ -1,0 +1,48 @@
+module Concurrency where
+
+import Nat
+import BoolLib
+
+data Channel (id : Nat) (t : Type) : Type where 
+    MkChannel of (id : Nat) (a : t) [id = id]
+
+----------------- Monads ----------------------
+data IO (t : Type) : Type where 
+    Null of (u : Unit)
+
+print : String -> IO Unit 
+
+-- bindE = >>= 
+bindE : [m : Type -> Type] -> [a : Type] -> [b : Type] -> m a -> (a -> m b) -> m b
+
+-- bind 
+bind : [m : Type -> Type] -> [a : Type] -> [b : Type] -> m a -> m b
+
+-- return 
+return : [a : Type] -> [m : Type -> Type] -> a -> m a
+
+-----------------------------------------------
+
+spawn : [name : Nat]
+     -> [a : Type]
+     -> [b : Type]
+     -> [m : Type -> Type]
+     -> Channel name a 
+     -> (b -> m Unit)
+     -> b 
+     -> m Unit
+
+send : [name : Nat]
+    -> [a : Type]
+    -> [b : Type]
+    -> [m : Type -> Type]
+    -> Channel name a 
+    -> a 
+    -> m Unit 
+
+receive : [name : Nat]
+       -> [a : Type]
+       -> [b : Type]
+       -> [m : Type -> Type]
+       -> Channel name a 
+       -> m b 
