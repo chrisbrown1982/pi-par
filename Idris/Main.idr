@@ -65,17 +65,18 @@ interface Idx (0 opM : (t : Type) -> MState -> (t -> MState) -> Type) where
   toNat : {m : Nat} -> Loc m -> Nat
   toNat {m} _ = m
 
+  decAt : {n : Nat}
+       -> (chs : Vect n Chan)
+       -> (ch : Nat)
+       -> Vect n Chan
+
 mutual
   sendSF : {m,n : Nat}
         -> (chs : Vect n Chan)
         -> (ch  : Loc m)
         -> (x : t)
         -> MState
-  sendSF {m} chs ch x =
-    -- let r = indexTy {opM = MOp} chs m
-    --     z = ?here
-    -- in 
-      MkState chs
+  sendSF {m} chs ch x = MkState (decAt {opM = MOp} chs m)
 
 -- mutual
   data MOp : (t : Type) -> (st : MState) -> (t -> MState) -> Type where
@@ -96,10 +97,15 @@ mutual
 
   implementation Idx MOp where
     indexTy [] ch = Void
+    indexTy (MkChan _ Z _ :: _) Z = Void
     indexTy (ch :: _) Z = msgType ch
     indexTy (_ :: chs) (S ch) = indexTy {opM = MOp} chs ch
 
     -- index' chs ch = ?idxHole
+
+    decAt [] ch = []
+    decAt (MkChan d b t :: chs) Z = MkChan d (pred b) t :: chs
+    decAt (ch :: chs) (S k) = ch :: decAt {opM = MOp} chs k
 
 data M : (ty : Type) -> (st : MState) -> (ty -> MState) -> Type where
   Pure   : (x : t) -> M t st (const st)
@@ -122,6 +128,7 @@ test = do
   Init
   (to, frm) <- Op (Spawn 2 Nat 1 Nat TODO_Proc)
   let ch : Loc 3 = Ibi (Ibi (Ibi Hic))
+  Op (Send to 1)
   Op (Send to 1)
   ?after
   Halt
