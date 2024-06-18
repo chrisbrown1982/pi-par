@@ -6,6 +6,10 @@ import Data.Vect
 -------------------------------------------------------------------------------
 -- Channels
 
+data Dir : Type where
+  In  : Dir
+  Out : Dir
+
 data Loc : Nat -> Type where
   Here  : Loc Z
   There : Loc n -> Loc (S n)
@@ -16,6 +20,14 @@ data InChan : Nat -> Type where
 data OutChan : Nat -> Type where
   MkOut : {n : Nat} -> Loc n -> OutChan n
 
+fromDir : Dir -> (Nat -> Type)
+fromDir In  = InChan
+fromDir Out = OutChan
+
+inv : Dir -> Dir
+inv In = Out
+inv Out = In
+
 chToNat : {m : Nat} -> (chTy : Nat -> Type) -> chTy m -> Nat
 chToNat {m} _ _ = m
 
@@ -23,9 +35,10 @@ chToNat {m} _ _ = m
 -- State Definition & Management Operations
 
 -- Environment item type
--- Nº Tokens, Message Type
+-- Direction, Nº Tokens, Message Type
 record Chan where
   constructor MkChan
+  direction : Dir
   bound     : Nat
   msgType   : Type
 
@@ -41,35 +54,31 @@ data State : Type where
 empty : State
 empty = Live []
 
-stIdxMsgTy' : {n : Nat} -> (chs : Vect n Chan) -> (ch  : Nat) -> Type
-stIdxMsgTy' [] ch = Void -- can't send on an unregistered channel
-stIdxMsgTy' (MkChan Z _ :: _) Z = Void -- can't send on a spent channel
-stIdxMsgTy' (ch :: _) Z = msgType ch
-stIdxMsgTy' (_ :: chs) (S ch) = stIdxMsgTy' chs ch
+stIdxMsgTyIn : {n : Nat} -> (chs : Vect n Chan) -> (ch  : Nat) -> Type
+stIdxMsgTyIn [] ch = Void -- can't recv on an unregistered channel
+stIdxMsgTyIn (MkChan _ Z _ :: _) Z = Void -- can't recv on a spent channel
+stIdxMsgTyIn (MkChan Out _ _ :: _) Z = Void -- can't recv on an output channel
+stIdxMsgTyIn (ch :: _) Z = msgType ch
+stIdxMsgTyIn (_ :: chs) (S ch) = stIdxMsgTyIn chs ch
+
+stIdxMsgTyOut : {n : Nat} -> (chs : Vect n Chan) -> (ch  : Nat) -> Type
+stIdxMsgTyOut [] ch = Void -- can't send on an unregistered channel
+stIdxMsgTyOut (MkChan _ Z _ :: _) Z = Void -- can't send on a spent channel
+stIdxMsgTyOut (MkChan In _ _ :: _) Z = Void -- can't send on an input channel
+stIdxMsgTyOut (ch :: _) Z = msgType ch
+stIdxMsgTyOut (_ :: chs) (S ch) = stIdxMsgTyOut chs ch
 
 stIdxMsgTy : {m, n : Nat}
-          -> (chTy : Nat -> Type)
+          -> (dir : Dir)
           -> (chs : Vect n Chan)
-          -> (ch : chTy m)
+          -> (ch : (fromDir dir) m)
           -> Type
-stIdxMsgTy chTy chs ch = stIdxMsgTy' chs (chToNat chTy ch)
-
-stIdxMsgTyS' : {n : Nat} -> (chs : Vect n Chan) -> (ch  : Nat) -> Maybe Type
-stIdxMsgTyS' [] ch = Nothing
-stIdxMsgTyS' (MkChan Z _ :: _) Z = Nothing
-stIdxMsgTyS' (ch :: _) Z = Just (msgType ch)
-stIdxMsgTyS' (_ :: chs) (S ch) = stIdxMsgTyS' chs ch
-
-stIdxMsgTyS : {m, n : Nat}
-           -> (chTy : Nat -> Type)
-           -> (chs : Vect n Chan)
-           -> (ch : chTy m)
-           -> Maybe Type
-stIdxMsgTyS chTy chs ch = stIdxMsgTyS' chs (chToNat chTy ch)
+stIdxMsgTy In chs ch = stIdxMsgTyIn chs (chToNat InChan ch)
+stIdxMsgTy Out chs ch = stIdxMsgTyOut chs (chToNat OutChan ch)
 
 stDecAt : {n : Nat} -> (chs : Vect n Chan) -> (ch : Nat) -> Vect n Chan
 stDecAt [] ch = [] -- no change
-stDecAt (MkChan b t :: chs) Z = MkChan (pred b) t :: chs
+stDecAt (MkChan d b t :: chs) Z = MkChan d (pred b) t :: chs
 stDecAt (ch :: chs) (S k) = ch :: stDecAt chs k
 
 -------------------------------------------------------------------------------
@@ -82,12 +91,12 @@ spawnSF : {n : Nat}
        -> (x : t)
        -> State
 spawnSF outB inB outTy inTy chs x =
-  Live (chs ++ [(MkChan outB outTy), (MkChan inB inTy)])
+  Live (chs ++ [(MkChan Out outB outTy), (MkChan In inB inTy)])
 
-decSF : {m,n  : Nat}
-     -> (chTy : Nat -> Type)
-     -> (chs  : Vect n Chan)
-     -> (ch   : chTy m)
+decSF : {m,n : Nat}
+     -> (dir : Dir)
+     -> (chs : Vect n Chan)
+     -> (ch  : (fromDir dir) m)
      -> (x : t)
      -> State
 decSF {m} _ chs _ _ = Live (stDecAt chs m)
@@ -100,7 +109,7 @@ recvSF : {t : Type}
       -> State
 recvSF {t = Void} chs ch x with (x)
   recvSF {t = Void} chs ch x | _ impossible
-recvSF {t = t} chs ch x = decSF InChan chs ch x
+recvSF {t = t} chs ch x = decSF In chs ch x
 
 -------------------------------------------------------------------------------
 -- Monad/State Machine Definition
@@ -119,11 +128,11 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
                    (spawnSF outB inB outTy inTy chs)
   Send  : {chs : Vect ub Chan}
        -> (ch  : OutChan m)
-       -> (msg : stIdxMsgTy OutChan chs ch)
-       -> ProcessM () (Live chs) (decSF OutChan chs ch)
+       -> (msg : stIdxMsgTy Out chs ch)
+       -> ProcessM () (Live chs) (decSF Out chs ch)
   Recv  : {chs : Vect ub Chan}
        -> (ch  : InChan m)
-       -> ProcessM (stIdxMsgTy InChan chs ch) (Live chs) (recvSF chs ch)
+       -> ProcessM (stIdxMsgTy In chs ch) (Live chs) (recvSF chs ch)
   Halt   : ProcessM () (Live chs) (const End)
 
   -- Standard operations
@@ -147,14 +156,14 @@ spawn (toB,toTy) (frmB,frmTy) p = Spawn toB toTy frmB frmTy p
 
 send : {chs : Vect b Chan}
     -> (ch  : OutChan m)
-    -> (msg : stIdxMsgTy OutChan chs ch)
-    -> ProcessM () (Live chs) (decSF OutChan chs ch)
+    -> (msg : stIdxMsgTy Out chs ch)
+    -> ProcessM () (Live chs) (decSF Out chs ch)
 send = Send
 
 recv : {m,n : Nat}
     -> {chs : Vect n Chan}
     -> (ch  : InChan m)
-    -> ProcessM (stIdxMsgTy InChan chs ch) (Live chs) (recvSF chs ch)
+    -> ProcessM (stIdxMsgTy In chs ch) (Live chs) (recvSF chs ch)
 recv = Recv
 
 -------------------------------------------------------------------------------
