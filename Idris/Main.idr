@@ -28,13 +28,19 @@ data Loc : Nat -> Type where
   Hic : Loc Z
   Ibi : Loc n -> Loc (S n)
 
+data InChan : Nat -> Type where
+  MkIn : {n : Nat} -> Loc n -> InChan n
+
+data OutChan : Nat -> Type where
+  MkOut : {n : Nat} -> Loc n -> OutChan n
+
 -------------------------------------------------------------------------------
 -- Monad/State Machine
 
 -- Direction, Tokens, Carrier Type
 record Chan where
   constructor MkChan
-  direction : Dir
+  -- direction : Dir
   bound     : Nat
   msgType   : Type
 
@@ -52,7 +58,7 @@ spawnSF : {n : Nat}
        -> (x : t)
        -> MState
 spawnSF inB outB inTy outTy chs x =
-  MkState (chs ++ [(MkChan In inB inTy), (MkChan Out outB outTy)])
+  MkState (chs ++ [(MkChan inB inTy), (MkChan outB outTy)])
 
 interface Idx (0 opM : (t : Type) -> MState -> (t -> MState) -> Type) where
   indexTy : {n : Nat}
@@ -68,6 +74,12 @@ interface Idx (0 opM : (t : Type) -> MState -> (t -> MState) -> Type) where
   toNat : {m : Nat} -> Loc m -> Nat
   toNat {m} _ = m
 
+  toNatOut : {m : Nat} -> OutChan m -> Nat
+  toNatOut {m} _ = m
+
+  toNatIn : {m : Nat} -> InChan m -> Nat
+  toNatIn {m} _ = m
+
 -- data IsValid : Type -> Type where
 --   ItIs : IsValid Void
 
@@ -78,14 +90,14 @@ notVoid _    = True
 mutual
   sendSF : {m,n : Nat}
         -> (chs : Vect n Chan)
-        -> (ch  : Loc m)
+        -> (ch  : OutChan m)
         -> (x : t)
         -> MState
   sendSF {m} chs ch x = MkState (decAt {opM = MOp} chs m)
 
   recvSF : {m,n : Nat}
         -> (chs : Vect n Chan)
-        -> (ch  : Loc m)
+        -> (ch  : InChan m)
         -> (x   : t)
         -> MState
   recvSF {m} chs ch x = MkState (decAt {opM = MOp} chs m)
@@ -93,16 +105,16 @@ mutual
 -- mutual
   data MOp : (t : Type) -> (st : MState) -> (t -> MState) -> Type where
     Send  : {chs : Vect ub Chan}
-         -> (ch  : Loc m)
+         -> (ch  : OutChan m)
         --  -> (msg : Nat)
-         -> (msg : (indexTy {opM = MOp} chs (toNat {opM = MOp} ch)))
+         -> (msg : (indexTy {opM = MOp} chs (toNatOut {opM = MOp} ch)))
          -> MOp () (MkState chs) (sendSF chs ch)
     Recv  : {chs : Vect ub Chan}
-         -> (ch  : Loc m)
+         -> (ch  : InChan m)
          -> {auto chk :
-              So (notVoid (indexTy {opM = MOp} chs (toNat {opM = MOp} ch)))}
+              So (notVoid (indexTy {opM = MOp} chs (toNatIn {opM = MOp} ch)))}
          -> MOp
-              (indexTy {opM = MOp} chs (toNat {opM = MOp} ch))
+              (indexTy {opM = MOp} chs (toNatIn {opM = MOp} ch))
               (MkState chs)
               (recvSF chs ch)
     Spawn : {chs : Vect b Chan}
@@ -110,20 +122,20 @@ mutual
         -> (outB : Nat) -> (outTy : Type)
         -> (p : Proc)
         -- -> MOp (Fin (S (S b)), Fin (S (S b))) -- restrict Fins?
-        -> MOp (Loc b, Loc (S b)) -- restrict Fins? YES!
+        -> MOp (OutChan b, InChan (S b)) -- restrict Fins? YES!
                 (MkState chs)
                 (spawnSF inB outB inTy outTy chs)
 
   implementation Idx MOp where
     indexTy [] ch = Void
-    indexTy (MkChan _ Z _ :: _) Z = Void
+    indexTy (MkChan Z _ :: _) Z = Void
     indexTy (ch :: _) Z = msgType ch
     indexTy (_ :: chs) (S ch) = indexTy {opM = MOp} chs ch
 
     -- index' chs ch = ?idxHole
 
     decAt [] ch = []
-    decAt (MkChan d b t :: chs) Z = MkChan d (pred b) t :: chs
+    decAt (MkChan b t :: chs) Z = MkChan (pred b) t :: chs
     decAt (ch :: chs) (S k) = ch :: decAt {opM = MOp} chs k
 
 data M : (ty : Type) -> (st : MState) -> (ty -> MState) -> Type where
@@ -146,9 +158,9 @@ test = do
   -- ?here
   Init
   (to, frm) <- Op (Spawn 2 Nat 1 Nat TODO_Proc)
-  let ch : Loc 3 = Ibi (Ibi (Ibi Hic))
-  Op (Send to 1)
-  Op (Send to 1)
+  let ch : OutChan 3 = MkOut (Ibi (Ibi (Ibi Hic)))
+  Op (Send to (S Z))
+  Op (Send to (S Z))
   x <- Op (Recv frm)
   -- ?after
   Halt
