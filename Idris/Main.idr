@@ -168,6 +168,14 @@ test = do
   -- Op Send
   -- Op Recv
 
+{-
+  1. Tidy up & fix Recv
+  2. Delegation primitives
+  3. Deal with Proc
+  4. Skeleton example & usage
+  5. Translate
+
+-}
 
 
 -------------------------------------------------------------------------------
