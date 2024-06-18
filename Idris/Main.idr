@@ -59,16 +59,21 @@ interface Idx (0 opM : (t : Type) -> MState -> (t -> MState) -> Type) where
          -> (chs : Vect n Chan)
          -> (ch  : Nat)
          -> Type
-  -- index' : (chs : Vect n Chan)
-  --       -> (ch  : Loc m)
-  --       -> (indexTy chs ch)
-  toNat : {m : Nat} -> Loc m -> Nat
-  toNat {m} _ = m
 
   decAt : {n : Nat}
        -> (chs : Vect n Chan)
        -> (ch : Nat)
        -> Vect n Chan
+
+  toNat : {m : Nat} -> Loc m -> Nat
+  toNat {m} _ = m
+
+-- data IsValid : Type -> Type where
+--   ItIs : IsValid Void
+
+notVoid : Type -> Bool
+notVoid Void = False
+notVoid _    = True
 
 mutual
   sendSF : {m,n : Nat}
@@ -78,6 +83,13 @@ mutual
         -> MState
   sendSF {m} chs ch x = MkState (decAt {opM = MOp} chs m)
 
+  recvSF : {m,n : Nat}
+        -> (chs : Vect n Chan)
+        -> (ch  : Loc m)
+        -> (x   : t)
+        -> MState
+  recvSF {m} chs ch x = MkState (decAt {opM = MOp} chs m)
+
 -- mutual
   data MOp : (t : Type) -> (st : MState) -> (t -> MState) -> Type where
     Send  : {chs : Vect ub Chan}
@@ -85,7 +97,14 @@ mutual
         --  -> (msg : Nat)
          -> (msg : (indexTy {opM = MOp} chs (toNat {opM = MOp} ch)))
          -> MOp () (MkState chs) (sendSF chs ch)
-    Recv  : MOp () (MkState chs) (const (MkState chs))
+    Recv  : {chs : Vect ub Chan}
+         -> (ch  : Loc m)
+         -> {auto chk :
+              So (notVoid (indexTy {opM = MOp} chs (toNat {opM = MOp} ch)))}
+         -> MOp
+              (indexTy {opM = MOp} chs (toNat {opM = MOp} ch))
+              (MkState chs)
+              (recvSF chs ch)
     Spawn : {chs : Vect b Chan}
         -> (inB : Nat) -> (inTy : Type)
         -> (outB : Nat) -> (outTy : Type)
@@ -130,7 +149,8 @@ test = do
   let ch : Loc 3 = Ibi (Ibi (Ibi Hic))
   Op (Send to 1)
   Op (Send to 1)
-  ?after
+  x <- Op (Recv frm)
+  -- ?after
   Halt
   -- ?here
   -- Op Send
