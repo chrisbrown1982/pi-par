@@ -14,6 +14,15 @@ data PingMsg : Type where
 ping : [pid : Nat] -> (i : Nat) -> (pong_id : Channel pid PingMsg) -> IO Unit 
 
 
+spawn : [name : Nat]
+     -> [a : Type]
+     -> [b : Type]
+     -> [m : Type -> Type]
+     -> Channel name a 
+     -> (b -> m Unit)
+     -> b 
+     -> m Unit
+
 main : IO Unit 
 main = spawn [Z] 
              [PingMsg]

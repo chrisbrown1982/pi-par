@@ -10,7 +10,7 @@ data Channel (id : Nat) (t : Type) : Type where
 data IO (t : Type) : Type where 
     Null of (u : Unit)
 
-print : String -> IO Unit 
+print : List Char -> IO Unit 
 
 -- bindE = >>= 
 bindE : [m : Type -> Type] -> [a : Type] -> [b : Type] -> m a -> (a -> m b) -> m b
