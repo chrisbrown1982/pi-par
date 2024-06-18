@@ -36,28 +36,6 @@ data MState : Type where
   MkState : {n : Nat} -> (chs : Vect n Chan) -> MState
   End : MState
 
-{-
-data M : {b  : Nat}
-      -> (ty : Type)  -- result of the operation
-      -> (st : State b) -- input state
-      -> (f  : ty -> Nat -> Nat) -- output state (helper)
-      -> (g  : ty -> State (f ty b)) -- output state (calc.)
-      -> Type where
-  Send  : M ty st ?f
-  Recv  : M ty st ?g
-  Spawn : M ty st ?h
--}
-
--- index' : {m, n : Nat} -> Fin m -> MState n -> LTE m n -> Chan
-
--- Send' : {ty : Type} -> {n, m : Nat}
---     -> (st : MState n)
---     -> (ch : Fin m)
---     -> (ok : LTE m n)
---     -> (x : (msgType (index' ch st ok)))
---     -> (MState n, ())
--- Recv : {ty : 
-
 data Proc : Type where
   TODO_Proc : Proc
 
