@@ -4,29 +4,11 @@ import Data.Fin
 import Data.Vect
 
 -------------------------------------------------------------------------------
--- Direction
-
-data Dir : Type where
-  In  : Dir
-  Out : Dir
-
--------------------------------------------------------------------------------
 -- Channels
 
-{-
-data Loc : Type where
-  Ptr : {b : Nat} -> Fin b -> Loc
-
-data InChan : Type where
-  MkIn : Loc -> InChan
-
-data OutChan : Type where
-  MkOut : Loc -> OutChan
- -}
-
 data Loc : Nat -> Type where
-  Hic : Loc Z
-  Ibi : Loc n -> Loc (S n)
+  Here  : Loc Z
+  There : Loc n -> Loc (S n)
 
 data InChan : Nat -> Type where
   MkIn : {n : Nat} -> Loc n -> InChan n
@@ -34,149 +16,158 @@ data InChan : Nat -> Type where
 data OutChan : Nat -> Type where
   MkOut : {n : Nat} -> Loc n -> OutChan n
 
--------------------------------------------------------------------------------
--- Monad/State Machine
+chToNat : {m : Nat} -> (chTy : Nat -> Type) -> chTy m -> Nat
+chToNat {m} _ _ = m
 
--- Direction, Tokens, Carrier Type
+-------------------------------------------------------------------------------
+-- State Definition & Management Operations
+
+-- Environment item type
+-- Nº Tokens, Message Type
 record Chan where
   constructor MkChan
-  -- direction : Dir
   bound     : Nat
   msgType   : Type
 
-data MState : Type where
-  MkState : {n : Nat} -> (chs : Vect n Chan) -> MState
-  End : MState
+-- Type representing the state of the process in terms of channels.
+-- A Process is either active or halted.
+-- A halted process cannot be restarted.
+-- An active process manages its set of live channels.
+data State : Type where
+  Live : {n : Nat} -> (chs : Vect n Chan) -> State
+  End  : State
+  -- Option: transition to End only permitted when all Channels are spent
 
-data Proc : Type where
-  TODO_Proc : Proc
+empty : State
+empty = Live []
+
+stIdxMsgTy' : {n : Nat} -> (chs : Vect n Chan) -> (ch  : Nat) -> Type
+stIdxMsgTy' [] ch = Void -- can't send on an unregistered channel
+stIdxMsgTy' (MkChan Z _ :: _) Z = Void -- can't send on a spent channel
+stIdxMsgTy' (ch :: _) Z = msgType ch
+stIdxMsgTy' (_ :: chs) (S ch) = stIdxMsgTy' chs ch
+
+stIdxMsgTy : {m, n : Nat}
+          -> (chTy : Nat -> Type)
+          -> (chs : Vect n Chan)
+          -> (ch : chTy m)
+          -> Type
+stIdxMsgTy chTy chs ch = stIdxMsgTy' chs (chToNat chTy ch)
+
+stIdxMsgTyS' : {n : Nat} -> (chs : Vect n Chan) -> (ch  : Nat) -> Maybe Type
+stIdxMsgTyS' [] ch = Nothing
+stIdxMsgTyS' (MkChan Z _ :: _) Z = Nothing
+stIdxMsgTyS' (ch :: _) Z = Just (msgType ch)
+stIdxMsgTyS' (_ :: chs) (S ch) = stIdxMsgTyS' chs ch
+
+stIdxMsgTyS : {m, n : Nat}
+           -> (chTy : Nat -> Type)
+           -> (chs : Vect n Chan)
+           -> (ch : chTy m)
+           -> Maybe Type
+stIdxMsgTyS chTy chs ch = stIdxMsgTyS' chs (chToNat chTy ch)
+
+stDecAt : {n : Nat} -> (chs : Vect n Chan) -> (ch : Nat) -> Vect n Chan
+stDecAt [] ch = [] -- no change
+stDecAt (MkChan b t :: chs) Z = MkChan (pred b) t :: chs
+stDecAt (ch :: chs) (S k) = ch :: stDecAt chs k
+
+-------------------------------------------------------------------------------
+-- State Transition Functions
 
 spawnSF : {n : Nat}
-       -> (inB, outB : Nat)
-       -> (inTy, outTy : Type)
-       -> (chs : Vect n Chan)
+       -> (outB,  inB  : Nat)
+       -> (outTy, inTy : Type)
+       -> (chs         : Vect n Chan)
        -> (x : t)
-       -> MState
-spawnSF inB outB inTy outTy chs x =
-  MkState (chs ++ [(MkChan inB inTy), (MkChan outB outTy)])
+       -> State
+spawnSF outB inB outTy inTy chs x =
+  Live (chs ++ [(MkChan outB outTy), (MkChan inB inTy)])
 
-interface Idx (0 opM : (t : Type) -> MState -> (t -> MState) -> Type) where
-  indexTy : {n : Nat}
-         -> (chs : Vect n Chan)
-         -> (ch  : Nat)
-         -> Type
+decSF : {m,n  : Nat}
+     -> (chTy : Nat -> Type)
+     -> (chs  : Vect n Chan)
+     -> (ch   : chTy m)
+     -> (x : t)
+     -> State
+decSF {m} _ chs _ _ = Live (stDecAt chs m)
 
-  decAt : {n : Nat}
-       -> (chs : Vect n Chan)
-       -> (ch : Nat)
-       -> Vect n Chan
+recvSF : {t : Type}
+      -> {m,n : Nat}
+      -> (chs : Vect n Chan)
+      -> (ch  : InChan m)
+      -> (x : t)
+      -> State
+recvSF {t = Void} chs ch x with (x)
+  recvSF {t = Void} chs ch x | _ impossible
+recvSF {t = t} chs ch x = decSF InChan chs ch x
 
-  toNat : {m : Nat} -> Loc m -> Nat
-  toNat {m} _ = m
+-------------------------------------------------------------------------------
+-- Monad/State Machine Definition
 
-  toNatOut : {m : Nat} -> OutChan m -> Nat
-  toNatOut {m} _ = m
+data SpawnedP : Type where
+  TODO_SpawnedP : SpawnedP
 
-  toNatIn : {m : Nat} -> InChan m -> Nat
-  toNatIn {m} _ = m
+data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
+  -- DSL operations
+  Spawn : {chs  : Vect b Chan}
+       -> (outB : Nat) -> (outTy : Type)
+       -> (inB  : Nat) -> (inTy : Type)
+       -> (p    : SpawnedP)
+       -> ProcessM (OutChan b, InChan (S b))
+                   (Live chs)
+                   (spawnSF outB inB outTy inTy chs)
+  Send  : {chs : Vect ub Chan}
+       -> (ch  : OutChan m)
+       -> (msg : stIdxMsgTy OutChan chs ch)
+       -> ProcessM () (Live chs) (decSF OutChan chs ch)
+  Recv  : {chs : Vect ub Chan}
+       -> (ch  : InChan m)
+       -> ProcessM (stIdxMsgTy InChan chs ch) (Live chs) (recvSF chs ch)
+  Halt   : ProcessM () (Live chs) (const End)
 
--- data IsValid : Type -> Type where
---   ItIs : IsValid Void
+  -- Standard operations
+  Pure   : (x : t) -> ProcessM t st (const st)
+  (>>=)  : ProcessM a (Live chs) sf 
+        -> ((x : a) -> ProcessM b (sf x) s3f)
+        -> ProcessM b (Live chs) s3f
+  (>>)   : ProcessM () (Live chs) sf
+        -> ProcessM b (sf ()) s3f
+        -> ProcessM b (Live chs) s3f
 
-notVoid : Type -> Bool
-notVoid Void = False
-notVoid _    = True
+Process : Type
+Process = ProcessM () empty (const End)
 
-mutual
-  sendSF : {m,n : Nat}
-        -> (chs : Vect n Chan)
-        -> (ch  : OutChan m)
-        -> (x : t)
-        -> MState
-  sendSF {m} chs ch x = MkState (decAt {opM = MOp} chs m)
+spawn : {chs : Vect b Chan}
+     -> (to, frm : (Nat, Type)) -> (p : SpawnedP)
+     -> ProcessM (OutChan b, InChan (S b))
+                 (Live chs)
+                 (spawnSF (fst to) (fst frm) (snd to) (snd frm) chs)
+spawn (toB,toTy) (frmB,frmTy) p = Spawn toB toTy frmB frmTy p
 
-  recvSF : {m,n : Nat}
-        -> (chs : Vect n Chan)
-        -> (ch  : InChan m)
-        -> (x   : t)
-        -> MState
-  recvSF {m} chs ch x = MkState (decAt {opM = MOp} chs m)
+send : {chs : Vect b Chan}
+    -> (ch  : OutChan m)
+    -> (msg : stIdxMsgTy OutChan chs ch)
+    -> ProcessM () (Live chs) (decSF OutChan chs ch)
+send = Send
 
--- mutual
-  data MOp : (t : Type) -> (st : MState) -> (t -> MState) -> Type where
-    Send  : {chs : Vect ub Chan}
-         -> (ch  : OutChan m)
-        --  -> (msg : Nat)
-         -> (msg : (indexTy {opM = MOp} chs (toNatOut {opM = MOp} ch)))
-         -> MOp () (MkState chs) (sendSF chs ch)
-    Recv  : {chs : Vect ub Chan}
-         -> (ch  : InChan m)
-         -> {auto chk :
-              So (notVoid (indexTy {opM = MOp} chs (toNatIn {opM = MOp} ch)))}
-         -> MOp
-              (indexTy {opM = MOp} chs (toNatIn {opM = MOp} ch))
-              (MkState chs)
-              (recvSF chs ch)
-    Spawn : {chs : Vect b Chan}
-        -> (inB : Nat) -> (inTy : Type)
-        -> (outB : Nat) -> (outTy : Type)
-        -> (p : Proc)
-        -- -> MOp (Fin (S (S b)), Fin (S (S b))) -- restrict Fins?
-        -> MOp (OutChan b, InChan (S b)) -- restrict Fins? YES!
-                (MkState chs)
-                (spawnSF inB outB inTy outTy chs)
+recv : {m,n : Nat}
+    -> {chs : Vect n Chan}
+    -> (ch  : InChan m)
+    -> ProcessM (stIdxMsgTy InChan chs ch) (Live chs) (recvSF chs ch)
+recv = Recv
 
-  implementation Idx MOp where
-    indexTy [] ch = Void
-    indexTy (MkChan Z _ :: _) Z = Void
-    indexTy (ch :: _) Z = msgType ch
-    indexTy (_ :: chs) (S ch) = indexTy {opM = MOp} chs ch
+-------------------------------------------------------------------------------
+-- Example
 
-    -- index' chs ch = ?idxHole
-
-    decAt [] ch = []
-    decAt (MkChan b t :: chs) Z = MkChan (pred b) t :: chs
-    decAt (ch :: chs) (S k) = ch :: decAt {opM = MOp} chs k
-
-data M : (ty : Type) -> (st : MState) -> (ty -> MState) -> Type where
-  Pure   : (x : t) -> M t st (const st)
-  Op     : MOp t st sf -> M t st sf
-  (>>=)  : M a (MkState chs) sf 
-        -> ((x : a)
-        -> M b (sf x) s3f)
-        -> M b (MkState chs) s3f
-  (>>)   : M () (MkState chs) sf
-        -> M b (sf ()) s3f
-        -> M b (MkState chs) s3f
-  -- 
-  Init   : M () (MkState []) (const (MkState []))
-  Halt   : M () st (const End)
-  
-  
-test : M () (MkState []) (const End)
+test : Process
 test = do
-  -- ?here
-  Init
-  (to, frm) <- Op (Spawn 2 Nat 1 Nat TODO_Proc)
-  let ch : OutChan 3 = MkOut (Ibi (Ibi (Ibi Hic)))
-  Op (Send to (S Z))
-  Op (Send to (S Z))
-  x <- Op (Recv frm)
-  -- ?after
+  (to, frm) <- spawn (2,Nat) (1,Nat) TODO_SpawnedP
+  send to 1
+  send to 1
+  let x = MkIn (There (There Here))
+  ans <- recv frm
   Halt
-  -- ?here
-  -- Op Send
-  -- Op Recv
-
-{-
-  1. Tidy up & fix Recv
-  2. Delegation primitives
-  3. Deal with Proc
-  4. Skeleton example & usage
-  5. Translate
-
--}
-
 
 -------------------------------------------------------------------------------
 
@@ -188,3 +179,11 @@ test = do
     ans <- recv fm                      [(Out, 0, Nat),(In, 0, Nat)]
 -}
 
+{-
+  [Done] 1. Tidy up & fix Recv
+  2. Delegation primitives
+  3. Deal with Proc
+  4. Skeleton example & usage
+  5. Translate
+
+-}
