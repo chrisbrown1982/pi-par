@@ -13,6 +13,7 @@ data Dir : Type where
 -------------------------------------------------------------------------------
 -- Channels
 
+{-
 data Loc : Type where
   Ptr : {b : Nat} -> Fin b -> Loc
 
@@ -21,6 +22,11 @@ data InChan : Type where
 
 data OutChan : Type where
   MkOut : Loc -> OutChan
+ -}
+
+data Loc : Nat -> Type where
+  Hic : Loc Z
+  Ibi : Loc n -> Loc (S n)
 
 -------------------------------------------------------------------------------
 -- Monad/State Machine
@@ -53,33 +59,47 @@ interface Idx (0 opM : (t : Type) -> MState -> (t -> MState) -> Type) where
          -> (chs : Vect n Chan)
          -> (ch  : Nat)
          -> Type
-  index' : (chs : Vect n Chan)
-        -> (ch  : Nat)
-        -> (indexTy chs ch)
+  -- index' : (chs : Vect n Chan)
+  --       -> (ch  : Loc m)
+  --       -> (indexTy chs ch)
+  toNat : {m : Nat} -> Loc m -> Nat
+  toNat {m} _ = m
 
 mutual
+  sendSF : {m,n : Nat}
+        -> (chs : Vect n Chan)
+        -> (ch  : Loc m)
+        -> (x : t)
+        -> MState
+  sendSF {m} chs ch x =
+    -- let r = indexTy {opM = MOp} chs m
+    --     z = ?here
+    -- in 
+      MkState chs
+
+-- mutual
   data MOp : (t : Type) -> (st : MState) -> (t -> MState) -> Type where
     Send  : {chs : Vect ub Chan}
-         -> (ch  : Nat)
+         -> (ch  : Loc m)
         --  -> (msg : Nat)
-         -> (msg : (indexTy {opM = MOp} chs ch))
-         -> MOp () (MkState chs) (const (MkState chs))
+         -> (msg : (indexTy {opM = MOp} chs (toNat {opM = MOp} ch)))
+         -> MOp () (MkState chs) (sendSF chs ch)
     Recv  : MOp () (MkState chs) (const (MkState chs))
     Spawn : {chs : Vect b Chan}
         -> (inB : Nat) -> (inTy : Type)
         -> (outB : Nat) -> (outTy : Type)
         -> (p : Proc)
         -- -> MOp (Fin (S (S b)), Fin (S (S b))) -- restrict Fins?
-        -> MOp (Nat, Nat) -- restrict Fins? YES!
+        -> MOp (Loc b, Loc (S b)) -- restrict Fins? YES!
                 (MkState chs)
                 (spawnSF inB outB inTy outTy chs)
 
   implementation Idx MOp where
     indexTy [] ch = Void
-    indexTy (_ :: _) Z = Chan
+    indexTy (ch :: _) Z = msgType ch
     indexTy (_ :: chs) (S ch) = indexTy {opM = MOp} chs ch
 
-    index' chs ch = ?idxHole
+    -- index' chs ch = ?idxHole
 
 data M : (ty : Type) -> (st : MState) -> (ty -> MState) -> Type where
   Pure   : (x : t) -> M t st (const st)
@@ -101,8 +121,9 @@ test = do
   -- ?here
   Init
   (to, frm) <- Op (Spawn 2 Nat 1 Nat TODO_Proc)
-  Op (Send to ?msgArg)
-  -- ?here
+  let ch : Loc 3 = Ibi (Ibi (Ibi Hic))
+  Op (Send to 1)
+  ?after
   Halt
   -- ?here
   -- Op Send
