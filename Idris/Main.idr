@@ -133,7 +133,7 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
   Recv  : {chs : Vect ub Chan}
        -> (ch  : InChan m)
        -> ProcessM (stIdxMsgTy In chs ch) (Live chs) (recvSF chs ch)
-  Halt   : ProcessM () (Live chs) (const End)
+  Halt  : ProcessM () (Live chs) (const End)
 
   -- Standard operations
   Pure   : (x : t) -> ProcessM t st (const st)
