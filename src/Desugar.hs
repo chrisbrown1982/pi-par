@@ -2,6 +2,20 @@ module Desugar where
 
 import Syntax 
 
+import qualified Unbound.Generics.LocallyNameless as Unbound
+
+transStmts :: [ Stmt ] -> Term 
+transStmts [] = error "Empty do block"
+transStmts [ (Bind n t) ] = error "A bind cannot be the last statment in a do expression"
+transStmts [ (Seq t) ]    = t
+transStmts (Bind n t : stmts) = App (App (Var (Unbound.string2Name "bindEq")) (Arg Rel t)) (Arg Rel lam)
+                                  where
+                                    lam = Lam Rel (Unbound.bind n (transStmts stmts)) 
+transStmts (Seq t : stmts)    = App (App (Var (Unbound.string2Name "bind")) (Arg Rel t)) (Arg Rel (transStmts stmts))
+
+transDo :: Stmts -> Term 
+transDo (MkStmts stmts) = transStmts stmts
+
 deSugarTerm :: Term -> Term 
 deSugarTerm TyType = TyType
 deSugarTerm (Var name) = Var name 
@@ -28,4 +42,4 @@ deSugarTerm (Contra t) = Contra (deSugarTerm t)
 deSugarTerm (TyCon x y) = TyCon x y
 deSugarTerm (DataCon x y) = DataCon x y
 deSugarTerm (Case t m) = Case (deSugarTerm t) m
-deSugarTerm (Do stmts) = error "here"
+deSugarTerm (Do stmts) = transDo stmts
