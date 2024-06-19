@@ -26,20 +26,18 @@ data ChanF : Nat -> Type where
 data Chan : Type where -- to avoid dependent pairs in MsgTy
   MkChan : {n : Nat} -> ChanF n -> Chan
 
--------------------------------------------------------------------------------
--- Message Type NF
+data ChanDef : Type where
+  MkDef : (bound  : Nat)
+       -> (msgTy  : Type)
+       -> (getChs : msgTy -> Maybe Chan)
+       -> ChanDef
 
-{-
-  NB: Would need reflection to ensure that 'Chan', 'InChan', 'OutChan' aren't
-  subexpressions of any of the ground types. Any channels smuggled in 
-  groundOpts will simply not be delegated.
--}
+fromDir : Dir -> (Nat -> Type)
+fromDir In  = InChan
+fromDir Out = OutChan
 
-data MsgTy : Type where
-  MkMTy : {n,m : Nat}
-       -> (base : Vect m Type)
-       -> (chs  : Vect n Chan)
-       -> MsgTy
+chToNat : {m : Nat} -> (chTy : Nat -> Type) -> chTy m -> Nat
+chToNat {m} _ _ = m
 
 -------------------------------------------------------------------------------
 -- State Definition & Management Operations
@@ -51,6 +49,7 @@ record SChan where
   direction : Dir
   bound     : Nat
   msgType   : Type
+  projChans : msgType -> Maybe Chan
 
 -- Type representing the state of the process in terms of channels.
 -- A Process is either active or halted.
@@ -64,11 +63,76 @@ data State : Type where
 empty : State
 empty = Live []
 
+stIdxMsgTyIn : {n : Nat} -> (chs : Vect n SChan) -> (ch  : Nat) -> Type
+stIdxMsgTyIn [] ch = Void -- can't recv on an unregistered channel
+stIdxMsgTyIn (MkSChan _ Z _ _ :: _) Z = Void -- can't recv on a spent channel
+stIdxMsgTyIn (MkSChan Out _ _ _ :: _) Z = Void -- can't recv on an output channel
+stIdxMsgTyIn (ch :: _) Z = msgType ch
+stIdxMsgTyIn (_ :: chs) (S ch) = stIdxMsgTyIn chs ch
+
+stIdxMsgTyOut : {n : Nat} -> (chs : Vect n SChan) -> (ch  : Nat) -> Type
+stIdxMsgTyOut [] ch = Void -- can't send on an unregistered channel
+stIdxMsgTyOut (MkSChan _ Z _ _ :: _) Z = Void -- can't send on a spent channel
+stIdxMsgTyOut (MkSChan In _ _ _ :: _) Z = Void -- can't send on an input channel
+stIdxMsgTyOut (ch :: _) Z = msgType ch
+stIdxMsgTyOut (_ :: chs) (S ch) = stIdxMsgTyOut chs ch
+
+stIdxMsgTy : {n   : Nat}
+          -> (dir : Dir)
+          -> (chs : Vect n SChan)
+          -> (ch  : Nat)
+          -> Type
+stIdxMsgTy In chs ch = stIdxMsgTyIn chs ch
+stIdxMsgTy Out chs ch = stIdxMsgTyOut chs ch
+
+stDecAt : {n : Nat} -> (chs : Vect n SChan) -> (ch : Nat) -> Vect n SChan
+stDecAt [] ch = [] -- no change
+stDecAt (MkSChan d b t f :: chs) Z = MkSChan d (pred b) t f :: chs
+stDecAt (ch :: chs) (S k) = ch :: stDecAt chs k
+
+-------------------------------------------------------------------------------
+-- State Transition Functions
+
+decSF : {n   : Nat}
+     -> (chs : Vect n SChan)
+     -> (ch  : Nat)
+     -> (x : t)
+     -> State
+decSF chs ch _ = Live (stDecAt chs ch)
+
+spawnSF : {t : Type}
+       -> {n : Nat}
+       -> (to,frm : ChanDef)
+       -> (chs    : Vect n SChan)
+       -> (x : t)
+       -> State
+spawnSF {t} (MkDef toB toT toF) (MkDef frmB frmT frmF) chs x =
+  Live (chs ++ [(MkSChan Out toB toT toF), (MkSChan In frmB frmT frmF)])
+
+sendSF : {t   : Type}
+      -> {m,n : Nat}
+      -> (fwd : Vect m SChan)
+      -> (chs : Vect n SChan)
+      -> (ch  : Nat)
+      -> (msg : stIdxMsgTy Out chs ch)
+      -> t
+      -> State
+sendSF chs [] ch msg x with (x)
+  sendSF chs [] ch msg x | p impossible 
+sendSF chs (MkSChan Out (S n) t f :: as) Z msg x = 
+  case f msg of
+    Nothing  => Live (chs ++ (MkSChan Out n t f :: as))
+    Just ch  => ?todo
+    -- if ch <= m then ch in m else
+      -- if ch == (S m) then we're sending the ch we're sending on (allowed?)
+      -- else ch in as
+    -- update the ch entry by reducing it to nothing
+    -- reconstruct chs, decrementing t
+sendSF chs (MkSChan In n t f :: as) Z msg x = ?isimpossible
+sendSF chs (a :: as) (S ch) msg x = sendSF (chs ++ [a]) as ch ?here x
+
 -------------------------------------------------------------------------------
 -- Monad/State Machine Definition
-
-data ChanDef : Type where
-  MkDef : (bound : Nat) -> (msgTy : MsgTy) -> ChanDef
 
 Spawned : {m : (ty : Type) -> (st : State) -> (ty -> State) -> Type}
        -> {outB,inB : Nat}
@@ -76,20 +140,23 @@ Spawned : {m : (ty : Type) -> (st : State) -> (ty -> State) -> Type}
        -> (inbox  : InChan inB)
        -> Type
 Spawned {m} {outB} {inB} _ _ =
-  m () (Live [MkSChan Out Z Nat, MkSChan In Z Nat]) (const End)
+  m () (Live [(MkSChan Out Z Nat ?h1), (MkSChan In Z Nat ?h2)]) (const End)
 
 data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
   -- DSL operations
   Spawn : {chs : Vect n SChan}
-       --  -> (to  : ChanDef)
-       --  -> (frm : ChanDef)
+       -> (to  : ChanDef)
+       -> (frm : ChanDef)
        -> (p   : (to  : OutChan Z)
               -> (frm : InChan (S Z))
               -> Spawned {m = ProcessM} to frm)
        -> ProcessM (OutChan n, InChan (S n))
                    (Live chs)
-                   (const (Live chs))
- 
+                   (spawnSF to frm chs)
+  Send  : {chs : Vect n SChan}
+       -> (ch  : OutChan m) 
+       -> (msg : stIdxMsgTy Out chs (chToNat OutChan ch))
+       -> ProcessM () (Live chs) (sendSF [] chs (chToNat OutChan ch) msg)
   Halt  : ProcessM () (Live chs) (const End)
   -- Standard operations
   Pure  : (x : t) -> ProcessM t st (const st)
@@ -113,10 +180,20 @@ Pong = ()
 
 pingpongP : Process
 pingpongP =
-  let pTo = MkDef 3 (MkMTy [Ping] [])
-  in do
-    x <- Spawn (\to, frm => Halt)
+  do
+    (pingTo, pingFrm) <- Spawn (MkDef 3 (Either Ping Chan) fP)
+                               (MkDef 2 () (const Nothing))
+                               (\to, frm => Halt)
+    (pongTo, pongFrm) <- Spawn (MkDef 3 (Either Ping Chan) fP)
+                               (MkDef 2 () (const Nothing))
+                               (\to, frm => Halt)
+    Send pingTo (Left ())
+    Send pingTo (Right (MkChan (IsOut pingTo)))
     ?after
+  where
+    fP : Either Ping Chan -> Maybe Chan
+    fP (Left _) = Nothing
+    fP (Right ch) = Just ch
 {-
   let pingCh = ChDef 3
   in do
