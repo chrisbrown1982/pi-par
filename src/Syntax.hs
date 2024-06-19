@@ -40,6 +40,15 @@ type TName = Unbound.Name Term
 -- as a type or as a term.
 type Type = Term
 
+-- | for do notation
+data Stmt 
+  = Bind TName Term 
+  | Seq  Term 
+   deriving (Show, Generic, Unbound.Alpha, Unbound.Subst Term)
+
+data Stmts 
+  = MkStmts [ Stmt ]
+   deriving (Show, Generic, Unbound.Alpha, Unbound.Subst Term)
 -- | basic language
 data Term
   = -- | type of types, concretely `Type`
@@ -96,6 +105,8 @@ data Term
     DataCon DataConName [Arg] 
   | -- | case analysis  `case a of matches`
     Case Term [Match]
+  | -- | do notation
+    Do Stmts
   {- STUBWITH -}
   deriving (Show, Generic)
 

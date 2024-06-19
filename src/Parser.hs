@@ -228,10 +228,10 @@ piforallStyle = Token.LanguageDef
                   ,"ord"
                   ,"Bool", "True", "False"
                   ,"if","then","else"
-                  ,"Unit", "()"
+                  ,"Unit", "()", "do", "end", "<-", ";"
                   ]
                , Token.reservedOpNames =
-                 ["!","?","\\",":",".",",","<", "=", "+", "-", "*", "^", "()", "_","|","{", "}"]
+                 ["!","?","\\",":",".",",","<", "=", "+", "-", "*", "^", "()", "_","|","{", "}", "<-"]
                 }
 {- SOLN DATA -}
 tokenizer :: Token.GenTokenParser String [Column] (StateT ConstructorNames Unbound.FreshM)
@@ -530,6 +530,7 @@ factor = choice [ {- SOLN DATA -} varOrCon   <?> "a variable or nullary data con
                 , bconst     <?> "a constant"
                 , ifExpr     <?> "an if expression"
                 , sigmaTy    <?> "a sigma type"
+                , doNotation <?> "do notation"
 
                 , expProdOrAnnotOrParens
                     <?> "an explicit function type or annotated expression"
@@ -561,8 +562,42 @@ lambda = do reservedOp "\\"
     lam (x, ep) m = Lam ep (Unbound.bind x m)
 {- STUBWITH         lam x m = Lam (Unbound.bind x m) -}
 
+ -- do notation has the syntax 
+ -- do { 
+ --      x <- e1 ; 
+ --      e2 ; 
+ --    } 
+ -- and gets parsed into:
+ -- e1 >>= (\x -> e2)
+doNotation :: LParser Term 
+doNotation = do reserved "do"
+               
+                s <- stmts
+                -- error (show s)
+                return (Do s)
 
+stmt :: LParser Stmt
+stmt = try bind <|> seqS
+       
+stmts :: LParser Stmts
+stmts = do 
+           ss <- many1 stmt
+           reserved "end"
+           return (MkStmts ss) 
 
+bind :: LParser Stmt 
+bind = do  -- error "bind"
+           x <- variable 
+           reserved "<-"
+           e <- expr
+           reserved ";"          
+           -- error (show (x, e))
+           return (Bind x e)
+
+seqS :: LParser Stmt 
+seqS = do e <- expr 
+          reserved ";"
+          return (Seq e)
 
 bconst  :: LParser Term
 {- SOLN DATA -}

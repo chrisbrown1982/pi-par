@@ -53,6 +53,7 @@ library
     Syntax
     TypeCheck
     Arbitrary
+    Desugar
   
 executable pi-par
   import: shared-properties

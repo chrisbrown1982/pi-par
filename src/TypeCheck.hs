@@ -24,13 +24,13 @@ import Unbound.Generics.LocallyNameless qualified as Unbound
 import Unbound.Generics.LocallyNameless.Unsafe (unsafeUnbind)
 {- STUBWITH -}
 
-
+import Desugar
 
 ---------------------------------------------------------------------
 
 -- | Infer/synthesize the type of a term
 inferType :: Term -> TcMonad Type
-inferType a = case a of
+inferType a = case (deSugarTerm a) of
   -- i-var
   (Var x) -> do
     decl <- Env.lookupTy x {- SOLN EP -}
@@ -167,7 +167,7 @@ checkType :: Term -> Type -> TcMonad ()
 checkType tm ty = do
 {- SOLN EQUAL -} 
   ty' <- Equal.whnf ty {- STUBWITH   let ty' = strip ty  -- ignore source positions/annotations -}
-  case tm of 
+  case (deSugarTerm tm) of 
     -- c-lam: check the type of a function
     (Lam {- SOLN EP -} ep1 {- STUBWITH -} bnd) -> case ty' of
       (TyPi {- SOLN EP -} ep2 {- STUBWITH -}tyA bnd2) -> do
