@@ -36,30 +36,82 @@ data ChanDef : Type where
 data SChan : Type where 
    MKSChan of (Dir) (Nat) (msgType : Type) (msgType -> Maybe Chan) 
 
+msgTypeProj : SChan -> Type 
+msgTypeProj = \s . case s of 
+                (MKSChan d n m f) -> m
+
 data State : Type where 
    Live of [n : Nat] (chs : Vec SChan n)
    End
 
+empty : State
+empty = Live [0] Nil
+
 const : [a : Type] -> [b : Type] -> a -> b -> a
 const = \[a] [b] x . (\y . x)
 
--- stIdxMsgTy : [n   : Nat]
---          -> (dir : Dir)
---          -> (chs : Vec SChan n)
---          -> (ch  : Nat)
---          -> Type
-   
 stIdxMsgTyIn : [n : Nat] -> (chs : Vec SChan n) -> (ch  : Nat) -> Type
-stIdxMsgTyIn = \[n] chs ch . case chs of 
-                                Nil -> Void 
-                                Cons ch chs ->
-                                    case ch of 
-                                        Zero -> msgType ch 
-                                        (Succ ch2) -> stIdxMsgTyTyIn chs ch 
+stIdxMsgTyIn = \[n] chs ch . 
+   case chs of 
+        Nil -> Void 
+        Cons x ch2 chs2 ->
+            case ch of 
+                Zero -> 
+                  case ch2 of 
+                    (MKSChan d n2 k f) -> 
+                      case n2 of                     
+                         Zero -> Void 
+                         Succ n22 -> 
+                          case d of 
+                            Out -> Void 
+                            In  -> k 
+                (Succ ch2) -> stIdxMsgTyIn [x] chs2 ch2
+
+stIdxMsgTyOut : [n : Nat] -> (chs : Vec SChan n) -> (ch  : Nat) -> Type
+stIdxMsgTyOut = \[n] chs ch . 
+   case chs of 
+        Nil -> Void 
+        Cons x ch2 chs2 ->
+            case ch of 
+                Zero -> 
+                  case ch2 of 
+                    (MKSChan d n2 k f) -> 
+                      case n2 of                     
+                         Zero -> Void 
+                         Succ n22 -> 
+                          case d of 
+                            Out -> k
+                            In  -> Void 
+                (Succ ch2) -> stIdxMsgTyOut [x] chs2 ch2 
+
+stIdxMsgTy : [n : Nat]
+           -> (dir : Dir)
+           -> (chs : Vec SChan n)
+           -> (ch : Nat)
+           -> Type 
+stIdxMsgTy = \[n] dir chs ch . 
+                case dir of 
+                    In -> stIdxMsgTyIn [n] chs ch 
+                    Out -> stIdxMsgTyOut [n] chs ch
+
+spawnSF : [t : Type]
+       -> [n : Nat]
+       -> (to : ChanDef)
+       -> (from : ChanDef)
+       -> (chs : Vec SChan n)
+       -> (x : t)
+       -> State 
+spawnSF = \[t] [n] to from chs x . 
+             case to of 
+               (MkDef toB toT toF) ->
+                  case from of 
+                    (MkDef frmB frmT frmF) ->
+                        Live [plus n 2] (append [SChan] [n] [2] chs (Cons [1] (MKSChan Out toB toT toF) 
+                                                                    (Cons [0] (MKSChan In frmB frmT frmF) Nil)))
 
 
 data ProcessM (ty : Type) (st : State) (f : ty -> State) : Type where 
-   -- Send of [n : Nat] [chs : Vec SChan n] [m : Nat] (ch : OutChan m) (msg : stIdxMsgTy Out chs m)
+    Send of [n : Nat] [chs : Vec SChan n] [m : Nat] (ch : OutChan m) (msg : stIdxMsgTy [n] Out chs m)
     Halt of [n : Nat] [chs : Vec SChan n] [ty=Unit] [st = Live [n] chs] [f=const [State] [ty] End]
 
 return : [t : Type] -> (x : t) -> [st : State] -> ProcessM t st (const [State] [t] st)
@@ -74,3 +126,14 @@ bindP : [n : Nat] -> [chs : Vec SChan n] -> [sf : Unit -> State]
      -> [b : Type] -> [s3f : b -> State]
      -> ProcessM b (sf ()) s3f 
      -> ProcessM b (Live [n] chs) s3f
+
+Process : Type 
+Process = ProcessM Unit empty (const [State] [Unit] End)
+
+-------------------------------------------------------------------------------
+-- Example
+
+Ping : Type 
+Ping = Unit 
+Pong : Type 
+Pong = Unit
