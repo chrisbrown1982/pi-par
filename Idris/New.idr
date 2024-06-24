@@ -29,9 +29,15 @@ fromChan : Chan -> Nat
 fromChan (MkInChan {n} _) = n
 fromChan (MkOutChan {n} _ _) = n
 
-data ChanTy : Type where
-  SendTy : List Type -> ChanTy
-  RecvTy : List Type -> ChanTy
+data InChanTy : List Type -> Type where
+  MkInChanTy : (ts : List Type) -> InChanTy ts
+data OutChanTy : List Type -> Type where
+  MkOutChanTy : (ts : List Type) -> OutChanTy ts
+
+
+data StChanTy : Type where
+  SendTy : List Type -> StChanTy
+  RecvTy : List Type -> StChanTy
 
 -------------------------------------------------------------------------------
 -- State Definition & Management Operations
@@ -41,28 +47,47 @@ data ChanTy : Type where
 -- A halted process cannot be restarted.
 -- An active process manages its set of live channels.
 data State : Type where
-  Live : {n : Nat} -> (chs : Vect n ChanTy) -> State
+  Live : {n : Nat} -> (chs : Vect n StChanTy) -> State
   End  : State
   -- Option: transition to End only permitted when all Channels are spent
 
-stIdxMsgTyOut : {n : Nat} -> (chs : Vect n ChanTy) -> (ch  : Nat) -> Type
+stIdxMsgTyOut : {n : Nat} -> (chs : Vect n StChanTy) -> (ch  : Nat) -> Type
 stIdxMsgTyOut [] ch = Void
 stIdxMsgTyOut (SendTy [] :: chs) Z = Void
-stIdxMsgTyOut (SendTy (t :: ts) :: chs) Z = t -- FIXME: what if Chan?
+stIdxMsgTyOut (SendTy (t :: ts) :: chs) Z = t
 stIdxMsgTyOut (RecvTy _  :: chs) Z = Void
 stIdxMsgTyOut (hd        :: chs) (S ch) = stIdxMsgTyOut chs ch
+
+stIdxMsgTyIn : {n : Nat} -> (chs : Vect n StChanTy) -> (ch,i : Nat) -> Type
+stIdxMsgTyIn [] ch i = Void
+stIdxMsgTyIn (SendTy _  :: chs) Z i = Void
+stIdxMsgTyIn (RecvTy [] :: chs) Z i = Void
+stIdxMsgTyIn (RecvTy (InChanTy ss :: ts) :: chs) Z i = InChan i
+stIdxMsgTyIn (RecvTy (OutChanTy ss :: ts) :: chs) Z i = OutChan i
+stIdxMsgTyIn (RecvTy (t :: ts) :: chs) Z i = t
+stIdxMsgTyIn (hd        :: chs) (S ch) i = stIdxMsgTyIn chs ch i
+
+stIdxMsgTyInRaw : {n : Nat} -> (chs : Vect n StChanTy) -> (ch : Nat) -> Type
+stIdxMsgTyInRaw [] ch = Void
+stIdxMsgTyInRaw (SendTy _  :: chs) Z = Void
+stIdxMsgTyInRaw (RecvTy [] :: chs) Z = Void
+stIdxMsgTyInRaw (RecvTy (t :: ts) :: chs) Z = t
+stIdxMsgTyInRaw (hd        :: chs) (S ch) = stIdxMsgTyInRaw chs ch
 
 tail' : List a -> List a
 tail' [] = []
 tail' (x :: xs) = xs
 
-stDecAt : {n : Nat} -> (chs : Vect n ChanTy) -> (ch : Nat) -> Vect n ChanTy
+stDecAt : {n : Nat} -> (chs : Vect n StChanTy) -> (ch : Nat) -> Vect n StChanTy
 stDecAt [] ch = [] -- no change
 stDecAt (SendTy ts :: chs) Z = SendTy (tail' ts) :: chs
 stDecAt (RecvTy ts :: chs) Z = RecvTy (tail' ts) :: chs
 stDecAt (ch :: chs) (S k) = ch :: stDecAt chs k
 
-stEmptyAt : {n : Nat} -> (chs : Vect n ChanTy) -> (ch : Nat) -> Vect n ChanTy
+stEmptyAt : {n : Nat}
+         -> (chs : Vect n StChanTy)
+         -> (ch : Nat)
+         -> Vect n StChanTy
 stEmptyAt [] ch = []
 stEmptyAt (SendTy ts :: chs) Z = SendTy [] :: chs
 stEmptyAt (RecvTy ts :: chs) Z = RecvTy [] :: chs
@@ -70,15 +95,18 @@ stEmptyAt (ch :: chs) (S k) = ch :: stEmptyAt chs k
 
 -- ...this is map.
 stApplyAt : (f   : List Type -> List Type)
-         -> (chs : Vect n ChanTy)
+         -> (chs : Vect n StChanTy)
          -> (ch  : Nat)
-         -> Vect n ChanTy
+         -> Vect n StChanTy
 stApplyAt f [] ch = []
 stApplyAt f (SendTy ts :: chs) Z = SendTy (f ts) :: chs
 stApplyAt f (RecvTy ts :: chs) Z = RecvTy (f ts) :: chs
 stApplyAt f (ch :: chs) (S k) = ch :: stApplyAt f chs k
 
-stSplitAt : {n : Nat} -> (chs : Vect n ChanTy) -> (ch : Chan) -> Vect n ChanTy
+stSplitAt : {n : Nat}
+         -> (chs : Vect n StChanTy)
+         -> (ch : Chan)
+         -> Vect n StChanTy
 stSplitAt chs (MkInChan {n} _) = stEmptyAt chs n
 stSplitAt chs (MkOutChan {n} _ Nothing) = stEmptyAt chs n
 stSplitAt chs (MkOutChan {n} _ (Just f)) = stApplyAt (snd . f) chs n
@@ -89,7 +117,7 @@ stSplitAt chs (MkOutChan {n} _ (Just f)) = stApplyAt (snd . f) chs n
 spawnSF : {t : Type}
        -> {n : Nat}
        -> (to,frm : List Type)
-       -> (chs    : Vect n ChanTy)
+       -> (chs    : Vect n StChanTy)
        -> (x : t)
        -> State
 spawnSF to frm chs _ = Live (chs ++ [SendTy to, RecvTy frm])
@@ -97,7 +125,7 @@ spawnSF to frm chs _ = Live (chs ++ [SendTy to, RecvTy frm])
 sendSF : {t : Type}
       -> {n : Nat}
       -> (ch  : Nat)
-      -> (chs : Vect n ChanTy)
+      -> (chs : Vect n StChanTy)
       -> (msgTy : Type)
       -> (msg : msgTy)
       -> (x : t)
@@ -106,6 +134,20 @@ sendSF ch chs Void msg x with (msg)
   sendSF ch chs Void msg x | p impossible
 sendSF ch chs Chan msg x = Live (stSplitAt (stDecAt chs ch) msg)
 sendSF ch chs msgTy msg x = Live (stDecAt chs ch)
+
+recvSF : {t : Type}
+      -> {n : Nat}
+      -> (ch : Nat)
+      -> (chs : Vect n StChanTy)
+      -> (ty : Type)
+      -> (x : t)
+      -> State
+recvSF {t = Void} ch chs ty x with (x)
+  recvSF {t = Void} ch chs ty x | p impossible
+recvSF {t = Chan} ch chs ty x = Live chs -- FIXME
+recvSF {t} ch chs (OutChanTy ts) x = Live ((stDecAt chs ch) ++ [(SendTy ts)])
+recvSF {t} ch chs (InChanTy ts) x = Live ((stDecAt chs ch) ++ [(RecvTy ts)])
+recvSF {t} ch chs ty x = Live (stDecAt chs ch)
 
 -------------------------------------------------------------------------------
 -- Monad/State Machine Definition
@@ -119,20 +161,28 @@ Spawned {m} inTy outTy =
 
 data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
   -- DSL operations
-  Spawn : {chs : Vect n ChanTy}   
+  Spawn : {chs : Vect n StChanTy}   
        -> (to  : List Type)
        -> (frm : List Type)
+       -> (tmpInTy,tmpOutTy : List Type)
        -> (p   : (pIn  : InChan  Z)
               -> (pOut : OutChan (S Z))
-              -> Spawned {m = ProcessM} frm to)
+              -> Spawned {m = ProcessM} tmpInTy tmpOutTy)
        -> ProcessM (OutChan n, InChan (S n))
                    (Live chs)
                    (spawnSF to frm chs)
-  Send  : {chs : Vect n ChanTy}
+  Send  : {chs : Vect n StChanTy}
        -> {m   : Nat}
        -> (ch  : OutChan m)
        -> (msg : stIdxMsgTyOut chs m)
        -> ProcessM () (Live chs) (sendSF m chs (stIdxMsgTyOut chs m) msg)
+  Recv  : {chs : Vect n StChanTy}
+       -> {m   : Nat}
+       -> (ch  : InChan m)
+       -> ProcessM
+            (stIdxMsgTyIn chs m n)
+            (Live chs)
+            (recvSF m chs (stIdxMsgTyInRaw chs m))
   Halt  : ProcessM () (Live chs) (const End)
   -- Standard operations
   Pure  : (x : t) -> ProcessM t st (const st)
@@ -152,15 +202,39 @@ Process = ProcessM () (Live []) (const End)
 calc : Process
 calc =
   do
-    (toP,frmP) <- Spawn [Nat, Nat, Nat, Nat] [Nat] p
-    (toQ,frmQ) <- Spawn [Chan] [] q
+    (toP,frmP) <- Spawn [Nat, Nat] [Nat] [Nat, Nat] [Nat] p
+    (toQ,frmQ) <- Spawn [Chan] [] [OutChanTy [Nat]] [] q
     Send toP Z
     Send toQ (MkOutChan toP (Just (\ts => (take 1 ts, drop 1 ts))))
     ?after
     -- Halt
   where
-    p frm to = Halt
-    q frm to = Halt
+    p : (pIn  : InChan  Z)
+     -> (pOut : OutChan (S Z))
+     -> Spawned {m = ProcessM} [Nat, Nat] [Nat]
+    p pIn pOut = do
+      x <- Recv pIn
+      -- x <- Recv (MkIn (There Here))
+      ?afterP
+      -- Halt
+
+    q : (qIn  : InChan  Z)
+     -> (qOut : OutChan (S Z))
+     -> Spawned {m = ProcessM} [OutChanTy [Nat]] []
+    q qIn qOut = do
+      toP <- Recv qIn
+      Send toP Z
+      ?afterQ
+      -- Halt
+
+test : Process
+test =
+  do
+    (toP,frmP) <- Spawn [] [OutChanTy [Nat]] [] [OutChanTy [Nat]] p
+    x <- Recv frmP
+    Halt
+  where
+    p pIn pOut = Halt
 
 -------------------------------------------------------------------------------
 
