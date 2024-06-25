@@ -17,22 +17,10 @@ data InChan : Nat -> Type where
 data OutChan : Nat -> Type where
   MkOut : {n : Nat} -> Loc n -> OutChan n
 
-data Chan : Type where
-  MkInChan  : {n : Nat} -> InChan n  -> Chan
-  MkOutChan : {n : Nat}
-           -> OutChan n
-           -- (ts -> (relinquishing, retaining))
-           -> Maybe (List Type -> (List Type, List Type))
-           -> Chan
-
-fromChan : Chan -> Nat
-fromChan (MkInChan {n} _) = n
-fromChan (MkOutChan {n} _ _) = n
-
-data InChanTy : List Type -> Type where
-  MkInChanTy : (ts : List Type) -> InChanTy ts
-data OutChanTy : List Type -> Type where
-  MkOutChanTy : (ts : List Type) -> OutChanTy ts
+data InChanTy : Nat -> List Type -> Type where
+  MkInChanTy : (ch : Nat) -> (ts : List Type) -> InChanTy ch ts
+data OutChanTy : Nat -> List Type -> Type where
+  MkOutChanTy : (ch : Nat) -> (ts : List Type) -> OutChanTy ch ts
 
 data StChanTy : Type where
   SendTy : List Type -> StChanTy
@@ -46,23 +34,37 @@ data StChanTy : Type where
 -- A halted process cannot be restarted.
 -- An active process manages its set of live channels.
 data State : Type where
-  Live : {n : Nat} -> (chs : Vect n StChanTy) -> State
+  Live : {n,m : Nat}
+      -> (chs : Vect n StChanTy)
+      -> (scs : Vect m Nat)
+      -> State
   End  : State
   -- Option: transition to End only permitted when all Channels are spent
 
-stIdxMsgTyOut : {n : Nat} -> (chs : Vect n StChanTy) -> (ch  : Nat) -> Type
-stIdxMsgTyOut [] ch = Void
-stIdxMsgTyOut (SendTy [] :: chs) Z = Void
-stIdxMsgTyOut (SendTy (t :: ts) :: chs) Z = t
-stIdxMsgTyOut (RecvTy _  :: chs) Z = Void
-stIdxMsgTyOut (hd        :: chs) (S ch) = stIdxMsgTyOut chs ch
+stIdxMsgTyOut' : {n : Nat} -> (chs : Vect n StChanTy) -> (ch  : Nat) -> Type
+stIdxMsgTyOut' [] ch = Void
+stIdxMsgTyOut' (SendTy [] :: chs) Z = Void
+stIdxMsgTyOut' (SendTy (t :: ts) :: chs) Z = t
+stIdxMsgTyOut' (RecvTy _  :: chs) Z = Void
+stIdxMsgTyOut' (hd        :: chs) (S ch) = stIdxMsgTyOut' chs ch
+
+stIdxMsgTyOut : {m,n : Nat}
+             -> (scs : Vect m Nat)
+             -> (chs : Vect n StChanTy)
+             -> (ch  : Nat)
+             -> Type
+stIdxMsgTyOut scs chs ch = case stIdxMsgTyOut' chs ch of
+  InChanTy i ts => if elem i scs then InChanTy i ts else Void
+  OutChanTy i ts => if elem i scs then OutChanTy i ts else Void
+  t => t
+
 
 stIdxMsgTyIn : {n : Nat} -> (chs : Vect n StChanTy) -> (ch,i : Nat) -> Type
 stIdxMsgTyIn [] ch i = Void
 stIdxMsgTyIn (SendTy _  :: chs) Z i = Void
 stIdxMsgTyIn (RecvTy [] :: chs) Z i = Void
-stIdxMsgTyIn (RecvTy (InChanTy ss :: ts) :: chs) Z i = InChan i
-stIdxMsgTyIn (RecvTy (OutChanTy ss :: ts) :: chs) Z i = OutChan i
+stIdxMsgTyIn (RecvTy (InChanTy _ ss :: ts) :: chs) Z i = InChan i
+stIdxMsgTyIn (RecvTy (OutChanTy _ ss :: ts) :: chs) Z i = OutChan i
 stIdxMsgTyIn (RecvTy (t :: ts) :: chs) Z i = t
 stIdxMsgTyIn (hd        :: chs) (S ch) i = stIdxMsgTyIn chs ch i
 
@@ -102,81 +104,99 @@ stApplyAt f (SendTy ts :: chs) Z = SendTy (f ts) :: chs
 stApplyAt f (RecvTy ts :: chs) Z = RecvTy (f ts) :: chs
 stApplyAt f (ch :: chs) (S k) = ch :: stApplyAt f chs k
 
-stSplitAt : {n : Nat}
-         -> (chs : Vect n StChanTy)
-         -> (ch : Chan)
-         -> Vect n StChanTy
-stSplitAt chs (MkInChan {n} _) = stEmptyAt chs n
-stSplitAt chs (MkOutChan {n} _ Nothing) = stEmptyAt chs n
-stSplitAt chs (MkOutChan {n} _ (Just f)) = stApplyAt (snd . f) chs n
+stOutChBTy' : {n : Nat}
+           -> (f : List Type -> (List Type, List Type))
+           -> (chs : Vect n StChanTy)
+           -> (i,ch : Nat)
+           -> Type
+stOutChBTy' f [] i ch = Void -- invalid channel
+stOutChBTy' f (RecvTy ts :: chs) Z ch = Void -- wrong direction
+stOutChBTy' f (SendTy [] :: chs) Z ch = Void -- nothing to delegate
+stOutChBTy' f (SendTy (t :: ts) :: chs) Z ch = OutChanTy ch (fst (f (t :: ts)))
+stOutChBTy' f (_ :: chs) (S k) ch = stOutChBTy' f chs k ch
 
 stOutChBTy : {n : Nat}
           -> (f : List Type -> (List Type, List Type))
           -> (chs : Vect n StChanTy)
           -> (i : Nat)
           -> Type
-stOutChBTy f [] i = Void -- invalid channel
-stOutChBTy f (RecvTy ts :: chs) Z = Void -- wrong direction
-stOutChBTy f (SendTy ts :: chs) Z = OutChanTy (fst (f ts))
-stOutChBTy f (_ :: chs) (S k) = stOutChBTy f chs k
+stOutChBTy f chs i = stOutChBTy' f chs i i
+
+stInChBTy' : {n : Nat}
+          -> (chs : Vect n StChanTy)
+          -> (i : Nat)
+          -> (ch : Nat)
+          -> Type
+stInChBTy' [] i ch = Void -- invalid channel
+stInChBTy' (RecvTy [] :: chs) Z ch = Void -- nothing to delegate
+stInChBTy' (RecvTy (t :: ts) :: chs) Z ch = InChanTy ch (t :: ts)
+stInChBTy' (SendTy ts :: chs) Z ch = Void
+stInChBTy' (_ :: chs) (S k) ch = stInChBTy' chs k ch
 
 stInChBTy : {n : Nat}
          -> (chs : Vect n StChanTy)
          -> (i : Nat)
          -> Type
-stInChBTy [] i = Void -- invalid channel
-stInChBTy (RecvTy ts :: chs) Z = InChanTy ts
-stInChBTy (SendTy ts :: chs) Z = Void
-stInChBTy (_ :: chs) (S k) = stInChBTy chs k
+stInChBTy chs ch = stInChBTy' chs ch ch
 
 -------------------------------------------------------------------------------
 -- State Transition Functions
 
 spawnSF : {t : Type}
-       -> {n : Nat}
+       -> {n,m : Nat}
        -> (to,frm : List Type)
        -> (chs    : Vect n StChanTy)
+       -> (scs    : Vect m Nat)
        -> (x : t)
        -> State
-spawnSF to frm chs _ = Live (chs ++ [SendTy to, RecvTy frm])
+spawnSF to frm chs scs _ = Live (chs ++ [SendTy to, RecvTy frm]) scs
 
 serialSF : {t : Type}
-        -> {n : Nat}
+        -> {n,m : Nat}
         -> (f : List Type -> (List Type, List Type))
         -> (ch : Nat)
         -> (chs : Vect n StChanTy)
+        -> (scs : Vect m Nat)
         -> (x : t)
         -> State
-serialSF {t = Void} f ch chs x with (x)
-  serialSF {t = Void} f ch chs x | p impossible
-serialSF {t} f ch chs x = Live (stApplyAt (snd . f) chs ch)
+serialSF {t = Void} f ch chs scs x with (x)
+  serialSF {t = Void} f ch chs scs x | p impossible
+serialSF {t} f ch chs scs x = Live (stApplyAt (snd . f) chs ch) (ch :: scs)
 
 sendSF : {t : Type}
-      -> {n : Nat}
+      -> {n,m : Nat}
       -> (ch  : Nat)
       -> (chs : Vect n StChanTy)
+      -> (scs : Vect m Nat)
       -> (msgTy : Type)
       -> (msg : msgTy)
       -> (x : t)
       -> State
-sendSF ch chs Void msg x with (msg)
-  sendSF ch chs Void msg x | p impossible
-sendSF ch chs Chan msg x = Live (stSplitAt (stDecAt chs ch) msg)
-sendSF ch chs msgTy msg x = Live (stDecAt chs ch)
+sendSF ch chs scs Void msg x with (msg)
+  sendSF ch chs scs Void msg x | p impossible
+sendSF ch chs scs (InChanTy i ts) msg x =
+  Live (stDecAt chs ch) (snd (delete i scs))
+sendSF ch chs scs (OutChanTy i ts) msg x =
+  Live (stDecAt chs ch) (snd (delete i scs))
+sendSF ch chs scs msgTy msg x =
+  Live (stDecAt chs ch) scs
 
 recvSF : {t : Type}
-      -> {n : Nat}
+      -> {n,m : Nat}
       -> (ch : Nat)
       -> (chs : Vect n StChanTy)
+      -> (scs : Vect m Nat)
       -> (ty : Type)
       -> (x : t)
       -> State
-recvSF {t = Void} ch chs ty x with (x)
-  recvSF {t = Void} ch chs ty x | p impossible
-recvSF {t = Chan} ch chs ty x = Live chs -- FIXME
-recvSF {t} ch chs (OutChanTy ts) x = Live ((stDecAt chs ch) ++ [(SendTy ts)])
-recvSF {t} ch chs (InChanTy ts) x = Live ((stDecAt chs ch) ++ [(RecvTy ts)])
-recvSF {t} ch chs ty x = Live (stDecAt chs ch)
+recvSF {t = Void} ch chs scs ty x with (x)
+  recvSF {t = Void} ch chs scs ty x | p impossible
+recvSF {t} ch chs scs (OutChanTy i ts) x =
+  Live ((stDecAt chs ch) ++ [(SendTy ts)]) scs
+recvSF {t} ch chs scs (InChanTy i ts) x =
+  Live ((stDecAt chs ch) ++ [(RecvTy ts)]) scs
+recvSF {t} ch chs scs ty x =
+  Live (stDecAt chs ch) scs
 
 -------------------------------------------------------------------------------
 -- Monad/State Machine Definition
@@ -186,55 +206,63 @@ Spawned : {m : (ty : Type) -> (st : State) -> (ty -> State) -> Type}
        -> (outTy : List Type)
        -> Type
 Spawned {m} inTy outTy =
-  m () (Live [(RecvTy inTy), (SendTy outTy)]) (const End)
+  m () (Live [(RecvTy inTy), (SendTy outTy)] []) (const End)
 
 data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
   -- DSL operations
-  Spawn : {chs : Vect n StChanTy}   
+  Spawn : {chs : Vect n StChanTy}
+       -> {scs : Vect m Nat}
        -> (to  : List Type)
        -> (frm : List Type)
        -> (p   : (pIn  : InChan  Z)
               -> (pOut : OutChan (S Z))
               -> Spawned {m = ProcessM} to frm)
        -> ProcessM (OutChan n, InChan (S n))
-                   (Live chs)
-                   (spawnSF to frm chs)
+                   (Live chs scs)
+                   (spawnSF to frm chs scs)
   SOutC : {chs : Vect n StChanTy}
+       -> {scs : Vect k Nat}
        -> (ch : OutChan m)
        -> (f  : List Type -> (List Type, List Type))
                           -- (relinquishing, retaining)
        -> ProcessM (stOutChBTy f chs m)
-                   (Live chs)
-                   (serialSF f m chs)
+                   (Live chs scs)
+                   (serialSF f m chs scs)
   SInC  : {chs : Vect n StChanTy}
+       -> {scs : Vect k Nat}
        -> (ch  : InChan m)
        -> ProcessM (stInChBTy chs m)
-                   (Live chs)
-                   (serialSF (\ts => (ts,[])) m chs)
+                   (Live chs scs)
+                   (serialSF (\ts => (ts,[])) m chs scs)
   Send  : {chs : Vect n StChanTy}
+       -> {scs : Vect k Nat}
        -> {m   : Nat}
        -> (ch  : OutChan m)
-       -> (msg : stIdxMsgTyOut chs m)
-       -> ProcessM () (Live chs) (sendSF m chs (stIdxMsgTyOut chs m) msg)
+       -> (msg : stIdxMsgTyOut scs chs m)
+       -> ProcessM
+            ()
+            (Live chs scs)
+            (sendSF m chs scs (stIdxMsgTyOut scs chs m) msg)
   Recv  : {chs : Vect n StChanTy}
+       -> {scs : Vect k Nat}
        -> {m   : Nat}
        -> (ch  : InChan m)
        -> ProcessM
             (stIdxMsgTyIn chs m n)
-            (Live chs)
-            (recvSF m chs (stIdxMsgTyInRaw chs m))
-  Halt  : ProcessM () (Live chs) (const End)
+            (Live chs scs)
+            (recvSF m chs scs (stIdxMsgTyInRaw chs m))
+  Halt  : ProcessM () (Live chs scs) (const End)
   -- Standard operations
   Pure  : (x : t) -> ProcessM t st (const st)
-  (>>=) : ProcessM a (Live chs) sf 
+  (>>=) : ProcessM a (Live chs scs) sf 
        -> ((x : a) -> ProcessM b (sf x) s3f)
-       -> ProcessM b (Live chs) s3f
-  (>>)  : ProcessM () (Live chs) sf
+       -> ProcessM b (Live chs scs) s3f
+  (>>)  : ProcessM () (Live chs scs) sf
        -> ProcessM b (sf ()) s3f
-       -> ProcessM b (Live chs) s3f
+       -> ProcessM b (Live chs scs) s3f
 
 Process : Type
-Process = ProcessM () (Live []) (const End)
+Process = ProcessM () (Live [] []) (const End)
 
 -------------------------------------------------------------------------------
 -- Example
@@ -272,31 +300,26 @@ calc =
 test : Process
 test =
   do
-    (toP,frmP) <- Spawn [Nat] [InChanTy [Nat]] p
-    (toQ,frmQ) <- Spawn [InChanTy [Nat]] [] q
-    (toW,frmW) <- Spawn [InChanTy [Nat]] [] w
+    (toP,frmP) <- Spawn [Nat] [InChanTy 6 [Nat]] p
+    (toQ,frmQ) <- Spawn [InChanTy 6 [Nat]] [] q
+    (toW,frmW) <- Spawn [InChanTy 6 [Nat]] [] w
+    -- (toP,frmP) <- Spawn [Nat] [OutChanTy 6 [Nat]] p
+    -- (toQ,frmQ) <- Spawn [OutChanTy 6 [Nat]] [] q
+    -- (toW,frmW) <- Spawn [OutChanTy 6 [Nat]] [] w
     ch <- Recv frmP
-    -- -- toP' <- SOutC (MkOut (There Here)) (\ts => (ts,[]))
+    -- ch' <- SOutC (MkOut (There Here)) (\ts => (ts,[]))
+    -- ch' <- SOutC ch (\ts => (ts,[]))
+    -- ch2' <- SOutC ch (\ts => (ts,[]))
     ch' <- SInC ch
-    -- ch' <- SInC ch
+    -- ch2' <- SInC ch
     Send toQ ch'
-    Send toW ch'
+    -- Send toW ch'
     ?after
     -- Halt
   where
     p pIn pOut = Halt
     q qIn qOut = Halt
     w wIn wOut = Halt
-
-
--- problem : you can now send toP' multiple times
--- solution: keep track of what serialised things we have sent
--- you can only send a serialised channel once
--- we will need to extend our Live state...
-
--- what happens if you serialise something to simply remove some behavioural prefix? The receiver will still expect certain things to be sent (first) so you can't avoid it.
-
--- We do need linearity
 
 -------------------------------------------------------------------------------
 
