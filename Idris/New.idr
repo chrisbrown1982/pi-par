@@ -272,18 +272,21 @@ calc =
 test : Process
 test =
   do
-    (toP,frmP) <- Spawn [Nat] [InChanTy [Nat,Nat]] p
-    (toQ,frmQ) <- Spawn [InChanTy [Nat,Nat]] [] q
+    (toP,frmP) <- Spawn [Nat] [InChanTy [Nat]] p
+    (toQ,frmQ) <- Spawn [InChanTy [Nat]] [] q
+    (toW,frmW) <- Spawn [InChanTy [Nat]] [] w
     ch <- Recv frmP
-    -- toP' <- SOutC (MkOut (There Here)) (\ts => (ts,[]))
-    -- ch' <- SOutC ch (\ts => (take 1 ts, drop 1 ts))
+    -- -- toP' <- SOutC (MkOut (There Here)) (\ts => (ts,[]))
     ch' <- SInC ch
+    -- ch' <- SInC ch
     Send toQ ch'
+    Send toW ch'
     ?after
     -- Halt
   where
     p pIn pOut = Halt
     q qIn qOut = Halt
+    w wIn wOut = Halt
 
 
 -- problem : you can now send toP' multiple times
@@ -292,6 +295,8 @@ test =
 -- we will need to extend our Live state...
 
 -- what happens if you serialise something to simply remove some behavioural prefix? The receiver will still expect certain things to be sent (first) so you can't avoid it.
+
+-- We do need linearity
 
 -------------------------------------------------------------------------------
 
