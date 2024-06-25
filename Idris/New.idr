@@ -113,13 +113,21 @@ stSplitAt chs (MkOutChan {n} _ (Just f)) = stApplyAt (snd . f) chs n
 stOutChBTy : {n : Nat}
           -> (f : List Type -> (List Type, List Type))
           -> (chs : Vect n StChanTy)
-          -> (ch : Nat)
           -> (i : Nat)
           -> Type
-stOutChBTy f [] ch i = Void -- invalid channel
-stOutChBTy f (RecvTy ts :: chs) ch Z = Void -- wrong direction
-stOutChBTy f (SendTy ts :: chs) ch Z = OutChanTy (fst (f ts))
-stOutChBTy f (_ :: chs) ch (S k) = stOutChBTy f chs ch k
+stOutChBTy f [] i = Void -- invalid channel
+stOutChBTy f (RecvTy ts :: chs) Z = Void -- wrong direction
+stOutChBTy f (SendTy ts :: chs) Z = OutChanTy (fst (f ts))
+stOutChBTy f (_ :: chs) (S k) = stOutChBTy f chs k
+
+stInChBTy : {n : Nat}
+         -> (chs : Vect n StChanTy)
+         -> (i : Nat)
+         -> Type
+stInChBTy [] i = Void -- invalid channel
+stInChBTy (RecvTy ts :: chs) Z = InChanTy ts
+stInChBTy (SendTy ts :: chs) Z = Void
+stInChBTy (_ :: chs) (S k) = stInChBTy chs k
 
 -------------------------------------------------------------------------------
 -- State Transition Functions
@@ -196,9 +204,14 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
        -> (ch : OutChan m)
        -> (f  : List Type -> (List Type, List Type))
                           -- (relinquishing, retaining)
-       -> ProcessM (stOutChBTy f chs m m)
+       -> ProcessM (stOutChBTy f chs m)
                    (Live chs)
                    (serialSF f m chs)
+  SInC  : {chs : Vect n StChanTy}
+       -> (ch  : InChan m)
+       -> ProcessM (stInChBTy chs m)
+                   (Live chs)
+                   (serialSF (\ts => (ts,[])) m chs)
   Send  : {chs : Vect n StChanTy}
        -> {m   : Nat}
        -> (ch  : OutChan m)
@@ -260,11 +273,12 @@ calc =
 test : Process
 test =
   do
-    (toP,frmP) <- Spawn [Nat] [OutChanTy [Nat,Nat]] [Nat] [OutChanTy [Nat,Nat]] p
-    (toQ,frmQ) <- Spawn [OutChanTy [Nat]] [] [OutChanTy [Nat]] [] q
+    (toP,frmP) <- Spawn [Nat] [InChanTy [Nat,Nat]] [Nat] [InChanTy [Nat,Nat]] p
+    (toQ,frmQ) <- Spawn [InChanTy [Nat,Nat]] [] [InChanTy [Nat,Nat]] [] q
     ch <- Recv frmP
     -- toP' <- SOutC (MkOut (There Here)) (\ts => (ts,[]))
-    ch' <- SOutC ch (\ts => (take 1 ts, drop 1 ts))
+    -- ch' <- SOutC ch (\ts => (take 1 ts, drop 1 ts))
+    ch' <- SInC ch
     Send toQ ch'
     ?after
     -- Halt
