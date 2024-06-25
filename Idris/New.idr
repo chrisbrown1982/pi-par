@@ -193,10 +193,9 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
   Spawn : {chs : Vect n StChanTy}   
        -> (to  : List Type)
        -> (frm : List Type)
-       -> (tmpInTy,tmpOutTy : List Type)
        -> (p   : (pIn  : InChan  Z)
               -> (pOut : OutChan (S Z))
-              -> Spawned {m = ProcessM} tmpInTy tmpOutTy)
+              -> Spawned {m = ProcessM} to frm)
        -> ProcessM (OutChan n, InChan (S n))
                    (Live chs)
                    (spawnSF to frm chs)
@@ -273,8 +272,8 @@ calc =
 test : Process
 test =
   do
-    (toP,frmP) <- Spawn [Nat] [InChanTy [Nat,Nat]] [Nat] [InChanTy [Nat,Nat]] p
-    (toQ,frmQ) <- Spawn [InChanTy [Nat,Nat]] [] [InChanTy [Nat,Nat]] [] q
+    (toP,frmP) <- Spawn [Nat] [InChanTy [Nat,Nat]] p
+    (toQ,frmQ) <- Spawn [InChanTy [Nat,Nat]] [] q
     ch <- Recv frmP
     -- toP' <- SOutC (MkOut (There Here)) (\ts => (ts,[]))
     -- ch' <- SOutC ch (\ts => (take 1 ts, drop 1 ts))
