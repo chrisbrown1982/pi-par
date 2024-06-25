@@ -34,7 +34,6 @@ data InChanTy : List Type -> Type where
 data OutChanTy : List Type -> Type where
   MkOutChanTy : (ts : List Type) -> OutChanTy ts
 
-
 data StChanTy : Type where
   SendTy : List Type -> StChanTy
   RecvTy : List Type -> StChanTy
@@ -111,6 +110,17 @@ stSplitAt chs (MkInChan {n} _) = stEmptyAt chs n
 stSplitAt chs (MkOutChan {n} _ Nothing) = stEmptyAt chs n
 stSplitAt chs (MkOutChan {n} _ (Just f)) = stApplyAt (snd . f) chs n
 
+stOutChBTy : {n : Nat}
+          -> (f : List Type -> (List Type, List Type))
+          -> (chs : Vect n StChanTy)
+          -> (ch : Nat)
+          -> (i : Nat)
+          -> Type
+stOutChBTy f [] ch i = Void -- invalid channel
+stOutChBTy f (RecvTy ts :: chs) ch Z = Void -- wrong direction
+stOutChBTy f (SendTy ts :: chs) ch Z = OutChanTy (fst (f ts))
+stOutChBTy f (_ :: chs) ch (S k) = stOutChBTy f chs ch k
+
 -------------------------------------------------------------------------------
 -- State Transition Functions
 
@@ -121,6 +131,17 @@ spawnSF : {t : Type}
        -> (x : t)
        -> State
 spawnSF to frm chs _ = Live (chs ++ [SendTy to, RecvTy frm])
+
+serialSF : {t : Type}
+        -> {n : Nat}
+        -> (f : List Type -> (List Type, List Type))
+        -> (ch : Nat)
+        -> (chs : Vect n StChanTy)
+        -> (x : t)
+        -> State
+serialSF {t = Void} f ch chs x with (x)
+  serialSF {t = Void} f ch chs x | p impossible
+serialSF {t} f ch chs x = Live (stApplyAt (snd . f) chs ch)
 
 sendSF : {t : Type}
       -> {n : Nat}
@@ -171,6 +192,13 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
        -> ProcessM (OutChan n, InChan (S n))
                    (Live chs)
                    (spawnSF to frm chs)
+  SOutC : {chs : Vect n StChanTy}
+       -> (ch : OutChan m)
+       -> (f  : List Type -> (List Type, List Type))
+                          -- (relinquishing, retaining)
+       -> ProcessM (stOutChBTy f chs m m)
+                   (Live chs)
+                   (serialSF f m chs)
   Send  : {chs : Vect n StChanTy}
        -> {m   : Nat}
        -> (ch  : OutChan m)
@@ -199,13 +227,14 @@ Process = ProcessM () (Live []) (const End)
 -------------------------------------------------------------------------------
 -- Example
 
+{-
 calc : Process
 calc =
   do
     (toP,frmP) <- Spawn [Nat, Nat] [Nat] [Nat, Nat] [Nat] p
-    (toQ,frmQ) <- Spawn [Chan] [] [OutChanTy [Nat]] [] q
+    (toQ,frmQ) <- Spawn [OutChanTy [Nat]] [] [OutChanTy [Nat]] [] q
     Send toP Z
-    Send toQ (MkOutChan toP (Just (\ts => (take 1 ts, drop 1 ts))))
+    -- Send toQ  -- (MkOutChan toP (Just (\ts => (take 1 ts, drop 1 ts))))
     ?after
     -- Halt
   where
@@ -226,15 +255,30 @@ calc =
       Send toP Z
       ?afterQ
       -- Halt
+-}
 
 test : Process
 test =
   do
-    (toP,frmP) <- Spawn [] [OutChanTy [Nat]] [] [OutChanTy [Nat]] p
-    x <- Recv frmP
-    Halt
+    (toP,frmP) <- Spawn [Nat] [OutChanTy [Nat,Nat]] [Nat] [OutChanTy [Nat,Nat]] p
+    (toQ,frmQ) <- Spawn [OutChanTy [Nat]] [] [OutChanTy [Nat]] [] q
+    ch <- Recv frmP
+    -- toP' <- SOutC (MkOut (There Here)) (\ts => (ts,[]))
+    ch' <- SOutC ch (\ts => (take 1 ts, drop 1 ts))
+    Send toQ ch'
+    ?after
+    -- Halt
   where
     p pIn pOut = Halt
+    q qIn qOut = Halt
+
+
+-- problem : you can now send toP' multiple times
+-- solution: keep track of what serialised things we have sent
+-- you can only send a serialised channel once
+-- we will need to extend our Live state...
+
+-- what happens if you serialise something to simply remove some behavioural prefix? The receiver will still expect certain things to be sent (first) so you can't avoid it.
 
 -------------------------------------------------------------------------------
 
