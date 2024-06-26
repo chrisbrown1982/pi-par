@@ -107,20 +107,23 @@ stApplyAt f (ch :: chs) (S k) = ch :: stApplyAt f chs k
 stOutChBTy' : {n : Nat}
            -> (f : List Type -> (List Type, List Type))
            -> (chs : Vect n StChanTy)
-           -> (i,ch : Nat)
+           -> (i,ch,n0 : Nat)
            -> Type
-stOutChBTy' f [] i ch = Void -- invalid channel
-stOutChBTy' f (RecvTy ts :: chs) Z ch = Void -- wrong direction
-stOutChBTy' f (SendTy [] :: chs) Z ch = Void -- nothing to delegate
-stOutChBTy' f (SendTy (t :: ts) :: chs) Z ch = OutChanTy ch (fst (f (t :: ts)))
-stOutChBTy' f (_ :: chs) (S k) ch = stOutChBTy' f chs k ch
+stOutChBTy' f [] i ch n0 = Void -- invalid channel
+stOutChBTy' f (RecvTy ts :: chs) Z ch n0 = Void -- wrong direction
+stOutChBTy' f (SendTy [] :: chs) Z ch n0 = Void -- nothing to delegate
+stOutChBTy' f (SendTy (t :: ts) :: chs) Z ch n0 =
+  case f (t :: ts) of
+    (xs,[]) => OutChanTy ch xs
+    (xs,(y :: ys)) => (OutChanTy ch xs, OutChan n0)
+stOutChBTy' f (_ :: chs) (S k) ch n0 = stOutChBTy' f chs k ch n0
 
 stOutChBTy : {n : Nat}
           -> (f : List Type -> (List Type, List Type))
           -> (chs : Vect n StChanTy)
           -> (i : Nat)
           -> Type
-stOutChBTy f chs i = stOutChBTy' f chs i i
+stOutChBTy {n} f chs i = stOutChBTy' f chs i i n
 
 stInChBTy' : {n : Nat}
           -> (chs : Vect n StChanTy)
@@ -138,6 +141,26 @@ stInChBTy : {n : Nat}
          -> (i : Nat)
          -> Type
 stInChBTy chs ch = stInChBTy' chs ch ch
+
+stShiftLen : {n : Nat}
+          -> (chs : Vect n StChanTy)
+          -> (ch  : Nat) 
+          -> Nat
+stShiftLen [] ch = Z
+stShiftLen ((::) {len} ch chs) Z = S (len + 1)
+stShiftLen (ch :: chs) (S k) = S (stShiftLen chs k)
+
+stShiftAt : {n : Nat}
+         -> (f : List Type -> List Type)
+         -> (chs : Vect n StChanTy)
+         -> (ch  : Nat)
+         -> Vect (stShiftLen chs ch) StChanTy
+stShiftAt f [] ch = []
+stShiftAt f ((::) {len} (SendTy ts) chs) Z =
+  SendTy [] :: chs ++ [SendTy (f ts)]
+stShiftAt f ((::) {len} (RecvTy ts) chs) Z =
+  RecvTy [] :: chs ++ [RecvTy (f ts)]
+stShiftAt f (ch :: chs) (S k) = ch :: stShiftAt f chs k
 
 -------------------------------------------------------------------------------
 -- State Transition Functions
@@ -161,7 +184,10 @@ serialSF : {t : Type}
         -> State
 serialSF {t = Void} f ch chs scs x with (x)
   serialSF {t = Void} f ch chs scs x | p impossible
-serialSF {t} f ch chs scs x = Live (stApplyAt (snd . f) chs ch) (ch :: scs)
+serialSF {t = (r,s)} f ch chs scs x =
+  Live (stShiftAt (snd . f) chs ch) (ch :: scs)
+serialSF {t} f ch chs scs x =
+  Live (stApplyAt (snd . f) chs ch) (ch :: scs)
 
 sendSF : {t : Type}
       -> {n,m : Nat}
@@ -225,7 +251,8 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
        -> (ch : OutChan m)
        -> (f  : List Type -> (List Type, List Type))
                           -- (relinquishing, retaining)
-       -> ProcessM (stOutChBTy f chs m)
+                          -- FIXME
+       -> ProcessM (stOutChBTy f chs m) -- if partial, return new channel
                    (Live chs scs)
                    (serialSF f m chs scs)
   SInC  : {chs : Vect n StChanTy}
@@ -300,25 +327,36 @@ calc =
 test : Process
 test =
   do
-    (toP,frmP) <- Spawn [Nat] [InChanTy 6 [Nat]] p
-    (toQ,frmQ) <- Spawn [InChanTy 6 [Nat]] [] q
-    (toW,frmW) <- Spawn [InChanTy 6 [Nat]] [] w
-    -- (toP,frmP) <- Spawn [Nat] [OutChanTy 6 [Nat]] p
-    -- (toQ,frmQ) <- Spawn [OutChanTy 6 [Nat]] [] q
-    -- (toW,frmW) <- Spawn [OutChanTy 6 [Nat]] [] w
+    -- (toP,frmP) <- Spawn [Nat] [InChanTy 6 [Nat]] p
+    -- (toQ,frmQ) <- Spawn [InChanTy 6 [Nat]] [] q
+    -- (toW,frmW) <- Spawn [InChanTy 6 [Nat]] [] w
+    (toP,frmP) <- Spawn [Nat] [OutChanTy 6 [Nat,Nat]] p
+    (toQ,frmQ) <- Spawn [OutChanTy 6 [Nat]] [] q
+    (toW,frmW) <- Spawn [OutChanTy 6 [Nat]] [] w
     ch <- Recv frmP
     -- ch' <- SOutC (MkOut (There Here)) (\ts => (ts,[]))
-    -- ch' <- SOutC ch (\ts => (ts,[]))
-    -- ch2' <- SOutC ch (\ts => (ts,[]))
-    ch' <- SInC ch
-    -- ch2' <- SInC ch
-    Send toQ ch'
-    -- Send toW ch'
+    (chS, ch') <- SOutC ch (\ts => (take 1 ts, drop 1 ts))
+    -- chS' <- SOutC ch (\ts => (ts,[]))
+    -- chS' <- SOutC ch' (\ts => (ts,[]))
+    Send toQ chS
+    -- Send toW chS
+
+    -- (toR,frmR) <- Spawn [] [] r
+    -- x <- Recv frmR
+    -- Send toP 42
     ?after
+
+    -- ch2' <- SOutC ch (\ts => (ts,[]))
+    -- ch' <- SInC ch
+    -- ch2' <- SInC ch
+    -- Send toQ ch'
+    -- Send toW ch'
+    -- ?after
     -- Halt
   where
     p pIn pOut = Halt
     q qIn qOut = Halt
+    -- r rIn rOut = Halt
     w wIn wOut = Halt
 
 -------------------------------------------------------------------------------
