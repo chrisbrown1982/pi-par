@@ -1,4 +1,4 @@
-module AltNoPartDelegation
+module Main
 
 import Data.Fin
 import Data.List
