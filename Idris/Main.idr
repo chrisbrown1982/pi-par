@@ -1,27 +1,33 @@
 module Main
 
-import Data.Fin
-import Data.List
-import Data.Vect
+import public Data.Fin
+import public Data.List
+import public Data.Vect
 
 -------------------------------------------------------------------------------
 -- Channels
-
+public export
 data Loc : Nat -> Type where
   Here  : Loc Z
   There : Loc n -> Loc (S n)
 
+public export 
 data InChan : Nat -> Type where
   MkIn : {n : Nat} -> Loc n -> InChan n
 
+public export
 data OutChan : Nat -> Type where
   MkOut : {n : Nat} -> Loc n -> OutChan n
 
+public export 
 data InChanTy : Nat -> List Type -> Type where
   MkInChanTy : (ch : Nat) -> (ts : List Type) -> InChanTy ch ts
+
+public export
 data OutChanTy : Nat -> List Type -> Type where
   MkOutChanTy : (ch : Nat) -> (ts : List Type) -> OutChanTy ch ts
 
+public export
 data StChanTy : Type where
   SendTy : List Type -> StChanTy
   RecvTy : List Type -> StChanTy
@@ -33,6 +39,7 @@ data StChanTy : Type where
 -- A Process is either active or halted.
 -- A halted process cannot be restarted.
 -- An active process manages its set of live channels.
+public export
 data State : Type where
   Live : {n,m : Nat}
       -> (chs : Vect n StChanTy)
@@ -41,6 +48,7 @@ data State : Type where
   End  : State
   -- Option: transition to End only permitted when all Channels are spent
 
+public export
 stIdxMsgTyOut' : {n : Nat} -> (chs : Vect n StChanTy) -> (ch  : Nat) -> Type
 stIdxMsgTyOut' [] ch = Void
 stIdxMsgTyOut' (SendTy [] :: chs) Z = Void
@@ -48,6 +56,7 @@ stIdxMsgTyOut' (SendTy (t :: ts) :: chs) Z = t
 stIdxMsgTyOut' (RecvTy _  :: chs) Z = Void
 stIdxMsgTyOut' (hd        :: chs) (S ch) = stIdxMsgTyOut' chs ch
 
+public export
 stIdxMsgTyOut : {m,n : Nat}
              -> (scs : Vect m Nat)
              -> (chs : Vect n StChanTy)
@@ -58,7 +67,7 @@ stIdxMsgTyOut scs chs ch = case stIdxMsgTyOut' chs ch of
   OutChanTy i ts => if elem i scs then OutChanTy i ts else Void
   t => t
 
-
+public export
 stIdxMsgTyIn : {n : Nat} -> (chs : Vect n StChanTy) -> (ch,i : Nat) -> Type
 stIdxMsgTyIn [] ch i = Void
 stIdxMsgTyIn (SendTy _  :: chs) Z i = Void
@@ -68,6 +77,7 @@ stIdxMsgTyIn (RecvTy (OutChanTy _ ss :: ts) :: chs) Z i = OutChan i
 stIdxMsgTyIn (RecvTy (t :: ts) :: chs) Z i = t
 stIdxMsgTyIn (hd        :: chs) (S ch) i = stIdxMsgTyIn chs ch i
 
+public export
 stIdxMsgTyInRaw : {n : Nat} -> (chs : Vect n StChanTy) -> (ch : Nat) -> Type
 stIdxMsgTyInRaw [] ch = Void
 stIdxMsgTyInRaw (SendTy _  :: chs) Z = Void
@@ -75,16 +85,19 @@ stIdxMsgTyInRaw (RecvTy [] :: chs) Z = Void
 stIdxMsgTyInRaw (RecvTy (t :: ts) :: chs) Z = t
 stIdxMsgTyInRaw (hd        :: chs) (S ch) = stIdxMsgTyInRaw chs ch
 
+public export
 tail' : List a -> List a
 tail' [] = []
 tail' (x :: xs) = xs
 
+public export
 stDecAt : {n : Nat} -> (chs : Vect n StChanTy) -> (ch : Nat) -> Vect n StChanTy
 stDecAt [] ch = [] -- no change
 stDecAt (SendTy ts :: chs) Z = SendTy (tail' ts) :: chs
 stDecAt (RecvTy ts :: chs) Z = RecvTy (tail' ts) :: chs
 stDecAt (ch :: chs) (S k) = ch :: stDecAt chs k
 
+public export
 stEmptyAt : {n : Nat}
          -> (chs : Vect n StChanTy)
          -> (ch : Nat)
@@ -95,6 +108,7 @@ stEmptyAt (RecvTy ts :: chs) Z = RecvTy [] :: chs
 stEmptyAt (ch :: chs) (S k) = ch :: stEmptyAt chs k
 
 -- ...this is map.
+public export
 stApplyAt : (f   : List Type -> List Type)
          -> (chs : Vect n StChanTy)
          -> (ch  : Nat)
@@ -104,6 +118,7 @@ stApplyAt f (SendTy ts :: chs) Z = SendTy (f ts) :: chs
 stApplyAt f (RecvTy ts :: chs) Z = RecvTy (f ts) :: chs
 stApplyAt f (ch :: chs) (S k) = ch :: stApplyAt f chs k
 
+public export
 stOutChBTy' : {n : Nat}
            -> (chs : Vect n StChanTy)
            -> (i,ch : Nat)
@@ -114,12 +129,14 @@ stOutChBTy' (SendTy [] :: chs) Z ch = Void -- nothing to delegate
 stOutChBTy' (SendTy (t :: ts) :: chs) Z ch = OutChanTy ch (t :: ts)
 stOutChBTy' (_ :: chs) (S k) ch = stOutChBTy' chs k ch
 
+public export
 stOutChBTy : {n : Nat}
           -> (chs : Vect n StChanTy)
           -> (i : Nat)
           -> Type
 stOutChBTy chs i = stOutChBTy' chs i i
 
+public export
 stInChBTy' : {n : Nat}
           -> (chs : Vect n StChanTy)
           -> (i : Nat)
@@ -131,6 +148,7 @@ stInChBTy' (RecvTy (t :: ts) :: chs) Z ch = InChanTy ch (t :: ts)
 stInChBTy' (SendTy ts :: chs) Z ch = Void
 stInChBTy' (_ :: chs) (S k) ch = stInChBTy' chs k ch
 
+public export
 stInChBTy : {n : Nat}
          -> (chs : Vect n StChanTy)
          -> (i : Nat)
@@ -139,7 +157,7 @@ stInChBTy chs ch = stInChBTy' chs ch ch
 
 -------------------------------------------------------------------------------
 -- State Transition Functions
-
+public export
 spawnSF : {t : Type}
        -> {n,m : Nat}
        -> (to,frm : List Type)
@@ -149,6 +167,18 @@ spawnSF : {t : Type}
        -> State
 spawnSF to frm chs scs _ = Live (chs ++ [SendTy to, RecvTy frm]) scs
 
+public export
+spawnSFN : {t : Type}
+        -> {n,m : Nat}
+        -> (num : Nat)
+        -> (to,frm : List Type)
+        -> (chs    : Vect n StChanTy)
+        -> (scs    : Vect m Nat)
+        -> (x : t)
+        -> State
+spawnSFN num to frm chs scs _ = Live (chs ++ (concat (replicate num [SendTy to, RecvTy frm]))) scs
+
+public export
 serialSF : {t : Type}
         -> {n,m : Nat}
         -> (ch : Nat)
@@ -161,6 +191,7 @@ serialSF {t = Void} ch chs scs x with (x)
 serialSF {t} ch chs scs x =
   Live (stApplyAt (const []) chs ch) (ch :: scs)
 
+public export
 sendSF : {t : Type}
       -> {n,m : Nat}
       -> (ch  : Nat)
@@ -179,6 +210,7 @@ sendSF ch chs scs (OutChanTy i ts) msg x =
 sendSF ch chs scs msgTy msg x =
   Live (stDecAt chs ch) scs
 
+public export
 recvSF : {t : Type}
       -> {n,m : Nat}
       -> (ch : Nat)
@@ -199,6 +231,7 @@ recvSF {t} ch chs scs ty x =
 -------------------------------------------------------------------------------
 -- Monad/State Machine Definition
 
+public export
 Spawned : {m : (ty : Type) -> (st : State) -> (ty -> State) -> Type}
        -> (inTy  : List Type)
        -> (outTy : List Type)
@@ -206,18 +239,32 @@ Spawned : {m : (ty : Type) -> (st : State) -> (ty -> State) -> Type}
 Spawned {m} inTy outTy =
   m () (Live [(RecvTy inTy), (SendTy outTy)] []) (const End)
 
+public export
 data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
   -- DSL operations
   Spawn : {chs : Vect n StChanTy}
        -> {scs : Vect m Nat}
        -> (to  : List Type)
        -> (frm : List Type)
-       -> (p   : (pIn  : InChan  Z)
-              -> (pOut : OutChan (S Z))
+       -> (p   : (pIn  : InChan  Z)      -- channel position in the child
+              -> (pOut : OutChan (S Z))  
               -> Spawned {m = ProcessM} to frm)
        -> ProcessM (OutChan n, InChan (S n))
                    (Live chs scs)
                    (spawnSF to frm chs scs)
+
+  SpawnN : {chs : Vect n StChanTy}
+        -> {scs : Vect m Nat}
+        -> (n : Nat)
+        -> (to  : List Type)
+        -> (frm : List Type)
+        -> (p   : (pIn  : InChan  Z)      -- channel position in the child
+               -> (pOut : OutChan (S Z))  
+               -> Spawned {m = ProcessM} to frm)
+        -> ProcessM ((List (OutChan n), List (InChan (S n))))
+                    (Live chs scs)
+                    (spawnSFN n to frm chs scs)
+
   SOutC : {chs : Vect n StChanTy}
        -> {scs : Vect k Nat}
        -> (ch : OutChan m)
@@ -257,6 +304,7 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
        -> ProcessM b (sf ()) s3f
        -> ProcessM b (Live chs scs) s3f
 
+public export
 Process : Type
 Process = ProcessM () (Live [] []) (const End)
 
