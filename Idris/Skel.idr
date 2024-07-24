@@ -3,22 +3,42 @@ module Skel
 import Main
 
 
-spawnN : {chs : Vect nChs StChanTy}
-      -> (n : Nat)
+{-Spawn : {chs : Vect n StChanTy}
+       -> {scs : Vect m Nat}
+       -> (to  : List Type)
+       -> (frm : List Type)
+       -> (p   : (pIn  : InChan  Z)      -- channel position in the child
+              -> (pOut : OutChan (S Z))  
+              -> Spawned {m = ProcessM} to frm)
+       -> ProcessM (OutChan n, InChan (S n))
+                   (Live chs scs)
+                   (spawnSF to frm chs scs)
+-}
+
+
+spawnN : (n : Nat)
+      -> {nChs : Nat}
+      -> {chs : Vect nChs StChanTy}
+      -> {scs : Vect m Nat}
       -> (toTy : List Type)
       -> (frmTy : List Type)
-      -> (p   : (pIn  : InChan  Z)
+      -> (p  : (pIn  : InChan  Z)
             -> (pOut : OutChan (S Z))
             -> Spawned {m = ProcessM} toTy frmTy)
       -> ProcessM
-          (List (n ** (OutChan n, InChan (S n))))
+          (List (m ** (OutChan m, InChan (S m))))
           (Live chs scs)
           (spawnSFN n toTy frmTy chs scs)
-spawnN {nChs} Z toTy frmTy p = Pure (Z ** [])
-spawnN {nChs} (S n) toTy frmTy p = do
+spawnN Z {chs=[]} {scs} toTy frmTy p = Pure (Prelude.Nil)
+spawnN Z {chs=(_::_)} {scs} toTy frmTy p = ?afterPP
+spawnN {nChs} (S n) {chs} {scs} toTy frmTy p = do
     (to,frm) <- Spawn toTy frmTy p
     xs <- spawnN n toTy frmTy p
-    Pure (nChs ** (to,frm) :: xs)
+    case n of 
+        Z => ?after991 -- Pure [(nChs ** (to, frm))]
+        (S n') => Pure ((nChs ** (to, frm)) :: xs)
+    -- Pure xs
+    -- ?after99
 
 {- farm : (worker : InChanTy n [Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat] 
               -> OutChanTy m [Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat] 
@@ -48,7 +68,7 @@ farm worker inL =
         (toW4, frmW4) <- Spawn [List Nat] 
                                [List Nat] worker 
     -}
-        xs <- spawnN 4 [List Nat] [List Nat] worker
+        -- xs <- spawnN 4 [List Nat] [List Nat] worker
     
         ?after2 
         -- Send (index 0 toChans) [1,2,3] -- (replicate 10 42)

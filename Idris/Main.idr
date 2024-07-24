@@ -176,7 +176,8 @@ spawnSFN : {t : Type}
         -> (scs    : Vect m Nat)
         -> (x : t)
         -> State
-spawnSFN num to frm chs scs _ = Live (chs ++ (concat (replicate num [SendTy to, RecvTy frm]))) scs
+spawnSFN Z to frm chs scs _ = Live [] scs
+spawnSFN (S n) to frm chs scs _ = Live (chs ++ (concat (replicate (S n) [SendTy to, RecvTy frm]))) scs
 
 public export
 serialSF : {t : Type}
