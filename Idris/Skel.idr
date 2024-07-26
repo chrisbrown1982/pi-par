@@ -18,11 +18,11 @@ import Main
 
 --- %logging "eval" 5
 public export
-spawnN : (n : Nat)
-      -> {0 nScs : Nat}
-      -> {nChs : Nat}
-      -> {chs : Vect nChs StChanTy}
-      -> {scs : Vect nScs Nat}
+spawnN : {n : Nat}
+      -> {m : Nat}
+      -> {chs : Vect n StChanTy}
+      -> {scs : Vect m Nat} 
+      -> (num : Nat)
       -> (toTy : List Type)
       -> (frmTy : List Type)
       -> (p  : (pIn  : InChan  Z)
@@ -32,20 +32,27 @@ spawnN : (n : Nat)
           -- (List (m ** (OutChan m, InChan (S m))))
           ()
           (Live chs scs)
-          (SpawnSFN n toTy frmTy chs scs)
-          {-(\_ => case n of
-                      Z => Live chs scs
-                      (S n) => Live (chs ++ (concat (replicate (S n) [SendTy toTy, RecvTy frmTy]))) scs
-          )-}
-spawnN Z {chs=[]} {scs} toTy frmTy p = Pure () -- (Prelude.Nil)
-spawnN Z {chs=(_::_)} {scs} toTy frmTy p = Pure () -- []
-spawnN (S Z) {nChs} {chs} {scs} toTy frmTy p = do
+          (SpawnSFN2 toTy frmTy chs scs)
+spawnN {chs} {scs} n toTy frmTy p = Pure2 () () (Live chs scs) (SpawnSFN2 toTy frmTy chs scs (Live chs scs))
+                                      --   (SpawnSFN2 toTy frmTy chs scs ())
+
+{-
+spawnN Z {chs=[]} {scs} toTy frmTy p = ?h -- Pure () -- (Prelude.Nil)
+spawnN Z {chs=(_::_)} {scs} toTy frmTy p = ?h2 -- Pure () -- []
+spawnN (S Z) {nChs} {chs} {scs} toTy frmTy p 
     (to,frm) <- Spawn toTy frmTy p
     Pure () -- [(nChs ** (to, frm))]
 spawnN (S (S n')) {nChs} {chs} {scs} toTy frmTy p = do
-    --?ahh
-    (to,frm) <- Spawn toTy frmTy p
-    xs <- spawnN (S n') toTy frmTy p
+    ?ahh
+
+
+    -- (to,frm) <- Spawn toTy frmTy p
+
+    -- ?h3
+
+    -- spawnN (S n') toTy frmTy p
+
+    -- xs <- spawnN (S n') toTy frmTy p
     --  | _ => assert_total $ idris_crash "no"
     -- let interm = (_ ** (to, frm)) :: (d :: ds) 
     -- ?afterKK

@@ -189,6 +189,20 @@ SpawnSFN (S n) to frm chs scs =
 ---                                   [SendTy to, RecvTy frm]))) scs
 
 public export
+SpawnSFN2 : {t : Type}
+        -> {nChs,m : Nat}
+        --- > (num : Nat)
+        -> (to,frm : List Type)
+        -> (chs    : Vect nChs StChanTy)
+        -> (scs    : Vect m Nat)
+        -> (x : t)
+        -> State
+-- SpawnSFN2 Z to frm chs scs = \_ => Live chs scs
+SpawnSFN2 {nChs} to frm chs scs =
+  \x => Live {n=plus nChs 2} (chs ++ [SendTy to, RecvTy frm]) scs
+
+
+public export
 serialSF : {t : Type}
         -> {n,m : Nat}
         -> (ch : Nat)
@@ -309,7 +323,16 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
   Halt  : ProcessM () (Live chs scs) (const End)
   -- Standard operations
   Pure  : (x : t) -> ProcessM t st (const2 st)
-  (>>=) : ProcessM a (Live chs scs) sf 
+
+  Pure2 :  (t : Type) 
+        -> (x : t) 
+        -> (add : Nat)
+        -> (st : State n) 
+        -> (st2 : State (n + add))
+        -> (r : StateR st st2)
+        ->  ProcessM t st (const2 st2)
+
+  (>>=) : ProcessM a (Live chs scs) sf  
        -> ((x : a) -> ProcessM b (sf x) s3f)
        -> ProcessM b (Live chs scs) s3f
   (>>)  : ProcessM () (Live chs scs) sf
