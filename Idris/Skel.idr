@@ -16,29 +16,49 @@ import Main
 -}
 
 
+--- %logging "eval" 5
+public export
 spawnN : (n : Nat)
+      -> {0 nScs : Nat}
       -> {nChs : Nat}
       -> {chs : Vect nChs StChanTy}
-      -> {scs : Vect m Nat}
+      -> {scs : Vect nScs Nat}
       -> (toTy : List Type)
       -> (frmTy : List Type)
       -> (p  : (pIn  : InChan  Z)
             -> (pOut : OutChan (S Z))
             -> Spawned {m = ProcessM} toTy frmTy)
       -> ProcessM
-          (List (m ** (OutChan m, InChan (S m))))
+          -- (List (m ** (OutChan m, InChan (S m))))
+          ()
           (Live chs scs)
-          (spawnSFN n toTy frmTy chs scs)
-spawnN Z {chs=[]} {scs} toTy frmTy p = Pure (Prelude.Nil)
-spawnN Z {chs=(_::_)} {scs} toTy frmTy p = ?afterPP
-spawnN {nChs} (S n) {chs} {scs} toTy frmTy p = do
+          (SpawnSFN n toTy frmTy chs scs)
+          {-(\_ => case n of
+                      Z => Live chs scs
+                      (S n) => Live (chs ++ (concat (replicate (S n) [SendTy toTy, RecvTy frmTy]))) scs
+          )-}
+spawnN Z {chs=[]} {scs} toTy frmTy p = Pure () -- (Prelude.Nil)
+spawnN Z {chs=(_::_)} {scs} toTy frmTy p = Pure () -- []
+spawnN (S Z) {nChs} {chs} {scs} toTy frmTy p = do
     (to,frm) <- Spawn toTy frmTy p
-    xs <- spawnN n toTy frmTy p
-    case n of 
+    Pure () -- [(nChs ** (to, frm))]
+spawnN (S (S n')) {nChs} {chs} {scs} toTy frmTy p = do
+    --?ahh
+    (to,frm) <- Spawn toTy frmTy p
+    xs <- spawnN (S n') toTy frmTy p
+    --  | _ => assert_total $ idris_crash "no"
+    -- let interm = (_ ** (to, frm)) :: (d :: ds) 
+    -- ?afterKK
+    -- ?h -- interm
+    Pure () -- ((_ ** (to, frm)) :: xs)
+{-
+    case n' of 
         Z => ?after991 -- Pure [(nChs ** (to, frm))]
-        (S n') => Pure ((nChs ** (to, frm)) :: xs)
+        (S n'') => ?after992 -- Pure ((nChs ** (to, frm)) :: xs)
     -- Pure xs
     -- ?after99
+%logging off
+-}
 
 {- farm : (worker : InChanTy n [Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat] 
               -> OutChanTy m [Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat, Nat] 

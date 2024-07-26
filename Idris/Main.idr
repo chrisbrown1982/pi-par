@@ -4,6 +4,10 @@ import public Data.Fin
 import public Data.List
 import public Data.Vect
 
+public export
+const2 : a -> b -> a 
+const2 x = \y => x 
+
 -------------------------------------------------------------------------------
 -- Channels
 public export
@@ -158,26 +162,31 @@ stInChBTy chs ch = stInChBTy' chs ch ch
 -------------------------------------------------------------------------------
 -- State Transition Functions
 public export
-spawnSF : {t : Type}
+SpawnSF : {t : Type}
        -> {n,m : Nat}
        -> (to,frm : List Type)
        -> (chs    : Vect n StChanTy)
        -> (scs    : Vect m Nat)
        -> (x : t)
        -> State
-spawnSF to frm chs scs _ = Live (chs ++ [SendTy to, RecvTy frm]) scs
+SpawnSF to frm chs scs _ = Live (chs ++ [SendTy to, RecvTy frm]) scs
 
 public export
-spawnSFN : {t : Type}
-        -> {n,m : Nat}
+-- %inline %tcinline
+SpawnSFN : {t : Type}
+        -> {nChs,m : Nat}
         -> (num : Nat)
         -> (to,frm : List Type)
-        -> (chs    : Vect n StChanTy)
+        -> (chs    : Vect nChs StChanTy)
         -> (scs    : Vect m Nat)
         -> (x : t)
         -> State
-spawnSFN Z to frm chs scs _ = Live [] scs
-spawnSFN (S n) to frm chs scs _ = Live (chs ++ (concat (replicate (S n) [SendTy to, RecvTy frm]))) scs
+SpawnSFN Z to frm chs scs = \_ => Live chs scs
+SpawnSFN (S n) to frm chs scs =
+  \x => SpawnSFN n to frm (chs ++ [SendTy to, RecvTy frm]) scs x
+--- try manually concat+replicate?
+---    Live (chs ++ (concat (replicate (S n) 
+---                                   [SendTy to, RecvTy frm]))) scs
 
 public export
 serialSF : {t : Type}
@@ -252,8 +261,9 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
               -> Spawned {m = ProcessM} to frm)
        -> ProcessM (OutChan n, InChan (S n))
                    (Live chs scs)
-                   (spawnSF to frm chs scs)
+                   (SpawnSF to frm chs scs)
 
+{-
   SpawnN : {chs : Vect n StChanTy}
         -> {scs : Vect m Nat}
         -> (n : Nat)
@@ -265,6 +275,7 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
         -> ProcessM ((List (OutChan n), List (InChan (S n))))
                     (Live chs scs)
                     (spawnSFN n to frm chs scs)
+-}
 
   SOutC : {chs : Vect n StChanTy}
        -> {scs : Vect k Nat}
@@ -297,7 +308,7 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
             (recvSF m chs scs (stIdxMsgTyInRaw chs m))
   Halt  : ProcessM () (Live chs scs) (const End)
   -- Standard operations
-  Pure  : (x : t) -> ProcessM t st (const st)
+  Pure  : (x : t) -> ProcessM t st (const2 st)
   (>>=) : ProcessM a (Live chs scs) sf 
        -> ((x : a) -> ProcessM b (sf x) s3f)
        -> ProcessM b (Live chs scs) s3f
