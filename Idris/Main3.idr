@@ -1,4 +1,4 @@
-module Main
+module Main3
 
 import public Data.Fin
 import public Data.List
@@ -69,6 +69,17 @@ stIdxMsgTyOut : {m,n : Nat}
 stIdxMsgTyOut scs chs ch = case stIdxMsgTyOut' chs ch of
   InChanTy i ts => if elem i scs then InChanTy i ts else Void
   OutChanTy i ts => if elem i scs then OutChanTy i ts else Void
+  t => t
+
+public export
+stIdxMsgTyOut2 : {m,n : Nat}
+             -> (scs : Vect m Nat)
+             -> (chs : Vect n StChanTy)
+             -> (ch  : Nat)
+             -> Type
+stIdxMsgTyOut2 scs chs ch = case stIdxMsgTyOut' chs ch of
+  InChanTy i ts => Void
+  OutChanTy i ts => Void
   t => t
 
 public export
@@ -162,109 +173,124 @@ stInChBTy chs ch = stInChBTy' chs ch ch
 -------------------------------------------------------------------------------
 -- State Transition Functions
 public export
-SpawnSF : {t : Type}
-       -> {n,m : Nat}
+spawnSF : -- {t : Type}
+          {n,m : Nat}
        -> (to,frm : List Type)
        -> (chs    : Vect n StChanTy)
        -> (scs    : Vect m Nat)
-       -> (x : t)
+    --   -> (x : t)
        -> State
-SpawnSF to frm chs scs _ = Live (chs ++ [SendTy to, RecvTy frm]) scs
+spawnSF to frm chs scs = Live (chs ++ [SendTy to, RecvTy frm]) scs
 
 public export
 -- %inline %tcinline
-SpawnSFN : {t : Type}
-        -> {nChs,m : Nat}
+spawnSFN : -- {t : Type}
+           {nChs,m : Nat}
         -> (num : Nat)
         -> (to,frm : List Type)
         -> (chs    : Vect nChs StChanTy)
         -> (scs    : Vect m Nat)
-        -> (x : t)
+      --  -> (x : t)
         -> State
-SpawnSFN Z to frm chs scs = \_ => Live chs scs
-SpawnSFN (S n) to frm chs scs =
-  \x => SpawnSFN n to frm (chs ++ [SendTy to, RecvTy frm]) scs x
+spawnSFN Z to frm chs scs = Live chs scs
+spawnSFN (S n) to frm chs scs =
+  spawnSFN n to frm (chs ++ [SendTy to, RecvTy frm]) scs
 --- try manually concat+replicate?
 ---    Live (chs ++ (concat (replicate (S n) 
 ---                                   [SendTy to, RecvTy frm]))) scs
 
 public export
-SpawnSFN2 : {t : Type}
-        -> {nChs,m : Nat}
+spawnSFN2 : -- {t : Type}
+           {nChs,m : Nat}
         --- > (num : Nat)
         -> (to,frm : List Type)
         -> (chs    : Vect nChs StChanTy)
         -> (scs    : Vect m Nat)
-        -> (x : t)
+       -- -> (x : t)
         -> State
 -- SpawnSFN2 Z to frm chs scs = \_ => Live chs scs
-SpawnSFN2 {nChs} to frm chs scs =
-  \x => Live {n=plus nChs 2} (chs ++ [SendTy to, RecvTy frm]) scs
+spawnSFN2 {nChs} to frm chs scs =
+  Live {n=plus nChs 2} (chs ++ [SendTy to, RecvTy frm]) scs
 
 
 public export
-serialSF : {t : Type}
-        -> {n,m : Nat}
+serialSF : -- {t : Type}
+           {n,m : Nat}
         -> (ch : Nat)
         -> (chs : Vect n StChanTy)
         -> (scs : Vect m Nat)
-        -> (x : t)
+  --      -> (x : t)
         -> State
-serialSF {t = Void} ch chs scs x with (x)
-  serialSF {t = Void} ch chs scs x | p impossible
-serialSF {t} ch chs scs x =
+{- serialSF {t = Void} ch chs scs x with (x)
+  serialSF {t = Void} ch chs scs x | p impossible -}
+serialSF  ch chs scs = 
   Live (stApplyAt (const []) chs ch) (ch :: scs)
 
 public export
-sendSF : {t : Type}
-      -> {n,m : Nat}
+sendSF : -- {t : Type}
+         {n,m : Nat}
       -> (ch  : Nat)
       -> (chs : Vect n StChanTy)
       -> (scs : Vect m Nat)
       -> (msgTy : Type)
       -> (msg : msgTy)
-      -> (x : t)
+   --   -> (x : t)
       -> State
-sendSF ch chs scs Void msg x with (msg)
-  sendSF ch chs scs Void msg x | p impossible
-sendSF ch chs scs (InChanTy i ts) msg x =
+{- sendSF ch chs scs Void msg x with (msg)
+  sendSF ch chs scs Void msg x | p impossible -}
+sendSF ch chs scs (InChanTy i ts) msg =
   Live (stDecAt chs ch) (snd (delete i scs))
-sendSF ch chs scs (OutChanTy i ts) msg x =
+sendSF ch chs scs (OutChanTy i ts) msg =
   Live (stDecAt chs ch) (snd (delete i scs))
-sendSF ch chs scs msgTy msg x =
+sendSF ch chs scs msgTy msg =
   Live (stDecAt chs ch) scs
 
+public export 
+sendSFN :
+         {n,m, len : Nat}
+      -> (chs : Vect n StChanTy)
+      -> (scs : Vect m Nat)
+      -> (chsS  : (Vect len (q : Nat ** OutChan q)))
+      -> (chsA : Vect n StChanTy)
+      -> State
+sendSFN chs scs [] acc = Live acc scs
+-- sendSFN chs scs ((m ** (OutChanTy i ts, out))::chss) 
+--  = sendSFN (stDecAt chs m) (snd (delete i scs)) chss 
+sendSFN chs scs ((q ** out)::chss) acc
+  = sendSFN chs scs chss (stDecAt chs q) 
+-- sendSFN chsS chs scs
+
 public export
-recvSF : {t : Type}
-      -> {n,m : Nat}
+recvSF : -- {t : Type}
+         {n,m : Nat}
       -> (ch : Nat)
       -> (chs : Vect n StChanTy)
       -> (scs : Vect m Nat)
       -> (ty : Type)
-      -> (x : t)
+     -- -> (x : t)
       -> State
-recvSF {t = Void} ch chs scs ty x with (x)
-  recvSF {t = Void} ch chs scs ty x | p impossible
-recvSF {t} ch chs scs (OutChanTy i ts) x =
+{- recvSF {t = Void} ch chs scs ty x with (x)
+  recvSF {t = Void} ch chs scs ty x | p impossible -}
+recvSF ch chs scs (OutChanTy i ts) =
   Live ((stDecAt chs ch) ++ [(SendTy ts)]) scs
-recvSF {t} ch chs scs (InChanTy i ts) x =
+recvSF ch chs scs (InChanTy i ts) =
   Live ((stDecAt chs ch) ++ [(RecvTy ts)]) scs
-recvSF {t} ch chs scs ty x =
+recvSF ch chs scs ty =
   Live (stDecAt chs ch) scs
 
 -------------------------------------------------------------------------------
 -- Monad/State Machine Definition
 
 public export
-Spawned : {m : (ty : Type) -> (st : State) -> (ty -> State) -> Type}
+Spawned : {m : (ty : Type) -> (st : State) -> State -> Type}
        -> (inTy  : List Type)
        -> (outTy : List Type)
        -> Type
 Spawned {m} inTy outTy =
-  m () (Live [(RecvTy inTy), (SendTy outTy)] []) (const End)
+  m () (Live [(RecvTy inTy), (SendTy outTy)] []) End
 
 public export
-data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
+data ProcessM : (ty : Type) -> (st : State) -> State -> Type where
   -- DSL operations
   Spawn : {chs : Vect n StChanTy}
        -> {scs : Vect m Nat}
@@ -275,7 +301,7 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
               -> Spawned {m = ProcessM} to frm)
        -> ProcessM (OutChan n, InChan (S n))
                    (Live chs scs)
-                   (SpawnSF to frm chs scs)
+                   (spawnSF to frm chs scs)
 
 {-
   SpawnN : {chs : Vect n StChanTy}
@@ -320,30 +346,20 @@ data ProcessM : (ty : Type) -> (st : State) -> (ty -> State) -> Type where
             (stIdxMsgTyIn chs m n)
             (Live chs scs)
             (recvSF m chs scs (stIdxMsgTyInRaw chs m))
-  Halt  : ProcessM () (Live chs scs) (const End)
+  Halt  : ProcessM () (Live chs scs) End
   -- Standard operations
-  Pure  : (x : t) -> ProcessM t st (const2 st)
+  Pure  : (x : t) -> ProcessM t st st
 
-  Pure2 :  (t : Type) 
-        -> (x : t) 
-        -> (add : Nat)
-        -> (st : State n) 
-        -> (st2 : State (n + add))
-        -> (r : StateR st st2)
-        ->  ProcessM t st (const2 st2)
-
-  --   Pure2 : (x : t) -> ProcessM t (stFn x) stFn
-
-  (>>=) : ProcessM a (Live chs scs) sf  
-       -> ((x : a) -> ProcessM b (sf x) s3f)
-       -> ProcessM b (Live chs scs) s3f
-  (>>)  : ProcessM () (Live chs scs) sf
-       -> ProcessM b (sf ()) s3f
-       -> ProcessM b (Live chs scs) s3f
+  (>>=) : ProcessM a (Live chs scs) st2  
+       -> ((x : a) -> ProcessM b st2 st3)
+       -> ProcessM b (Live chs scs) st3
+  (>>)  : ProcessM () (Live chs scs) st2
+       -> ProcessM b st2 st3
+       -> ProcessM b (Live chs scs) st3
 
 public export
 Process : Type
-Process = ProcessM () (Live [] []) (const End)
+Process = ProcessM () (Live [] []) End
 
 -------------------------------------------------------------------------------
 -- Example
