@@ -3,6 +3,7 @@ module Main4
 import public Data.Fin
 import public Data.List
 import public Data.Vect
+import public Decidable.Equality
 
 public export
 const2 : a -> b -> a 
@@ -80,6 +81,18 @@ stDecAt (RecvTy ts l :: chs) Z = RecvTy (tail' ts) l :: chs
 stDecAt (ch :: chs) (S k) = ch :: stDecAt chs k
 
 
+
+
+-------------------------------------------------------------------------------
+-- State Transition Functions
+public export
+spawnSF : -- {t : Type}
+          {n : Nat}
+       -> (toT,frmT : Type)
+       -> (chs    : Vect n (t ** (StChanTy t)))
+       -> State
+spawnSF toT frmT chs = Live (chs ++ [(toT ** SendTy toT), (frmT ** RecvTy frmT)])
+
 public export
 sendSF : {n   : Nat}
       -> (ch  : Nat)
@@ -104,6 +117,17 @@ data ProcessM : (ty : Type) -> (st : State) -> State -> Type where
        -> ProcessM b st2 st3
        -> ProcessM b (Live chs) st3
 
+  Spawn : {chs : Vect n StChanTy}
+    -> (to  : Type)
+    -> (frm : Type)
+    -> (p   : (pIn  : InChan  Z)      -- channel position in the child
+           -> (pOut : OutChan (S Z))  
+           -> Spawned {m = ProcessM} to frm)
+    -> ProcessM (OutChan n, InChan (S n))
+                (Live chs)
+                (spawnSF to frm chs)
+
+
   Send  : {chs : Vect n StChanTy}
        -> {m   : Nat}
        -> (ch  : OutChan m)
@@ -113,6 +137,15 @@ data ProcessM : (ty : Type) -> (st : State) -> State -> Type where
             (Live chs)
             (sendSF m chs)
 
+data ChVect : (len : Nat) -> (m : Nat) -> (chs : Vect k StChanTy) -> Type where 
+       ChNil  : ChVect 0 m [] 
+       ChCons : {m : Nat}
+             -> (o : OutChan (m+1)) 
+             -> (t : stIdxMsgTyOut' chs (m+1)) 
+             -> (tail : ChVect len m chs)
+             -> (prf : Not (m = (m+1))) 
+             -> ChVect (len + 1) (m+1) chs
+
 up : {k : Nat}
   -> {chs : Vect k StChanTy}
   -> (n : Nat)
@@ -121,16 +154,52 @@ up : {k : Nat}
 up n [] = []
 up n ((m ** (o, msg)) :: css) = (m ** (o, ?d)) :: up n css
 
+voidElim : Void -> a 
+voidElim v impossible
+
+lem1: (n : Nat) -> (m : Nat) -> (p : Not (n = m)) -> (stIdxMsgTyOut' (stDecAt chs n) m  = stIdxMsgTyOut' chs m)
+
+{-
+stIdxMsgTyOut' : {n : Nat} -> (chs : Vect n StChanTy) -> (ch  : Nat) -> Type
+stIdxMsgTyOut' [] ch = Void
+stIdxMsgTyOut' (SendTy [] _ :: chs) Z = Void
+stIdxMsgTyOut' (SendTy (t :: ts) Active :: chs) Z = t
+stIdxMsgTyOut' (SendTy (t :: ts) _ :: chs) Z = Void
+stIdxMsgTyOut' (RecvTy _ _ :: chs) Z = Void
+stIdxMsgTyOut' (hd        :: chs) (S ch) = stIdxMsgTyOut' chs ch
+-}
+
+lem2' : (c : StChanTy) -> (cs : Vect k StChanTy) -> (m : Nat) -> (p2 : NonZero m) -> stIdxMsgTyOut' (c :: cs) m 
+                       ->  stIdxMsgTyOut' cs m
+lem2' c cs (S m') p2 msgT = ?o1
+
+lem2'' :  (c : StChanTy) -> stIdxMsgTyOut' (stDecAt cs (S x)) m ->  stIdxMsgTyOut' (stDecAt (c::cs) (S x)) m
+
+public export
+lem2 : {k : Nat} -> (n : Nat) -> (m : Nat) -> (chs : Vect k StChanTy)
+    -> (p2 : NonZero n) 
+    -> (msgT : stIdxMsgTyOut' chs m) -> stIdxMsgTyOut' (stDecAt chs n) m
+lem2 (S x) m [] SIsNonZero msgT = msgT
+lem2 (S x) m (c :: cs) SIsNonZero msgT = let ind = lem2 (S x) m cs SIsNonZero (lem2' c cs m ?p5 msgT) in lem2'' c ind
+
+up2 : {k : Nat}
+-> {chs : Vect k StChanTy}
+-> (n : Nat) -- channel we have just sent on
+-> (chsS  : (ChVect len m chs)) -- the remainder of the channels that we have yet to send
+-> ChVect len m (stDecAt chs n) -- the remainder updated (which shouldn't do anything)
+up2 n ChNil = ?h2
+up2 n (ChCons {m} o msgT css prf) = let msgT' = lem2 n (m + 1) chs ?p msgT 
+                                        in ChCons o msgT' (up2 n css) prf  -- (m ** (o, ?d)) :: up n css
+
 public export 
 sendSFN :
          {n, len : Nat}
-      -> (chs : Vect n StChanTy)
+      -> (chs : Vect n StChanTy) -- initial state
       -> (chsS  : (Vect len (m : Nat ** (OutChan m, stIdxMsgTyOut' chs m))))
       -> State
 sendSFN chs [] = Live chs
 sendSFN chs ((m ** (out, msg))::chss)
   = sendSFN (stDecAt chs m) (up m chss)  
-
 
 public export
 sendN  : {n : Nat}

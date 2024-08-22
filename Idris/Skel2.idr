@@ -18,7 +18,7 @@ import Main2
 plusMultZ : (n : Nat) -> n = plus n (mult 0 2)
 
 --- %logging "eval" 5
-%logging 5
+
 public export
 SpawnN : {n : Nat}
       -> {m : Nat}
@@ -35,19 +35,10 @@ SpawnN : {n : Nat}
           ()
           (Live chs scs)
           (const2 (SpawnSFN num toTy frmTy chs scs ()))
---spawnN Z toTy frmTy p = Pure2 () () 2 (Live chs scs) (SpawnSF toTy frmTy chs scs (Live chs scs))
-SpawnN {n} {m} {chs} {scs} Z toTy frmTy p = rewrite sym (plusMultZ n) in Pure2 () -- () n m Z (Live chs scs) (SpawnSFN Z toTy frmTy chs scs (Live chs scs))
+SpawnN {n} {m} {chs} {scs} Z toTy frmTy p = rewrite sym (plusMultZ n) in Pure2 () 
 SpawnN {n} {m} {chs} {scs} (S num) toTy frmTy p
---   = Pure2 () () n m (mult (S num) 2) (Live chs scs) (SpawnSFN (S num) toTy frmTy chs scs ())
-  = let r = Pure2 {stFn = const2 (SpawnSFN (S num) toTy frmTy chs scs ())} () in r --?h -- Pure2 () -- () n m (mult (S num) 2) (Live chs scs) (SpawnSFN (S num) toTy frmTy chs scs ())
-%logging off
--- h : ProcessM {q = m} {p = plus n (S (S (mult num 2)))} {m} {n} () (Live {n} {m} chs scs) (SpawnSFN {t = ()} {nChs = n} {m} (S num) toTy frmTy chs scs)
+  = let r = Pure2 {stFn = const2 (SpawnSFN (S num) toTy frmTy chs scs ())} () in r 
 
-
--- Pure2 () () (mult num 2) (Live chs scs) (SpawnSFN num toTy frmTy chs scs (Live chs scs)) 
-
--- () () (Live chs scs) (SpawnSFN2 toTy frmTy chs scs (Live chs scs))
-                                      --   (SpawnSFN2 toTy frmTy chs scs ())
 
 {-
 spawnN Z {chs=[]} {scs} toTy frmTy p = ?h -- Pure () -- (Prelude.Nil)
