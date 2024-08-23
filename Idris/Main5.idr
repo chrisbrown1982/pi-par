@@ -69,6 +69,9 @@ public export
 data ProcessM : (ty : Type) -> (st : State) -> State -> Type where
 
   Halt  : ProcessM () (Live chs) End
+
+  Ret  : (x : t) -> ProcessM t (Live chs) End
+
   -- Standard operations
   Pure  : (x : t) -> ProcessM t st st
 
@@ -102,11 +105,14 @@ data ProcessM : (ty : Type) -> (st : State) -> State -> Type where
 
   Recv : {chs : Vect n (t ** StChanTy t)}
       -> {m   : Nat}
+      -> (ty : Type)
       -> (ch  : InChan m)
       -> ProcessM
-          (stIdxMsgTyIn chs m n)
+          (ty)
           (Live chs)
           (Live chs)
+
+
 
 public export
 SpawnSFN : -- {t : Type}
@@ -155,17 +161,17 @@ SendN ((m ** (t ** (c, msg))) :: cs) =
 
 public export
 RecN : {chs : Vect n (t ** StChanTy t)}
-   -- -> (msgTy : Type)
+    -> (msgTy : Type)
     -> (inChs : Vect len (m : Nat ** InChan m))
     -> ProcessM 
-            (List (m ** stIdxMsgTyIn chs m n))
+            (List msgTy) -- (m ** stIdxMsgTyIn chs m n))
             (Live chs) 
             (Live chs)
-RecN [] = Pure []
-RecN ((m ** c) :: chs) = 
-    do m1 <- Recv c
-       msgs <- RecN chs
-       Pure ((m ** m1) :: msgs)
+RecN ty [] = Pure []
+RecN ty ((m ** c) :: chs) = 
+    do m1 <- Recv ty c
+       msgs <- RecN ty chs
+       Pure (m1 :: msgs)
 
 public export
 Process : Type
@@ -176,7 +182,7 @@ test =
     do 
         (to, frm) <- Spawn Nat Nat p
         Send to 42
-        v <- Recv frm
+        v <- Recv Nat frm
         Halt
 
  where
@@ -184,7 +190,7 @@ test =
       -> (pOut : OutChan (S Z))
       -> Spawned {m = ProcessM} Nat Nat
     p pIn pOut = do
-                    x <- Recv pIn
+                    x <- Recv Nat pIn
                     Send pOut 42
                     Halt
 
@@ -215,9 +221,9 @@ farm4 inTy outTy w input =
 
         SendN (convertChans inTy res input)
 
-        msgs <- RecN (inChans res)
+        msgs <- RecN outTy (inChans res)
 
-        ?h
+        Ret msgs
 
         
 
@@ -227,7 +233,7 @@ farmTest =
     do 
        res <- SpawnN 4 Nat Nat w
        SendN (convertChans Nat res [1,2,3,4])
-       msgs <- RecN (inChans res)
+       msgs <- RecN Nat (inChans res)
        Halt
         
  where 
@@ -236,3 +242,5 @@ farmTest =
           -> Spawned {m = ProcessM} Nat Nat
     w pIn pOut = do 
                     Halt 
+
+    
