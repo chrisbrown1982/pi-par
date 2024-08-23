@@ -29,6 +29,7 @@ public export
 data OutChan : Nat -> Type where
   MkOut : {n : Nat} -> Loc n -> OutChan n
 
+{-
 public export 
 data InChanTy : Nat -> Type -> Type where
   MkInChanTy : (ch : Nat) -> (t : Type) -> InChanTy ch t
@@ -36,6 +37,7 @@ data InChanTy : Nat -> Type -> Type where
 public export
 data OutChanTy : Nat -> Type -> Type where
   MkOutChanTy : (ch : Nat) -> (t : Type) -> OutChanTy ch t
+-}
 
 public export
 data StChanTy : (t : Type) -> Type where
@@ -55,9 +57,6 @@ stIdxMsgTyIn : {n : Nat} -> (chs : Vect n (t ** StChanTy t)) -> (ch,i : Nat) -> 
 stIdxMsgTyIn [] ch i = Void
 stIdxMsgTyIn ((t ** SendTy _)  :: chs) Z i = Void
 stIdxMsgTyIn ((t ** RecvTy t) :: chs) Z i = t
--- stIdxMsgTyIn ((t ** RecvTy (InChanTy _ ss :: ts)) :: chs) Z i = InChan i
--- stIdxMsgTyIn ((t ** RecvTy (OutChanTy _ ss :: ts)) :: chs) Z i = OutChan i
--- stIdxMsgTyIn ((t ** RecvTy (t :: ts)) :: chs) Z i = t
 stIdxMsgTyIn (hd        :: chs) (S ch) i = stIdxMsgTyIn chs ch i 
 
 public export
@@ -76,33 +75,22 @@ Spawned {m} inTy outTy =
   m () (Live [(inTy ** RecvTy inTy), (outTy ** SendTy outTy)]) End
 
 
+{-
 public export
-recvSF : 
-         {n : Nat}
-      -> (ch : Nat)
-      -> (chs : Vect n (t ** StChanTy t))
-      -> (ty : Type)
-      -> State
-recvSF ch chs (OutChanTy i t) =
-  Live (chs ++ [(t ** SendTy t)])
-recvSF ch chs (InChanTy i t) =
-  Live (chs ++ [(t ** RecvTy t)])
-recvSF ch chs ty =
-  Live chs
-
-public export
-recvSFN : 
+ recvSF : 
            {n : Nat}
-        -> (m : Nat)
+        -> (ch : Nat)
         -> (chs : Vect n (t ** StChanTy t))
-        -> (tys : Type)
+        -> (ty : Type)
         -> State
-recvSFN Z chs t = Live chs
-recvSFN (S k) chs (OutChanTy i t) =
-    recvSFN k (chs ++ [(t ** SendTy t)]) t
-recvSFN (S k) chs (InChanTy i t) =
-    recvSFN k (chs ++ [(t ** RecvTy t)]) t
-recvSFN (S k) chs t = recvSFN k chs t
+recvSF ch chs (OutChanTy i t) =
+    Live (chs ++ [(t ** SendTy t)])
+recvSF ch chs (InChanTy i t) =
+    Live (chs ++ [(t ** RecvTy t)])
+recvSF ch chs ty =
+    Live chs
+-}
+
 
 -------------------------------------------------------------------------------
 -- State Transition Functions
@@ -155,7 +143,7 @@ data ProcessM : (ty : Type) -> (st : State) -> State -> Type where
       -> ProcessM
           (stIdxMsgTyIn chs m n)
           (Live chs)
-          (recvSF m chs (stIdxMsgTyInRaw chs m))
+          (Live chs)
 
 public export
 SpawnSFN : -- {t : Type}
@@ -213,17 +201,18 @@ SendN ((m ** (t ** (c, msg))) :: cs) =
           (recvSF m chs (stIdxMsgTyInRaw chs m))
 -}
 
+
 public export
 RecN : {m : Nat} 
     -> {chs : Vect n (t ** StChanTy t)}
-    -> (msgTy : Type)
+   -- -> (msgTy : Type)
     -> (inChs : List (InChan m))
     -> ProcessM 
-            (List msgTy)
+            (List (m ** stIdxMsgTyIn chs m n))
             (Live chs) 
-            (recvSFN m chs msgTy)
-RecN msgTy [] = ?h1
-RecN msgTy (c :: chs) = 
-    do -- m <- Recv c
-       msgs <- RecN msgTy chs
-       ?h
+            (Live chs)
+RecN [] = Pure []
+RecN {m} (c :: chs) = 
+    do m1 <- Recv c
+       msgs <- RecN chs
+       Pure ((m ** m1) :: msgs)
