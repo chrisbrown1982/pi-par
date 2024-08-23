@@ -209,24 +209,18 @@ inChans ((m ** (o, i))::chs) = ((S m) ** i) :: inChans chs
 
 farm4 : (inTy : Type)
    ->  (outTy : Type)
-  -- ->  (nW : Nat)
+   ->  (nW : Nat)
    ->  (w : (pIn : InChan Z)
          -> (pOut : OutChan (S Z))
          -> Spawned {m = ProcessM} inTy outTy)
-   ->  (input : Vect 4 inTy)
+   ->  (input : Vect nW inTy)
    ->  ProcessM (List outTy) (Live []) End
-farm4 inTy outTy w input = 
+farm4 inTy outTy nw w input = 
     do
         res <- SpawnN 4 inTy outTy w 
-
         SendN (convertChans inTy res input)
-
         msgs <- RecN outTy (inChans res)
-
         Ret msgs
-
-        
-
 
 farmTest : Process 
 farmTest = 
