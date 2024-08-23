@@ -5,15 +5,6 @@ import public Data.List
 import public Data.Vect
 import public Decidable.Equality
 
-
-{-
-public export
-data ChanLin : Type where
-    Active : ChanLin
-    Serial : ChanLin
-    Spent  : ChanLin
--}
-
 -------------------------------------------------------------------------------
 -- Channels
 public export
@@ -29,16 +20,6 @@ public export
 data OutChan : Nat -> Type where
   MkOut : {n : Nat} -> Loc n -> OutChan n
 
-{-
-public export 
-data InChanTy : Nat -> Type -> Type where
-  MkInChanTy : (ch : Nat) -> (t : Type) -> InChanTy ch t
-
-public export
-data OutChanTy : Nat -> Type -> Type where
-  MkOutChanTy : (ch : Nat) -> (t : Type) -> OutChanTy ch t
--}
-
 public export
 data StChanTy : (t : Type) -> Type where
   SendTy : (t : Type) -> StChanTy t
@@ -50,7 +31,6 @@ data State : Type where
         -> (chs : Vect n (t ** StChanTy t))
         -> State
     End  : State
-
 
 public export
 stIdxMsgTyIn : {n : Nat} -> (chs : Vect n (t ** StChanTy t)) -> (ch,i : Nat) -> Type
@@ -73,23 +53,6 @@ Spawned : {m : (ty : Type) -> (st : State) -> State -> Type}
        -> Type
 Spawned {m} inTy outTy =
   m () (Live [(inTy ** RecvTy inTy), (outTy ** SendTy outTy)]) End
-
-
-{-
-public export
- recvSF : 
-           {n : Nat}
-        -> (ch : Nat)
-        -> (chs : Vect n (t ** StChanTy t))
-        -> (ty : Type)
-        -> State
-recvSF ch chs (OutChanTy i t) =
-    Live (chs ++ [(t ** SendTy t)])
-recvSF ch chs (InChanTy i t) =
-    Live (chs ++ [(t ** RecvTy t)])
-recvSF ch chs ty =
-    Live chs
--}
 
 
 -------------------------------------------------------------------------------
@@ -166,7 +129,7 @@ SpawnN : {n : Nat}
             -> (pOut : OutChan (S Z))
             -> Spawned {m = ProcessM} toTy frmTy)
       -> ProcessM
-            (List (m ** (OutChan m, InChan (S m))))
+            (Vect num (m ** (OutChan m, InChan (S m))))
             (Live chs)
             (SpawnSFN num chs toTy frmTy)
 SpawnN {n} Z toTy frmTy p = Pure []
@@ -175,7 +138,6 @@ SpawnN {n} (S num) toTy frmTy p =
     s <- Spawn toTy frmTy p 
     r <- SpawnN num toTy frmTy p 
     Pure ((n ** s) :: r)
-
 
 public export
 SendN  : {n : Nat}
@@ -191,28 +153,86 @@ SendN ((m ** (t ** (c, msg))) :: cs) =
        SendN cs
        Pure () 
 
-{-
-  Recv : {chs : Vect n (t ** StChanTy t)}
-      -> {m   : Nat}
-      -> (ch  : InChan m)
-      -> ProcessM
-          (stIdxMsgTyIn chs m n)
-          (Live chs)
-          (recvSF m chs (stIdxMsgTyInRaw chs m))
--}
-
-
 public export
-RecN : {m : Nat} 
-    -> {chs : Vect n (t ** StChanTy t)}
+RecN : {chs : Vect n (t ** StChanTy t)}
    -- -> (msgTy : Type)
-    -> (inChs : List (InChan m))
+    -> (inChs : Vect len (m : Nat ** InChan m))
     -> ProcessM 
             (List (m ** stIdxMsgTyIn chs m n))
             (Live chs) 
             (Live chs)
 RecN [] = Pure []
-RecN {m} (c :: chs) = 
+RecN ((m ** c) :: chs) = 
     do m1 <- Recv c
        msgs <- RecN chs
        Pure ((m ** m1) :: msgs)
+
+public export
+Process : Type
+Process = ProcessM () (Live []) End
+
+test : Process
+test = 
+    do 
+        (to, frm) <- Spawn Nat Nat p
+        Send to 42
+        v <- Recv frm
+        Halt
+
+ where
+    p :  (pIn : InChan Z)
+      -> (pOut : OutChan (S Z))
+      -> Spawned {m = ProcessM} Nat Nat
+    p pIn pOut = do
+                    x <- Recv pIn
+                    Send pOut 42
+                    Halt
+
+convertChans : (t : Type) 
+            -> Vect len (m : Nat ** (OutChan m, InChan (S m)))
+            -> (msgs : Vect len t)
+            -> Vect len (m : Nat ** (t : Type ** (OutChan m, t)))
+convertChans t [] msgs = []
+convertChans t ((m ** (o,i)) :: rest) (msg::msgs) = 
+   (m ** (t ** (o, msg))) :: convertChans t rest msgs 
+
+inChans : Vect len (m : Nat ** (OutChan m, InChan (S m))) -> Vect len (n : Nat ** InChan n)
+inChans [] = []
+inChans ((m ** (o, i))::chs) = ((S m) ** i) :: inChans chs
+
+
+farm4 : (inTy : Type)
+   ->  (outTy : Type)
+  -- ->  (nW : Nat)
+   ->  (w : (pIn : InChan Z)
+         -> (pOut : OutChan (S Z))
+         -> Spawned {m = ProcessM} inTy outTy)
+   ->  (input : Vect 4 inTy)
+   ->  ProcessM (List outTy) (Live []) End
+farm4 inTy outTy w input = 
+    do
+        res <- SpawnN 4 inTy outTy w 
+
+        SendN (convertChans inTy res input)
+
+        msgs <- RecN (inChans res)
+
+        ?h
+
+        
+
+
+farmTest : Process 
+farmTest = 
+    do 
+       res <- SpawnN 4 Nat Nat w
+       SendN (convertChans Nat res [1,2,3,4])
+       msgs <- RecN (inChans res)
+       Halt
+        
+ where 
+    w : (pIn : InChan cid)
+          -> (pOut : OutChan (S cid))
+          -> Spawned {m = ProcessM} Nat Nat
+    w pIn pOut = do 
+                    Halt 
