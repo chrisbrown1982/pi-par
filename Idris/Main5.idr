@@ -213,7 +213,7 @@ farm4 : (inTy : Type)
    ->  (w : (pIn : InChan Z)
          -> (pOut : OutChan (S Z))
          -> Spawned {m = ProcessM} inTy outTy)
-   ->  (input : Vect nW inTy)
+   ->  (input : Vect 4 inTy)
    ->  ProcessM (List outTy) (Live []) End
 farm4 inTy outTy nw w input = 
     do
@@ -221,6 +221,35 @@ farm4 inTy outTy nw w input =
         SendN (convertChans inTy res input)
         msgs <- RecN outTy (inChans res)
         Ret msgs
+
+pipeTest : Process 
+pipeTest = 
+    do 
+        (in1, out1) <- Spawn Nat Nat stage1 
+        Send in1 42
+        res <- Recv Nat out1 
+        Halt 
+ where 
+    stage2 : (pIn : InChan Z) 
+          -> (pOut : OutChan (S Z))
+          -> Spawned {m = ProcessM} Nat Nat 
+    stage2 pIn pOut = do
+                         Send pOut 42
+                         Halt
+
+
+    stage1 : (pIn : InChan Z) 
+          -> (pOut : OutChan (S Z))
+          -> Spawned {m = ProcessM} Nat Nat 
+    stage1 pIn pOut = do 
+                            (stg2In, stgOut) <- Spawn Nat Nat stage2 
+                            msg <- Recv Nat pIn  
+                            Send stg2In msg
+                            res <- Recv Nat stgOut 
+                            Send pOut res 
+                            Halt 
+
+ 
 
 farmTest : Process 
 farmTest = 
