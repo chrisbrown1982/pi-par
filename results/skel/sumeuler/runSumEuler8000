@@ -1,0 +1,42 @@
+for ((i=0 ; i < 5 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(2,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(4,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(6,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(8,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(10,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(12,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(14,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(16,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(18,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(20,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(22,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(24,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(26,8000).' -s init stop -pa ./ebin/
+done
+for ((i=0 ; i < 10 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_examples(28,8000).' -s init stop -pa ./ebin/
+done

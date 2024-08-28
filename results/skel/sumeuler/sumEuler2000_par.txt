@@ -1,0 +1,1080 @@
+Example 4: [{n,1},
+            {min,269453},
+            {max,269453},
+            {med,269453},
+            {mean,269453.0},
+            {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+Example 4: [{n,1},
+            {min,271561},
+            {max,271561},
+            {med,271561},
+            {mean,271561.0},
+            {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+Example 4: [{n,1},
+            {min,197964},
+            {max,197964},
+            {med,197964},
+            {mean,197964.0},
+            {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+Example 4: [{n,1},
+            {min,283001},
+            {max,283001},
+            {med,283001},
+            {mean,283001.0},
+            {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+Example 4: [{n,1},
+            {min,247133},
+            {max,247133},
+            {med,247133},
+            {mean,247133.0},
+            {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+Example 4: [{n,1},
+            {min,141647},
+            {max,141647},
+            {med,141647},
+            {mean,141647.0},
+            {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+Example 4: [{n,1},
+            {min,150844},
+            {max,150844},
+            {med,150844},
+            {mean,150844.0},
+            {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+Example 4: [{n,1},
+            {min,140991},
+            {max,140991},
+            {med,140991},
+            {mean,140991.0},
+            {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+Example 4: [{n,1},
+            {min,151970},
+            {max,151970},
+            {med,151970},
+            {mean,151970.0},
+            {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+Example 4: [{n,1},
+            {min,140596},
+            {max,140596},
+            {med,140596},
+            {mean,140596.0},
+            {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+Example 4: [{n,1},
+            {min,142858},
+            {max,142858},
+            {med,142858},
+            {mean,142858.0},
+            {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+Example 4: [{n,1},
+            {min,142948},
+            {max,142948},
+            {med,142948},
+            {mean,142948.0},
+            {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+Example 4: [{n,1},
+            {min,152072},
+            {max,152072},
+            {med,152072},
+            {mean,152072.0},
+            {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+Example 4: [{n,1},
+            {min,152016},
+            {max,152016},
+            {med,152016},
+            {mean,152016.0},
+            {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+Example 4: [{n,1},
+            {min,146260},
+            {max,146260},
+            {med,146260},
+            {mean,146260.0},
+            {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+Example 4: [{n,1},
+            {min,124330},
+            {max,124330},
+            {med,124330},
+            {mean,124330.0},
+            {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+Example 4: [{n,1},
+            {min,113333},
+            {max,113333},
+            {med,113333},
+            {mean,113333.0},
+            {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+Example 4: [{n,1},
+            {min,114479},
+            {max,114479},
+            {med,114479},
+            {mean,114479.0},
+            {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+Example 4: [{n,1},
+            {min,113255},
+            {max,113255},
+            {med,113255},
+            {mean,113255.0},
+            {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+Example 4: [{n,1},
+            {min,118262},
+            {max,118262},
+            {med,118262},
+            {mean,118262.0},
+            {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+Example 4: [{n,1},
+            {min,117335},
+            {max,117335},
+            {med,117335},
+            {mean,117335.0},
+            {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+Example 4: [{n,1},
+            {min,117783},
+            {max,117783},
+            {med,117783},
+            {mean,117783.0},
+            {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+Example 4: [{n,1},
+            {min,121064},
+            {max,121064},
+            {med,121064},
+            {mean,121064.0},
+            {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+Example 4: [{n,1},
+            {min,104424},
+            {max,104424},
+            {med,104424},
+            {mean,104424.0},
+            {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+Example 4: [{n,1},
+            {min,113789},
+            {max,113789},
+            {med,113789},
+            {mean,113789.0},
+            {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+Example 4: [{n,1},
+            {min,100707},
+            {max,100707},
+            {med,100707},
+            {mean,100707.0},
+            {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+Example 4: [{n,1},
+            {min,102705},
+            {max,102705},
+            {med,102705},
+            {mean,102705.0},
+            {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+Example 4: [{n,1},
+            {min,96711},
+            {max,96711},
+            {med,96711},
+            {mean,96711.0},
+            {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+Example 4: [{n,1},
+            {min,92833},
+            {max,92833},
+            {med,92833},
+            {mean,92833.0},
+            {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+Example 4: [{n,1},
+            {min,95198},
+            {max,95198},
+            {med,95198},
+            {mean,95198.0},
+            {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+Example 4: [{n,1},
+            {min,99091},
+            {max,99091},
+            {med,99091},
+            {mean,99091.0},
+            {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+Example 4: [{n,1},
+            {min,109520},
+            {max,109520},
+            {med,109520},
+            {mean,109520.0},
+            {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+Example 4: [{n,1},
+            {min,103437},
+            {max,103437},
+            {med,103437},
+            {mean,103437.0},
+            {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+Example 4: [{n,1},
+            {min,96997},
+            {max,96997},
+            {med,96997},
+            {mean,96997.0},
+            {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+Example 4: [{n,1},
+            {min,85821},
+            {max,85821},
+            {med,85821},
+            {mean,85821.0},
+            {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+Example 4: [{n,1},
+            {min,85431},
+            {max,85431},
+            {med,85431},
+            {mean,85431.0},
+            {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+Example 4: [{n,1},
+            {min,86187},
+            {max,86187},
+            {med,86187},
+            {mean,86187.0},
+            {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+Example 4: [{n,1},
+            {min,75407},
+            {max,75407},
+            {med,75407},
+            {mean,75407.0},
+            {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+Example 4: [{n,1},
+            {min,84863},
+            {max,84863},
+            {med,84863},
+            {mean,84863.0},
+            {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+Example 4: [{n,1},
+            {min,76459},
+            {max,76459},
+            {med,76459},
+            {mean,76459.0},
+            {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+Example 4: [{n,1},
+            {min,89756},
+            {max,89756},
+            {med,89756},
+            {mean,89756.0},
+            {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+Example 4: [{n,1},
+            {min,101766},
+            {max,101766},
+            {med,101766},
+            {mean,101766.0},
+            {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+Example 4: [{n,1},
+            {min,83612},
+            {max,83612},
+            {med,83612},
+            {mean,83612.0},
+            {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+Example 4: [{n,1},
+            {min,91455},
+            {max,91455},
+            {med,91455},
+            {mean,91455.0},
+            {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+Example 4: [{n,1},
+            {min,75188},
+            {max,75188},
+            {med,75188},
+            {mean,75188.0},
+            {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+Example 4: [{n,1},
+            {min,78535},
+            {max,78535},
+            {med,78535},
+            {mean,78535.0},
+            {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+Example 4: [{n,1},
+            {min,70433},
+            {max,70433},
+            {med,70433},
+            {mean,70433.0},
+            {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+Example 4: [{n,1},
+            {min,81382},
+            {max,81382},
+            {med,81382},
+            {mean,81382.0},
+            {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+Example 4: [{n,1},
+            {min,68515},
+            {max,68515},
+            {med,68515},
+            {mean,68515.0},
+            {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+Example 4: [{n,1},
+            {min,72528},
+            {max,72528},
+            {med,72528},
+            {mean,72528.0},
+            {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+Example 4: [{n,1},
+            {min,75193},
+            {max,75193},
+            {med,75193},
+            {mean,75193.0},
+            {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+Example 4: [{n,1},
+            {min,75100},
+            {max,75100},
+            {med,75100},
+            {mean,7.51e4},
+            {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+Example 4: [{n,1},
+            {min,75836},
+            {max,75836},
+            {med,75836},
+            {mean,75836.0},
+            {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+Example 4: [{n,1},
+            {min,72368},
+            {max,72368},
+            {med,72368},
+            {mean,72368.0},
+            {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+Example 4: [{n,1},
+            {min,62086},
+            {max,62086},
+            {med,62086},
+            {mean,62086.0},
+            {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+Example 4: [{n,1},
+            {min,64120},
+            {max,64120},
+            {med,64120},
+            {mean,64120.0},
+            {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+Example 4: [{n,1},
+            {min,60320},
+            {max,60320},
+            {med,60320},
+            {mean,60320.0},
+            {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+Example 4: [{n,1},
+            {min,69908},
+            {max,69908},
+            {med,69908},
+            {mean,69908.0},
+            {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+Example 4: [{n,1},
+            {min,64758},
+            {max,64758},
+            {med,64758},
+            {mean,64758.0},
+            {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+Example 4: [{n,1},
+            {min,71872},
+            {max,71872},
+            {med,71872},
+            {mean,71872.0},
+            {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+Example 4: [{n,1},
+            {min,73820},
+            {max,73820},
+            {med,73820},
+            {mean,73820.0},
+            {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+Example 4: [{n,1},
+            {min,68402},
+            {max,68402},
+            {med,68402},
+            {mean,68402.0},
+            {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+Example 4: [{n,1},
+            {min,64790},
+            {max,64790},
+            {med,64790},
+            {mean,64790.0},
+            {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+Example 4: [{n,1},
+            {min,63120},
+            {max,63120},
+            {med,63120},
+            {mean,63120.0},
+            {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+Example 4: [{n,1},
+            {min,73010},
+            {max,73010},
+            {med,73010},
+            {mean,73010.0},
+            {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+Example 4: [{n,1},
+            {min,69232},
+            {max,69232},
+            {med,69232},
+            {mean,69232.0},
+            {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+Example 4: [{n,1},
+            {min,64674},
+            {max,64674},
+            {med,64674},
+            {mean,64674.0},
+            {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+Example 4: [{n,1},
+            {min,66217},
+            {max,66217},
+            {med,66217},
+            {mean,66217.0},
+            {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+Example 4: [{n,1},
+            {min,67306},
+            {max,67306},
+            {med,67306},
+            {mean,67306.0},
+            {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+Example 4: [{n,1},
+            {min,66710},
+            {max,66710},
+            {med,66710},
+            {mean,66710.0},
+            {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+Example 4: [{n,1},
+            {min,67055},
+            {max,67055},
+            {med,67055},
+            {mean,67055.0},
+            {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+Example 4: [{n,1},
+            {min,62119},
+            {max,62119},
+            {med,62119},
+            {mean,62119.0},
+            {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+Example 4: [{n,1},
+            {min,64711},
+            {max,64711},
+            {med,64711},
+            {mean,64711.0},
+            {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+Example 4: [{n,1},
+            {min,66476},
+            {max,66476},
+            {med,66476},
+            {mean,66476.0},
+            {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+Example 4: [{n,1},
+            {min,64578},
+            {max,64578},
+            {med,64578},
+            {mean,64578.0},
+            {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+Example 4: [{n,1},
+            {min,66950},
+            {max,66950},
+            {med,66950},
+            {mean,66950.0},
+            {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+Example 4: [{n,1},
+            {min,62020},
+            {max,62020},
+            {med,62020},
+            {mean,62020.0},
+            {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+Example 4: [{n,1},
+            {min,62793},
+            {max,62793},
+            {med,62793},
+            {mean,62793.0},
+            {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+Example 4: [{n,1},
+            {min,62885},
+            {max,62885},
+            {med,62885},
+            {mean,62885.0},
+            {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+Example 4: [{n,1},
+            {min,58905},
+            {max,58905},
+            {med,58905},
+            {mean,58905.0},
+            {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+Example 4: [{n,1},
+            {min,66696},
+            {max,66696},
+            {med,66696},
+            {mean,66696.0},
+            {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+Example 4: [{n,1},
+            {min,58943},
+            {max,58943},
+            {med,58943},
+            {mean,58943.0},
+            {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+Example 4: [{n,1},
+            {min,62731},
+            {max,62731},
+            {med,62731},
+            {mean,62731.0},
+            {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+Example 4: [{n,1},
+            {min,60086},
+            {max,60086},
+            {med,60086},
+            {mean,60086.0},
+            {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+Example 4: [{n,1},
+            {min,69158},
+            {max,69158},
+            {med,69158},
+            {mean,69158.0},
+            {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+Example 4: [{n,1},
+            {min,52498},
+            {max,52498},
+            {med,52498},
+            {mean,52498.0},
+            {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+Example 4: [{n,1},
+            {min,53847},
+            {max,53847},
+            {med,53847},
+            {mean,53847.0},
+            {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+Example 4: [{n,1},
+            {min,56325},
+            {max,56325},
+            {med,56325},
+            {mean,56325.0},
+            {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+Example 4: [{n,1},
+            {min,57826},
+            {max,57826},
+            {med,57826},
+            {mean,57826.0},
+            {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+Example 4: [{n,1},
+            {min,54704},
+            {max,54704},
+            {med,54704},
+            {mean,54704.0},
+            {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+Example 4: [{n,1},
+            {min,58118},
+            {max,58118},
+            {med,58118},
+            {mean,58118.0},
+            {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+Example 4: [{n,1},
+            {min,57286},
+            {max,57286},
+            {med,57286},
+            {mean,57286.0},
+            {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+Example 4: [{n,1},
+            {min,58198},
+            {max,58198},
+            {med,58198},
+            {mean,58198.0},
+            {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+Example 4: [{n,1},
+            {min,58157},
+            {max,58157},
+            {med,58157},
+            {mean,58157.0},
+            {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+Example 4: [{n,1},
+            {min,60641},
+            {max,60641},
+            {med,60641},
+            {mean,60641.0},
+            {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+Example 4: [{n,1},
+            {min,55966},
+            {max,55966},
+            {med,55966},
+            {mean,55966.0},
+            {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+Example 4: [{n,1},
+            {min,55460},
+            {max,55460},
+            {med,55460},
+            {mean,55460.0},
+            {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+Example 4: [{n,1},
+            {min,58195},
+            {max,58195},
+            {med,58195},
+            {mean,58195.0},
+            {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+Example 4: [{n,1},
+            {min,57941},
+            {max,57941},
+            {med,57941},
+            {mean,57941.0},
+            {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+Example 4: [{n,1},
+            {min,56210},
+            {max,56210},
+            {med,56210},
+            {mean,56210.0},
+            {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+Example 4: [{n,1},
+            {min,55012},
+            {max,55012},
+            {med,55012},
+            {mean,55012.0},
+            {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+Example 4: [{n,1},
+            {min,55679},
+            {max,55679},
+            {med,55679},
+            {mean,55679.0},
+            {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+Example 4: [{n,1},
+            {min,50672},
+            {max,50672},
+            {med,50672},
+            {mean,50672.0},
+            {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+Example 4: [{n,1},
+            {min,58669},
+            {max,58669},
+            {med,58669},
+            {mean,58669.0},
+            {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+Example 4: [{n,1},
+            {min,56965},
+            {max,56965},
+            {med,56965},
+            {mean,56965.0},
+            {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+Example 4: [{n,1},
+            {min,51911},
+            {max,51911},
+            {med,51911},
+            {mean,51911.0},
+            {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+Example 4: [{n,1},
+            {min,50257},
+            {max,50257},
+            {med,50257},
+            {mean,50257.0},
+            {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+Example 4: [{n,1},
+            {min,49612},
+            {max,49612},
+            {med,49612},
+            {mean,49612.0},
+            {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+Example 4: [{n,1},
+            {min,53860},
+            {max,53860},
+            {med,53860},
+            {mean,53860.0},
+            {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+Example 4: [{n,1},
+            {min,51792},
+            {max,51792},
+            {med,51792},
+            {mean,51792.0},
+            {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+Example 4: [{n,1},
+            {min,49967},
+            {max,49967},
+            {med,49967},
+            {mean,49967.0},
+            {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+Example 4: [{n,1},
+            {min,53401},
+            {max,53401},
+            {med,53401},
+            {mean,53401.0},
+            {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+Example 4: [{n,1},
+            {min,55115},
+            {max,55115},
+            {med,55115},
+            {mean,55115.0},
+            {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+Example 4: [{n,1},
+            {min,52029},
+            {max,52029},
+            {med,52029},
+            {mean,52029.0},
+            {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+Example 4: [{n,1},
+            {min,53161},
+            {max,53161},
+            {med,53161},
+            {mean,53161.0},
+            {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+Example 4: [{n,1},
+            {min,46879},
+            {max,46879},
+            {med,46879},
+            {mean,46879.0},
+            {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+Example 4: [{n,1},
+            {min,51720},
+            {max,51720},
+            {med,51720},
+            {mean,51720.0},
+            {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+Example 4: [{n,1},
+            {min,46055},
+            {max,46055},
+            {med,46055},
+            {mean,46055.0},
+            {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+Example 4: [{n,1},
+            {min,48936},
+            {max,48936},
+            {med,48936},
+            {mean,48936.0},
+            {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+Example 4: [{n,1},
+            {min,50510},
+            {max,50510},
+            {med,50510},
+            {mean,50510.0},
+            {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+Example 4: [{n,1},
+            {min,49336},
+            {max,49336},
+            {med,49336},
+            {mean,49336.0},
+            {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+Example 4: [{n,1},
+            {min,54045},
+            {max,54045},
+            {med,54045},
+            {mean,54045.0},
+            {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+Example 4: [{n,1},
+            {min,52749},
+            {max,52749},
+            {med,52749},
+            {mean,52749.0},
+            {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+Example 4: [{n,1},
+            {min,50577},
+            {max,50577},
+            {med,50577},
+            {mean,50577.0},
+            {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+Example 4: [{n,1},
+            {min,53648},
+            {max,53648},
+            {med,53648},
+            {mean,53648.0},
+            {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+Example 4: [{n,1},
+            {min,49773},
+            {max,49773},
+            {med,49773},
+            {mean,49773.0},
+            {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+Example 4: [{n,1},
+            {min,51903},
+            {max,51903},
+            {med,51903},
+            {mean,51903.0},
+            {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+Example 4: [{n,1},
+            {min,50547},
+            {max,50547},
+            {med,50547},
+            {mean,50547.0},
+            {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+Example 4: [{n,1},
+            {min,48414},
+            {max,48414},
+            {med,48414},
+            {mean,48414.0},
+            {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+Example 4: [{n,1},
+            {min,46974},
+            {max,46974},
+            {med,46974},
+            {mean,46974.0},
+            {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+Example 4: [{n,1},
+            {min,47826},
+            {max,47826},
+            {med,47826},
+            {mean,47826.0},
+            {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+Example 4: [{n,1},
+            {min,51897},
+            {max,51897},
+            {med,51897},
+            {mean,51897.0},
+            {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+Example 4: [{n,1},
+            {min,48288},
+            {max,48288},
+            {med,48288},
+            {mean,48288.0},
+            {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+Example 4: [{n,1},
+            {min,48182},
+            {max,48182},
+            {med,48182},
+            {mean,48182.0},
+            {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+Example 4: [{n,1},
+            {min,49072},
+            {max,49072},
+            {med,49072},
+            {mean,49072.0},
+            {std_dev,0.0}]
+Done with examples on 28 cores.
+------

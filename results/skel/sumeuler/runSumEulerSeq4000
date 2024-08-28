@@ -1,0 +1,3 @@
+for ((i=0 ; i < 5 ; i++)); do
+	erl -noinput -eval 'sumEuler:run_seq(4000).' -s init stop -pa ./ebin/
+done

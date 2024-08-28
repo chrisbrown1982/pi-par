@@ -1,0 +1,35 @@
+SumEuler Seq: [{n,1},
+               {min,6169096},
+               {max,6169096},
+               {med,6169096},
+               {mean,6169096.0},
+               {std_dev,0.0}]
+Done with seq. 
+SumEuler Seq: [{n,1},
+               {min,6249927},
+               {max,6249927},
+               {med,6249927},
+               {mean,6249927.0},
+               {std_dev,0.0}]
+Done with seq. 
+SumEuler Seq: [{n,1},
+               {min,6022053},
+               {max,6022053},
+               {med,6022053},
+               {mean,6022053.0},
+               {std_dev,0.0}]
+Done with seq. 
+SumEuler Seq: [{n,1},
+               {min,6265248},
+               {max,6265248},
+               {med,6265248},
+               {mean,6265248.0},
+               {std_dev,0.0}]
+Done with seq. 
+SumEuler Seq: [{n,1},
+               {min,6025166},
+               {max,6025166},
+               {med,6025166},
+               {mean,6025166.0},
+               {std_dev,0.0}]
+Done with seq. 
