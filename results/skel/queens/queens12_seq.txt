@@ -1,0 +1,35 @@
+Example 4: [{n,1},
+            {min,110335400},
+            {max,110335400},
+            {med,110335400},
+            {mean,1.103354e8},
+            {std_dev,0.0}]
+finished
+Example 4: [{n,1},
+            {min,108715624},
+            {max,108715624},
+            {med,108715624},
+            {mean,108715624.0},
+            {std_dev,0.0}]
+finished
+Example 4: [{n,1},
+            {min,106627021},
+            {max,106627021},
+            {med,106627021},
+            {mean,106627021.0},
+            {std_dev,0.0}]
+finished
+Example 4: [{n,1},
+            {min,109977713},
+            {max,109977713},
+            {med,109977713},
+            {mean,109977713.0},
+            {std_dev,0.0}]
+finished
+Example 4: [{n,1},
+            {min,110444059},
+            {max,110444059},
+            {med,110444059},
+            {mean,110444059.0},
+            {std_dev,0.0}]
+finished
