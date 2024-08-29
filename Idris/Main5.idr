@@ -54,6 +54,13 @@ Spawned : {m : (ty : Type) -> (st : State) -> State -> Type}
 Spawned {m} inTy outTy =
   m () (Live [(inTy ** RecvTy inTy), (outTy ** SendTy outTy)]) End
 
+public export
+Worker : {m : (ty : Type) -> (st : State) -> State -> Type}
+       -> (inTy  : Type)
+       -> (outTy : Type)
+       -> Type
+Worker {m} inTy outTy =
+  m () (Live [(inTy ** RecvTy inTy), (outTy ** SendTy outTy)]) End
 
 -------------------------------------------------------------------------------
 -- State Transition Functions
@@ -265,5 +272,4 @@ farmTest =
           -> Spawned {m = ProcessM} Nat Nat
     w pIn pOut = do 
                     Halt 
-
     
