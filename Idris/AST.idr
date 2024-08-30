@@ -3,11 +3,11 @@ module AST
 import Idris.Syntax
 import Idris.Parser
 
-import Core.FC    -- for the `PhysicalIdrSrc` type
-import Core.Name    -- for the `ModuleIdent` type
+import Core.FC
+import Core.Name
 
 import System
-import System.File    -- for `readFile`
+import System.File
 
 import ErrOr
 
@@ -61,86 +61,87 @@ showEDecl = %runElab derive
 showEMod : Show EMod 
 showEMod = %runElab derive
 
-
 -------------------------------------------------------------------------------
--- Erlang IR Pretty Print
+-- IR Generation -- Names
 
-Tab : Type
-Tab = Nat
+Env : Type
+Env = List String
 
-ppEPat  : EPat -> String
-ppEStmt : Tab -> EStmt -> String
+prelude : String -> String
+prelude "printLn"  = "io:format" -- N.B. newlines not preserved
+prelude "putStrLn" = "io:format"
+prelude "putStr"   = "io:format"
+prelude "print"    = "io:format"
+prelude str        = str
 
-ppEDecl : EDecl -> String
-ppEDecl EDNil = ""
-ppEDecl (EDFun dn cs) = dn ++ "() -> ok.\n"
-
-ppEMod  : EMod -> String
-ppEMod (EM mn ds) =
-  let ds' = map ppEDecl ds
-  in "-module(" ++ mn ++ ").\n\n" ++ (concat ds')
-
-
--------------------------------------------------------------------------------
--- IR Generation
-
-getNameFrmName : Name.Name -> ErrorOr String
-getNameFrmName n =
-  case displayName n of
-      (Nothing, n') => Just n'
-      _ => error "getNameFrmTerm -- PRef -- non-empty namespace"
-
-getNameFrmTerm : PTerm -> ErrorOr String
-getNameFrmTerm (PRef fc' n) =
-  getNameFrmName n
-getNameFrmTerm (PApp fc' f x) =
-  getNameFrmTerm f
-getNameFrmTerm tm = error $ "getNameFrmTerm -- unimplemented -- " ++ show tm
-
-getNameFrmClause : PClause -> ErrorOr String
-getNameFrmClause (MkPatClause fc lhs _ _) =
-  getNameFrmTerm lhs
-getNameFrmClause (MkWithClause fc lhs _ _ _) =
-  error "getNameFrmClause -- MkWithClause"
-getNameFrmClause (MkImpossible fc lhs) =
-  error "getNameFrmClause -- MkImpossible"
-
-toEVarName : String -> ErrorOr String
+toEVarName : String -> String
 toEVarName str =
   case strM str of
-    StrNil => error "toEVarName: empty string"
-    StrCons x xs => pure (strCons (toUpper x) xs)
+    StrNil => assert_total (idris_crash "toEVarName: impossible empty string")
+    StrCons x xs => strCons (toUpper x) xs
 
-genEPats : PTerm -> ErrorOr (List EPat)
-genEPats (PRef fc n) =
-  map (\n' => [EPVar n']) (getNameFrmName n >>= toEVarName)
-genEPats (PApp fc (PRef _ _) x) =
-  genEPats x
-genEPats (PApp fc f x) = do
-  xs <- genEPats f
-  ys <- genEPats x
-  pure (xs ++ ys)
+lookup : Env -> String -> String
+lookup [] str = prelude str
+lookup (x :: xs) str = if str == x then toEVarName x else lookup xs str
 
-genEPats p = error $ "genEPats: unimplemeted -- " ++ show p
+getNameFrmName : Env -> Name.Name -> ErrorOr String
+getNameFrmName env n =
+  case displayName n of
+      (Nothing, n') => Just (lookup env n')
+      _ => error "getNameFrmTerm -- PRef -- non-empty namespace"
 
-genEPatsTop : PTerm -> ErrorOr (List EPat)
-genEPatsTop (PRef fc n) = Just []
-genEPatsTop p = genEPats p
+getNameFrmTerm : Env -> PTerm -> ErrorOr String
+getNameFrmTerm env (PRef fc' n) =
+  getNameFrmName env n
+getNameFrmTerm env (PApp fc' f x) =
+  getNameFrmTerm env f
+getNameFrmTerm env tm =
+  error $ "getNameFrmTerm -- unimplemented -- " ++ show tm
+
+getNameFrmClause : Env -> PClause -> ErrorOr String
+getNameFrmClause env (MkPatClause fc lhs _ _) =
+  getNameFrmTerm env lhs
+getNameFrmClause env (MkWithClause fc lhs _ _ _) =
+  error "getNameFrmClause -- MkWithClause"
+getNameFrmClause env (MkImpossible fc lhs) =
+  error "getNameFrmClause -- MkImpossible"
+
+-------------------------------------------------------------------------------
+-- IR Generation -- Patterns
+
+genEPats : Env -> PTerm -> ErrorOr (List EPat, Env)
+genEPats env (PRef fc n) = do
+  n' <- getNameFrmName env n
+  pure ([EPVar (toEVarName n')], n' :: env)
+genEPats env (PApp fc (PRef _ _) x) =
+  genEPats env x
+genEPats env (PApp fc f x) = do
+  (xs, env')  <- genEPats env f
+  (ys, env'') <- genEPats env' x
+  pure (xs ++ ys, env'')
+genEPats env p = error $ "genEPats: unimplemeted -- " ++ show p
+
+genEPatsTop : PTerm -> ErrorOr (List EPat, Env)
+genEPatsTop (PRef fc n) = Just ([], []) -- no arguments
+genEPatsTop p = genEPats [] p
+
+-------------------------------------------------------------------------------
+-- IR Generation -- Terms/Expressions/Statements
 
 mutual
-  genEStmtsDo : PDo -> ErrorOr (List EStmt)
-  genEStmtsDo (DoExp fc tm) = genEStmts tm
-  genEStmtsDo (DoBind _ _ _ _) =
+  genEStmtsDo : Env -> PDo -> ErrorOr (List EStmt)
+  genEStmtsDo env (DoExp fc tm) = genEStmts env tm
+  genEStmtsDo env (DoBind _ _ _ _) =
     error $ "genEStmtsDo: unimplemented -- DoBind"
-  genEStmtsDo (DoBindPat _ _ _ _) =
+  genEStmtsDo env (DoBindPat _ _ _ _) =
     error $ "genEStmtsDo: unimplemented -- DoBindPat"
-  genEStmtsDo (DoLet _ _ _ _ _ _) =
+  genEStmtsDo env (DoLet _ _ _ _ _ _) =
     error $ "genEStmtsDo: unimplemented -- DoLet"
-  genEStmtsDo (DoLetPat _ _ _ _ _) =
+  genEStmtsDo env (DoLetPat _ _ _ _ _) =
     error $ "genEStmtsDo: unimplemented -- DoLetPat"
-  genEStmtsDo (DoLetLocal _ _) =
+  genEStmtsDo env (DoLetLocal _ _) =
     error $ "genEStmtsDo: unimplemented -- DoLetLocal"
-  genEStmtsDo (DoRewrite _ _) =
+  genEStmtsDo env (DoRewrite _ _) =
     error $ "genEStmtsDo: unimplemented -- DoRewrite"
 
   genEStmtsStr : PStr -> ErrorOr String
@@ -148,41 +149,47 @@ mutual
   genEStmtsStr (StrInterp fc tm) =
     error $ "genEStmtsStr: unimplemented -- StrInterp"
 
-  genEStmts : PTerm -> ErrorOr (List EStmt)
-  genEStmts (PRef fc n) =
-    map (\n' => pure (ESVar n')) (getNameFrmName n)
-  genEStmts (PApp fc f x) = do
-    ESApp fn xs  <- genEStmt f
+  genEStmts : Env -> PTerm -> ErrorOr (List EStmt)
+  genEStmts env (PRef fc n) =
+    map (\n' => pure (ESVar n')) (getNameFrmName env n)
+  genEStmts env (PApp fc f x) = do
+    ESApp fn xs  <- genEStmt env f
       | ESVar fn => do
-        x' <- genEStmt x
+        x' <- genEStmt env x
         pure [ESApp fn [x']]
       | f' => error $ "TODO: " ++ show f'
-    x' <- genEStmt x
+    x' <- genEStmt env x
     pure [ESApp fn (xs ++ [x'])]
-  genEStmts (PString fc ht strs) = do
+  genEStmts env (PString fc ht strs) = do
     strs' <- mapM genEStmtsStr strs
     pure [ESString (concat strs')]
-  genEStmts (PDoBlock fc mns dss) = do 
-    stmts <- mapM genEStmtsDo dss
+  genEStmts env (PDoBlock fc mns dss) = do
+    stmts <- mapM (genEStmtsDo env) dss
     pure (concat stmts)
-  genEStmts tm = error $ "genEStmts: unimplemented -- "  ++ show tm
+  genEStmts env tm = error $ "genEStmts: unimplemented -- "  ++ show tm
 
-  genEStmt : PTerm -> ErrorOr EStmt
-  genEStmt tm = do
-    (stmt :: _) <- genEStmts tm
+  genEStmt : Env -> PTerm -> ErrorOr EStmt
+  genEStmt env tm = do
+    (stmt :: _) <- genEStmts env tm
       | [] => error $ "genEStmt: no statements generated"
     pure stmt
 
+-------------------------------------------------------------------------------
+-- IR Generation -- Clauses/Statements
+
 genEClause : PClause -> ErrorOr (List EPat, List EStmt)
-genEClause (MkPatClause fc lhs rhs ws) = do
-  pats <- genEPatsTop lhs
-  stmts <- genEStmts rhs
-  Just (pats, stmts) -- IGNORE WHERE BLOCK
+genEClause (MkPatClause fc lhs rhs []) = do
+  (pats, env) <- genEPatsTop lhs
+  stmts <- genEStmts env rhs
+  Just (pats, stmts)
 genEClause c = error $ "genEClause: unimplemented -- " ++ show c
+
+-------------------------------------------------------------------------------
+-- IR Generation -- Declarations
 
 genEDecl : PDecl -> ErrorOr EDecl
 genEDecl (PDef fc cs@(c :: _)) = do
-  dn <- getNameFrmClause c
+  dn <- getNameFrmClause [] c
   body <- mapM genEClause cs
   pure (EDFun dn body) -- FIXME -- Parameters
 -- 
@@ -190,61 +197,13 @@ genEDecl (PClaim fc rc v fopts ty) =
   Just EDNil -- we don't care for type signatures
 genEDecl d = error $ "genEDecl: unimplemented -- " ++ show d
 
+-------------------------------------------------------------------------------
+-- IR Generation -- Modules
+
 genIR : Module -> ErrorOr EMod
 genIR m = do
   ds <- mapM genEDecl m.decls
   Just (EM "example" ds)
-
--------------------------------------------------------------------------------
-
-
-{-
-ind : Tab -> String
-ind Z = ""
-ind (S t) = " " ++ ind t
-
-iPutStr : Tab -> String -> IO ()
-iPutStr Z s = putStr s
-iPutStr (S t) s = putStr " " >> iPutStr t s
-
--------------------------------------------------------------------------------
-
-mutual
-  genPDo : Tab -> String -> PDo -> IO ()
-  genPDo t sfx (DoExp fc tm) = genPTerm t tm >> putStrLn sfx
-  genPDo t sfx stmt = die $ "genPDo: unimplemented -- " -- ++ showDo stmt
-
-  genPTerm : Tab -> PTerm -> IO ()
-  genPTerm t (PRef fc n) = case displayName n of
-    (_, n') => iPutStr t n'
-  genPTerm t (PDoBlock fc mns []) = die "genPTerm: empty do block"
-  genPTerm t (PDoBlock fc mns (s :: ss)) = do
-    traverse_ (genPDo t ",") (init (s :: ss))
-    genPDo t "." (last (s :: ss))
-  genPTerm _ tm = die $ "genPTerm: unimplemented -- " ++ show tm
-
-genPClause : PClause -> IO ()
-genPClause (MkPatClause fc lhs rhs wb) = do
-  genPTerm Z lhs
-  putStr "() -> \n"
-  genPTerm 2 rhs
-
--- ignore where blocks for now...
-genPClause (MkWithClause fc lhs wps wfs cs) =
-  die "genPClause: with clauses unsupported"
-genPClause (MkImpossible fc lhs) = pure ()
-
-genPDecl : PDecl -> IO ()
-genPDecl (PClaim fc rc v fopts ty) = pure ()
-  -- we don't care for type signatures
-genPDecl (PDef fc [c]) = genPClause c
-genPDecl (PDef fc (c :: cs)) = genPClause c
-genPDecl x = die $ "genPDecl: unimplemented -- " ++ show x
-
-gen : List PDecl -> IO ()
-gen [] = pure ()
-gen (d :: ds) = genPDecl d
--}
 
 -----------------------------------------------------------------------------
 
@@ -267,5 +226,3 @@ main = do
     
   -- putStrLn (ppEMod ir)
   putStrLn (show ir)
-  
-
