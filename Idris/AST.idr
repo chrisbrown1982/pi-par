@@ -52,6 +52,7 @@ data EStmt : Type where
   ESMacMod : EStmt
   ESList : List EStmt -> EStmt
   ESSelf : EStmt
+  ESRecv : List (EPat, List EStmt) -> EStmt
 
 data EDecl : Type where
   EDNil : EDecl
@@ -163,23 +164,47 @@ genEPatsTop p = genEPats [] p
 -- IR Generation -- Terms/Expressions/Statements
 
 mutual
-  genEStmtsDo : Env -> PDo -> ErrorOr (List EStmt, Env)
-  genEStmtsDo env (DoExp fc tm) = genEStmts env tm
-  genEStmtsDo env (DoBindPat fc lhs rhs []) = do
-    (xs, env') <- genEPats env lhs
-    (e, env'') <- genSpawn env' rhs
-    pure ([ESMatchOp xs e], env'')
-  genEStmtsDo env (DoBind _ _ _ _) =
+  genEStmtsDo : Env
+             -> List PDo
+             -> ErrorOr (List EStmt, Env)
+  genEStmtsDo env [] = pure ([], env)
+  genEStmtsDo env ((DoExp fc tm) :: dss) = do
+    (es, env') <- genEStmts env tm
+    (rest, env'') <- genEStmtsDo env' dss
+    pure (es ++ rest, env'')
+  genEStmtsDo env ((DoBindPat fc lhs rhs []) :: dss) = do
+    ([x,y], env') <- genEPats env lhs
+      | (xs, env') => do
+        (e, env'') <- genEStmt env' rhs
+        (rest, env''') <- genEStmtsDo env'' dss
+        pure (ESMatchOp xs e :: rest, env''')
+    (e@(ESApp "spawn" _), env'') <- genSpawn env' rhs -- SPAWN
+      | (e, env'') => do
+        (rest, env''') <- genEStmtsDo env'' dss
+        pure (ESMatchOp [x,y] e :: rest, env''')
+    (rest, env''') <- genEStmtsDo env'' dss
+    pure (ESMatchOp [x] e :: rest, env''')
+  genEStmtsDo env (DoBind fc nfc x rhs@(PApp _ (PRef _ fn) (PRef _ ch)) :: dss) = do
+    x' <- getNameStrFrmName env x
+    case displayName fn of
+      (Nothing, "Recv") => do
+        (rest, env') <- genEStmtsDo (x' :: env) dss
+        pure ([ESRecv [(EPVar (toEVarName x'), rest)]], env')
+      _ => do
+        (rhs', env') <- genEStmt (x' :: env) rhs
+        (rest, env'') <- genEStmtsDo env' dss
+        pure (rhs' :: rest, env'')
+  genEStmtsDo env (DoBind fc nfc x rhs :: dss) = do
     error $ "genEStmtsDo: unimplemented -- DoBind"
-  genEStmtsDo env (DoBindPat _ _ _ _) =
+  genEStmtsDo env (DoBindPat _ _ _ _ :: dss) =
     error $ "genEStmtsDo: unimplemented -- DoBindPat"
-  genEStmtsDo env (DoLet _ _ _ _ _ _) =
+  genEStmtsDo env (DoLet _ _ _ _ _ _ :: dss) =
     error $ "genEStmtsDo: unimplemented -- DoLet"
-  genEStmtsDo env (DoLetPat _ _ _ _ _) =
+  genEStmtsDo env (DoLetPat _ _ _ _ _ :: dss) =
     error $ "genEStmtsDo: unimplemented -- DoLetPat"
-  genEStmtsDo env (DoLetLocal _ _) =
+  genEStmtsDo env (DoLetLocal _ _ :: dss) =
     error $ "genEStmtsDo: unimplemented -- DoLetLocal"
-  genEStmtsDo env (DoRewrite _ _) =
+  genEStmtsDo env (DoRewrite _ _ :: ds) =
     error $ "genEStmtsDo: unimplemented -- DoRewrite"
 
   genEStmtsStr : PStr -> ErrorOr String
@@ -202,9 +227,8 @@ mutual
   genEStmts env (PString fc ht strs) = do
     strs' <- mapM genEStmtsStr strs
     pure ([ESString (concat strs')], env)
-  genEStmts env (PDoBlock fc mns dss) = do
-    (stmts, env') <- traverseWithSt genEStmtsDo env dss
-    pure ((concat stmts), env')
+  genEStmts env (PDoBlock fc mns dss) =
+    genEStmtsDo env dss
   genEStmts env tm = error $ "genEStmts: unimplemented -- "  ++ show tm
 
   genEStmt : Env -> PTerm -> ErrorOr (EStmt, Env)

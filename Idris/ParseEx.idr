@@ -24,6 +24,7 @@ p1 cIn cOut = Halt
 mainPar : Process
 mainPar = do
   (pTo, pFrm) <- Spawn Nat Nat p1
+  msg <- Recv pFrm
   Halt
 -- -}
 
