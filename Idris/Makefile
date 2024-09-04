@@ -1,10 +1,14 @@
 
+RLWRAP=$(shell which rlwrap)
 IDRIS=$(shell which idris2)
 
 all: gen
 
 gen: AST.idr
-	rlwrap $(IDRIS) -p idris2 -p elab-util AST.idr
+	$(RLWRAP) $(IDRIS) -p idris2 -p elab-util AST.idr
+
+repl:
+	$(RLWRAP) $(IDRIS)
 
 erl: example.erl
 	erlc example.erl

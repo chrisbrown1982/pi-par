@@ -25,6 +25,18 @@ mapM f (x :: xs) = do
   x' <- f x
   pure (x' :: xs')
 
+traverseWithSt : Monad m
+              => {st : Type}
+              -> (f : st -> a -> m (b, st))
+              -> st
+              -> List a
+              -> m (List b, st)
+traverseWithSt f st [] = pure ([], st)
+traverseWithSt f st (x :: xs) = do
+  (x', st') <- f st x
+  (xs', st'') <- traverseWithSt f st' xs
+  pure (x' :: xs', st'')
+
 -------------------------------------------------------------------------------
 -- Erlang IR
 
@@ -36,6 +48,10 @@ data EStmt : Type where
   ESVar   : String -> EStmt
   ESApp   : String -> List EStmt -> EStmt
   ESString : String -> EStmt
+  ESMatchOp : List EPat -> EStmt -> EStmt
+  ESMacMod : EStmt
+  ESList : List EStmt -> EStmt
+  ESSelf : EStmt
 
 data EDecl : Type where
   EDNil : EDecl
@@ -67,12 +83,13 @@ showEMod = %runElab derive
 Env : Type
 Env = List String
 
-prelude : String -> String
-prelude "printLn"  = "io:format" -- N.B. newlines not preserved
-prelude "putStrLn" = "io:format"
-prelude "putStr"   = "io:format"
-prelude "print"    = "io:format"
-prelude str        = str
+prelude : String -> EStmt
+prelude "printLn"  = ESVar "io:format" -- N.B. newlines not preserved
+prelude "putStrLn" = ESVar "io:format"
+prelude "putStr"   = ESVar "io:format"
+prelude "print"    = ESVar "io:format"
+prelude "Halt"     = ESApp "exit" [ESVar "halt"]
+prelude str        = ESVar str
 
 toEVarName : String -> String
 toEVarName str =
@@ -80,27 +97,40 @@ toEVarName str =
     StrNil => assert_total (idris_crash "toEVarName: impossible empty string")
     StrCons x xs => strCons (toUpper x) xs
 
-lookup : Env -> String -> String
+lookup : Env -> String -> EStmt
 lookup [] str = prelude str
-lookup (x :: xs) str = if str == x then toEVarName x else lookup xs str
+lookup (x :: xs) str =
+  if str == x then ESVar (toEVarName x) else lookup xs str
 
-getNameFrmName : Env -> Name.Name -> ErrorOr String
-getNameFrmName env n =
+getNameStrFrmName : Env -> Name.Name -> ErrorOr String
+getNameStrFrmName env n =
+  case displayName n of
+      (Nothing, n') => case lookup env n' of
+        ESVar n'' => Just n''
+        n'' => error
+             $ "getNameStrFrmName: var lookup unexpected expand -- " ++ show n''
+      _ => error "getNameStrFrmName -- non-empty namespace"
+
+getNameStmtFrmName : Env -> Name.Name -> ErrorOr EStmt
+getNameStmtFrmName env n =
   case displayName n of
       (Nothing, n') => Just (lookup env n')
-      _ => error "getNameFrmTerm -- PRef -- non-empty namespace"
+      _ => error "getNameStmtFrmName -- non-empty namespace"
 
-getNameFrmTerm : Env -> PTerm -> ErrorOr String
+getNameFrmTerm : Env -> PTerm -> ErrorOr EStmt
 getNameFrmTerm env (PRef fc' n) =
-  getNameFrmName env n
+  getNameStmtFrmName env n
 getNameFrmTerm env (PApp fc' f x) =
   getNameFrmTerm env f
 getNameFrmTerm env tm =
   error $ "getNameFrmTerm -- unimplemented -- " ++ show tm
 
 getNameFrmClause : Env -> PClause -> ErrorOr String
-getNameFrmClause env (MkPatClause fc lhs _ _) =
-  getNameFrmTerm env lhs
+getNameFrmClause env (MkPatClause fc lhs _ _) = do
+  ESVar n <- getNameFrmTerm env lhs
+    | n =>
+      error $ "getNameFrmClause: name causes unexpected expansion -- " ++ show n
+  pure n
 getNameFrmClause env (MkWithClause fc lhs _ _ _) =
   error "getNameFrmClause -- MkWithClause"
 getNameFrmClause env (MkImpossible fc lhs) =
@@ -111,13 +141,17 @@ getNameFrmClause env (MkImpossible fc lhs) =
 
 genEPats : Env -> PTerm -> ErrorOr (List EPat, Env)
 genEPats env (PRef fc n) = do
-  n' <- getNameFrmName env n
+  n' <- getNameStrFrmName env n
   pure ([EPVar (toEVarName n')], n' :: env)
 genEPats env (PApp fc (PRef _ _) x) =
   genEPats env x
 genEPats env (PApp fc f x) = do
   (xs, env')  <- genEPats env f
   (ys, env'') <- genEPats env' x
+  pure (xs ++ ys, env'')
+genEPats env (PPair fc l r) = do
+  (xs, env') <- genEPats env l
+  (ys, env'') <- genEPats env' r
   pure (xs ++ ys, env'')
 genEPats env p = error $ "genEPats: unimplemeted -- " ++ show p
 
@@ -129,8 +163,12 @@ genEPatsTop p = genEPats [] p
 -- IR Generation -- Terms/Expressions/Statements
 
 mutual
-  genEStmtsDo : Env -> PDo -> ErrorOr (List EStmt)
+  genEStmtsDo : Env -> PDo -> ErrorOr (List EStmt, Env)
   genEStmtsDo env (DoExp fc tm) = genEStmts env tm
+  genEStmtsDo env (DoBindPat fc lhs rhs []) = do
+    (xs, env') <- genEPats env lhs
+    (e, env'') <- genSpawn env' rhs
+    pure ([ESMatchOp xs e], env'')
   genEStmtsDo env (DoBind _ _ _ _) =
     error $ "genEStmtsDo: unimplemented -- DoBind"
   genEStmtsDo env (DoBindPat _ _ _ _) =
@@ -149,30 +187,40 @@ mutual
   genEStmtsStr (StrInterp fc tm) =
     error $ "genEStmtsStr: unimplemented -- StrInterp"
 
-  genEStmts : Env -> PTerm -> ErrorOr (List EStmt)
-  genEStmts env (PRef fc n) =
-    map (\n' => pure (ESVar n')) (getNameFrmName env n)
+  genEStmts : Env -> PTerm -> ErrorOr (List EStmt, Env)
+  genEStmts env (PRef fc n) = do
+    stmt <- getNameStmtFrmName env n
+    pure ([stmt], env)
   genEStmts env (PApp fc f x) = do
-    ESApp fn xs  <- genEStmt env f
-      | ESVar fn => do
-        x' <- genEStmt env x
-        pure [ESApp fn [x']]
+    (ESApp fn xs, env')  <- genEStmt env f
+      | (ESVar fn, env') => do
+        (x', env'') <- genEStmt env' x
+        pure ([ESApp fn [x']], env'')
       | f' => error $ "TODO: " ++ show f'
-    x' <- genEStmt env x
-    pure [ESApp fn (xs ++ [x'])]
+    (x', env') <- genEStmt env x
+    pure ([ESApp fn (xs ++ [x'])], env')
   genEStmts env (PString fc ht strs) = do
     strs' <- mapM genEStmtsStr strs
-    pure [ESString (concat strs')]
+    pure ([ESString (concat strs')], env)
   genEStmts env (PDoBlock fc mns dss) = do
-    stmts <- mapM (genEStmtsDo env) dss
-    pure (concat stmts)
+    (stmts, env') <- traverseWithSt genEStmtsDo env dss
+    pure ((concat stmts), env')
   genEStmts env tm = error $ "genEStmts: unimplemented -- "  ++ show tm
 
-  genEStmt : Env -> PTerm -> ErrorOr EStmt
+  genEStmt : Env -> PTerm -> ErrorOr (EStmt, Env)
   genEStmt env tm = do
-    (stmt :: _) <- genEStmts env tm
-      | [] => error $ "genEStmt: no statements generated"
-    pure stmt
+    ((stmt :: _), env') <- genEStmts env tm
+      | ([], _) => error $ "genEStmt: no statements generated"
+    pure (stmt, env')
+
+  genSpawn : Env -> PTerm -> ErrorOr (EStmt, Env)
+  genSpawn env tm@(PApp _ (PApp _ (PApp _ (PRef _ fn) (PRef _ ty1)) (PRef _ ty2)) (PRef _ p)) =
+    case displayName fn of
+      (Nothing, "Spawn") => do
+        pStr <- getNameStmtFrmName env p
+        Just (ESApp "spawn" [ESMacMod, pStr, ESList [ESVar "chan", ESSelf]], env)
+      _ => genEStmt env tm
+  genSpawn env tm = genEStmt env tm
 
 -------------------------------------------------------------------------------
 -- IR Generation -- Clauses/Statements
@@ -180,7 +228,7 @@ mutual
 genEClause : PClause -> ErrorOr (List EPat, List EStmt)
 genEClause (MkPatClause fc lhs rhs []) = do
   (pats, env) <- genEPatsTop lhs
-  stmts <- genEStmts env rhs
+  (stmts, _) <- genEStmts env rhs
   Just (pats, stmts)
 genEClause c = error $ "genEClause: unimplemented -- " ++ show c
 
