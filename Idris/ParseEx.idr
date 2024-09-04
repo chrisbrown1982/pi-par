@@ -18,7 +18,9 @@ mainPar = do
 p1 : (cIn  : InChan  Z)
   -> (cOut : OutChan (S Z))
   -> Spawned {m = ProcessM} to frm
-p1 cIn cOut = Halt
+p1 cIn cOut =
+  Send cOut 42
+  Halt
 
 -- {-
 mainPar : Process

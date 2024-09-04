@@ -46,6 +46,7 @@ data EPat : Type where
 
 data EStmt : Type where
   ESVar   : String -> EStmt
+  ESCst  : String -> EStmt -- numbers, strings, &c. NOT SURE ABOUT THIS
   ESApp   : String -> List EStmt -> EStmt
   ESString : String -> EStmt
   ESMatchOp : List EPat -> EStmt -> EStmt
@@ -53,6 +54,7 @@ data EStmt : Type where
   ESList : List EStmt -> EStmt
   ESSelf : EStmt
   ESRecv : List (EPat, List EStmt) -> EStmt
+  ESSend : String -> EStmt -> EStmt
 
 data EDecl : Type where
   EDNil : EDecl
@@ -169,7 +171,7 @@ mutual
              -> ErrorOr (List EStmt, Env)
   genEStmtsDo env [] = pure ([], env)
   genEStmtsDo env ((DoExp fc tm) :: dss) = do
-    (es, env') <- genEStmts env tm
+    (es, env') <- genSend env tm
     (rest, env'') <- genEStmtsDo env' dss
     pure (es ++ rest, env'')
   genEStmtsDo env ((DoBindPat fc lhs rhs []) :: dss) = do
@@ -229,6 +231,8 @@ mutual
     pure ([ESString (concat strs')], env)
   genEStmts env (PDoBlock fc mns dss) =
     genEStmtsDo env dss
+  genEStmts env (PPrimVal fc c) = do
+    pure ([ESCst (show c)], env)
   genEStmts env tm = error $ "genEStmts: unimplemented -- "  ++ show tm
 
   genEStmt : Env -> PTerm -> ErrorOr (EStmt, Env)
@@ -245,6 +249,15 @@ mutual
         Just (ESApp "spawn" [ESMacMod, pStr, ESList [ESVar "chan", ESSelf]], env)
       _ => genEStmt env tm
   genSpawn env tm = genEStmt env tm
+
+  genSend : Env -> PTerm -> ErrorOr (List EStmt, Env)
+  genSend env tm@(PApp _ (PApp _ (PRef _ fn) (PRef _ ch)) msg) = do
+    "Send" <- getNameStrFrmName env fn
+      | fn' => genEStmts env tm
+    ch' <- getNameStrFrmName env ch
+    (msg', env') <- genEStmt env msg
+    pure ([ESSend ch' msg'], env)
+  genSend env tm = genEStmts env tm
 
 -------------------------------------------------------------------------------
 -- IR Generation -- Clauses/Statements
