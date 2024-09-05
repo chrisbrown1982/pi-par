@@ -81,6 +81,47 @@ showEMod : Show EMod
 showEMod = %runElab derive
 
 -------------------------------------------------------------------------------
+-- Pretty Print IR
+
+pStmts : String -> List EStmt -> String 
+pStmts t [] = "" 
+pStmts t (ESVar x :: ss) = t ++ x ++ " " ++ pStmts t ss 
+pStmts t (ESCst c :: ss) = t ++ c ++ " " ++ pStmts t ss 
+pStmts t (ESApp fn args::ss) = t ++ fn ++ "( " ++ pStmts "" args ++ " ) " ++  pStmts t ss 
+pStmts t (ESString s::ss)  = t ++ "\"" ++ s ++ "\"" ++ pStmts t ss
+pStmts t (ESMatchOp pats st :: ss) = t ++ "ESMATCHOP" ++ pStmts t ss
+pStmts t (ESMacMod ::ss) = t ++ "ESMacMod" ++ pStmts t ss 
+pStmts t (ESList sts :: ss) = t ++  "LIST" ++ pStmts t ss 
+pStmts t (ESSelf  :: ss) = t ++ "self() " ++ pStmts t ss 
+pStmts t (ESRecv cs :: ss) = t ++ "RECV" ++ pStmts t ss 
+pStmts t (ESSend m s :: ss) = t ++ " ! " ++ pStmts "" [s] ++ pStmts t ss 
+
+pPats : List EPat -> String 
+pPats [] = ""
+pPats (EPVar n::EPVar n2::pats) = n ++ " , " ++ n2 ++ pPats pats
+pPats (EPVar n :: pats) = n ++ " " ++ pPats pats  
+
+pClauses : String -> List (List EPat, List EStmt) -> String 
+pClauses n [] = ""
+pClauses n ((pats, stmts)::cs) =  n ++ " ( "
+                               ++ pPats pats
+                               ++ " ) "
+                               ++ " -> \n"
+                               ++ pStmts "\t" stmts
+                               ++ ".\n"
+                               ++ pClauses n cs
+
+pDecs : List EDecl -> String 
+pDecs [] = ""
+pDecs (EDNil :: decs) = pDecs decs 
+pDecs (EDFun n cs :: decs) =  pClauses n cs ++ "\n" ++ pDecs decs
+
+pMod : EMod -> String 
+pMod (EM name decs) =  "-module(" ++ name ++ ")." ++ "\n"
+                    ++ "-compile(export_all).\n"
+                    ++ pDecs decs 
+
+-------------------------------------------------------------------------------
 -- IR Generation -- Names
 
 Env : Type
@@ -290,6 +331,7 @@ genIR m = do
   ds <- mapM genEDecl m.decls
   Just (EM "example" ds)
 
+
 -----------------------------------------------------------------------------
 
 main : IO ()
@@ -311,3 +353,5 @@ main = do
     
   -- putStrLn (ppEMod ir)
   putStrLn (show ir)
+
+  putStrLn (pMod ir)
