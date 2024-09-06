@@ -82,44 +82,69 @@ showEMod = %runElab derive
 
 -------------------------------------------------------------------------------
 -- Pretty Print IR
+mutual 
 
-pStmts : String -> List EStmt -> String 
-pStmts t [] = "" 
-pStmts t (ESVar x :: ss) = t ++ x ++ " " ++ pStmts t ss 
-pStmts t (ESCst c :: ss) = t ++ c ++ " " ++ pStmts t ss 
-pStmts t (ESApp fn args::ss) = t ++ fn ++ "( " ++ pStmts "" args ++ " ) " ++  pStmts t ss 
-pStmts t (ESString s::ss)  = t ++ "\"" ++ s ++ "\"" ++ pStmts t ss
-pStmts t (ESMatchOp pats st :: ss) = t ++ "ESMATCHOP" ++ pStmts t ss
-pStmts t (ESMacMod ::ss) = t ++ "ESMacMod" ++ pStmts t ss 
-pStmts t (ESList sts :: ss) = t ++  "LIST" ++ pStmts t ss 
-pStmts t (ESSelf  :: ss) = t ++ "self() " ++ pStmts t ss 
-pStmts t (ESRecv cs :: ss) = t ++ "RECV" ++ pStmts t ss 
-pStmts t (ESSend m s :: ss) = t ++ " ! " ++ pStmts "" [s] ++ pStmts t ss 
+  eF : List EStmt -> String -> String 
+  eF [] s = ""
+  eF (s1::s2::ss) s = s 
+  eF (s1::[]) s = s
 
-pPats : List EPat -> String 
-pPats [] = ""
-pPats (EPVar n::EPVar n2::pats) = n ++ " , " ++ n2 ++ pPats pats
-pPats (EPVar n :: pats) = n ++ " " ++ pPats pats  
+  pRecvs : String -> String -> List (EPat, List EStmt) -> String 
+  pRecvs t e [] = ""
+  pRecvs t e ((p,cs) :: rest) = pPats [p] ++ " -> " 
+                        ++ pStmts t e cs
+                        ++ pRecvs t e rest
 
-pClauses : String -> List (List EPat, List EStmt) -> String 
-pClauses n [] = ""
-pClauses n ((pats, stmts)::cs) =  n ++ " ( "
-                               ++ pPats pats
-                               ++ " ) "
-                               ++ " -> \n"
-                               ++ pStmts "\t" stmts
-                               ++ ".\n"
-                               ++ pClauses n cs
+  pStmts : String -> String -> List EStmt -> String 
+  pStmts t e [] = "" 
+  pStmts t e (ESVar x :: ss) = t ++ x ++ " " ++ (eF ss e) ++ pStmts t e ss 
+  pStmts t e (ESCst c :: ss) = t ++ c ++ " " ++ (eF ss e) ++ pStmts t e ss 
+  pStmts t e (ESApp fn args::ss) = t ++ fn ++ "( " ++ pStmts "" " , " args ++ " ) " ++  (eF ss e) ++ pStmts t e ss 
+  pStmts t e (ESString s::ss)  = t ++ "\"" ++ s ++ "\"" ++ (eF ss e) ++ pStmts t e ss
+  pStmts t e (ESMatchOp pats st :: ss) = t 
+                                          ++ pPats pats
+                                          ++ " = "
+                                          ++ pStmts t e [st] 
+                                          ++ (eF ss e) ++ pStmts t e ss
+  pStmts t e (ESMacMod ::ss) = t ++ "?MODULE" ++ (eF ss e) ++ pStmts t e ss 
+  pStmts t e (ESList sts :: ss) = t ++  "[ "
+                               ++ pStmts t " , " sts 
+                               ++ " ] "
+                               ++ (eF ss e) ++ pStmts t e ss 
+  pStmts t e (ESSelf  :: ss) = t ++ "self() " ++ (eF ss e) ++ pStmts t e ss 
+  pStmts t e (ESRecv cs :: ss) = t ++ "receive" ++ "\n\t\t"
+                                 ++ pRecvs (t++"\t") e cs
+                             ++ (eF ss e) 
+                             ++ "\n"
+                             ++ t 
+                             ++ "end"
+                             ++ pStmts t e ss 
+  pStmts t e (ESSend m s :: ss) = t ++ m ++ " ! " ++ pStmts "" "" [s] ++ (eF ss e) ++ pStmts t e ss 
 
-pDecs : List EDecl -> String 
-pDecs [] = ""
-pDecs (EDNil :: decs) = pDecs decs 
-pDecs (EDFun n cs :: decs) =  pClauses n cs ++ "\n" ++ pDecs decs
+  pPats : List EPat -> String 
+  pPats [] = ""
+  pPats (EPVar n::EPVar n2::pats) = n ++ " , " ++ n2 ++ pPats pats
+  pPats (EPVar n :: pats) = n ++ " " ++ pPats pats  
 
-pMod : EMod -> String 
-pMod (EM name decs) =  "-module(" ++ name ++ ")." ++ "\n"
-                    ++ "-compile(export_all).\n"
-                    ++ pDecs decs 
+  pClauses : String -> List (List EPat, List EStmt) -> String 
+  pClauses n [] = ""
+  pClauses n ((pats, stmts)::cs) =  n ++ " ( "
+                                 ++ pPats pats
+                                 ++ " ) "
+                                 ++ " -> \n"
+                                 ++ pStmts "\t" ",\n" stmts
+                                 ++ ".\n"
+                                 ++ pClauses n cs
+
+  pDecs : List EDecl -> String 
+  pDecs [] = ""
+  pDecs (EDNil :: decs) = pDecs decs 
+  pDecs (EDFun n cs :: decs) =  pClauses n cs ++ "\n" ++ pDecs decs
+
+  pMod : EMod -> String 
+  pMod (EM name decs) =  "-module(" ++ name ++ ")." ++ "\n"
+                      ++ "-compile(export_all).\n"
+                      ++ pDecs decs 
 
 -------------------------------------------------------------------------------
 -- IR Generation -- Names
@@ -292,13 +317,15 @@ mutual
   genSpawn env tm = genEStmt env tm
 
   genSend : Env -> PTerm -> ErrorOr (List EStmt, Env)
-  genSend env tm@(PApp _ (PApp _ (PRef _ fn) (PRef _ ch)) msg) = do
+  genSend env tm@(PApp _ (PApp _ (PRef _ fn) (PRef _ ch)) msg) = 
+    do
     "Send" <- getNameStrFrmName env fn
       | fn' => genEStmts env tm
     ch' <- getNameStrFrmName env ch
     (msg', env') <- genEStmt env msg
     pure ([ESSend ch' msg'], env)
   genSend env tm = genEStmts env tm
+
 
 -------------------------------------------------------------------------------
 -- IR Generation -- Clauses/Statements
@@ -346,12 +373,12 @@ main = do
   let Right (ws, st, mod) = runParser srcLoc Nothing rawSrc (prog srcLoc)
     | Left err => printLn err
 
-  -- traverse_ printLn $ mod.decls
+  traverse_ printLn $ mod.decls
   -- traverse_ genPDecl mod.decls
   let Just ir = genIR mod
     | Err (StdErr err) => die err
     
-  -- putStrLn (ppEMod ir)
+  -- putStrLn (showEMod mod)
   putStrLn (show ir)
 
   putStrLn (pMod ir)
