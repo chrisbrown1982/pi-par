@@ -1,1 +1,3 @@
 **/Idris/build
+erl_crash.dump
+*.beam
