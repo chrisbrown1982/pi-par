@@ -77,6 +77,3 @@ run_example(X, Size) ->
      % MatB = lists:duplicate(Size, lists:seq(1,Size)),
      io:format("MatMulPar : ~p~n", [sk_profile:benchmark(fun ?MODULE:parmatmul/2, [X, Size], 1)]),
      io:format("Done~n").
-
-
-

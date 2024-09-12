@@ -70,6 +70,24 @@ data ProcessM : (ty : Type) -> (st : State) -> State -> Type where
   Halt   : ProcessM () (Live chs) End
   Return : (x : t) -> ProcessM t (Live chs) End
 
+  Send  : {chs : (Vect n (t ** StChanTy t))}
+       -> {m   : Nat}
+       -> (ch  : OutChan m)
+       -> (msg : t)
+       -> ProcessM
+            ()
+            (Live chs)
+            (Live chs)
+
+  Recv : {chs : Vect n (t ** StChanTy t)}
+      -> {m   : Nat}
+      -> (ty : Type)
+      -> (ch  : InChan m)
+      -> ProcessM
+          (ty)
+          (Live chs)
+          (Live chs)
+
   -- Standard operations
   Pure  : (x : t) -> ProcessM t st st
   (>>=) : ProcessM a (Live chs) st2  
@@ -82,3 +100,20 @@ data ProcessM : (ty : Type) -> (st : State) -> State -> Type where
 public export
 Process : Type
 Process = ProcessM () (Live []) End
+
+public export 
+fChan : (a, b) -> a 
+
+sChan : (a, b) -> b
+
+public export
+SpawnSFN : -- {t : Type}
+            {nChs : Nat}
+         -> (num : Nat)
+         -> (chs : (Vect nChs (t ** StChanTy t)))
+         -> (toT, frmT : Type)
+         -> State
+SpawnSFN Z chs toT frmT = Live chs
+SpawnSFN (S n) chs toT frmT = 
+     SpawnSFN n (chs ++ [(toT ** (SendTy toT)), (frmT ** (RecvTy frmT))]) toT frmT
+

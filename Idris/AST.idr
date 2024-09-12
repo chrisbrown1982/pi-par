@@ -43,18 +43,32 @@ traverseWithSt f st (x :: xs) = do
 public export
 data EPat : Type where
   EPVar : String -> EPat
+  EPCst : String -> EPat
+  EPBracket : List EPat -> EPat
+  EPInfixApp : List EPat -> String -> List EPat -> EPat 
+  EPPair : List EPat -> List EPat -> EPat 
+  EPUnit : EPat 
+  EPList : List EPat -> EPat
 
 data EStmt : Type where
   ESVar   : String -> EStmt
   ESCst  : String -> EStmt -- numbers, strings, &c. NOT SURE ABOUT THIS
   ESApp   : String -> List EStmt -> EStmt
+  ESInfixApp : EStmt -> String -> EStmt -> EStmt
   ESString : String -> EStmt
   ESMatchOp : List EPat -> EStmt -> EStmt
+  ESMatchVar : String -> EStmt -> EStmt
   ESMacMod : EStmt
   ESList : List EStmt -> EStmt
   ESSelf : EStmt
   ESRecv : List (EPat, List EStmt) -> EStmt
-  ESSend : String -> EStmt -> EStmt
+  ESSend : EStmt -> EStmt -> EStmt
+  EBracket : EStmt -> EStmt
+  ESeq : EStmt -> EStmt -> EStmt
+  ELam : List EPat -> EStmt -> EStmt
+  EList : List EStmt -> EStmt
+  EPair : List EStmt -> List EStmt -> EStmt
+  EUnit : EStmt
 
 data EDecl : Type where
   EDNil : EDecl
@@ -89,23 +103,87 @@ mutual
   eF (s1::s2::ss) s = s 
   eF (s1::[]) s = s
 
+  eP : List EPat -> String -> String 
+  eP [] s = ""
+  eP (s1::s2::ss) s = s 
+  eP (s1::[]) s = s
+
+  pFun : String -> String 
+  pFun fun = 
+    case fun of
+      "filter" => "lists:filter"
+      "sum" => "lists:sum"
+      "map" => "lists:map"
+      "length" => "length"
+      "spawn" => "spawn"
+      "Nat" => "nat"
+      "fChan" => "utils:fst"
+      "sChan" => "utils:snd"
+      "chunk" => "utils:n_length_chunks"
+      "fst" => "utils:fst2"
+      "snd" => "utils:snd2"
+      "zip1" => "lists:zip"
+      "foldl" => "lists:foldl"
+      "hd" => "hd"
+      "tl" => "tl"
+      fn => "?MODULE:" ++ fn
+
+  pVar : String -> String 
+  pVar fun = 
+    case fun of
+      "Nat" => "nat"
+      fn => fn
+
   pRecvs : String -> String -> List (EPat, List EStmt) -> String 
   pRecvs t e [] = ""
-  pRecvs t e ((p,cs) :: rest) = pPats [p] ++ " -> " 
+  pRecvs t e ((p,cs) :: rest) = pPats " , " [p] ++ " -> " 
                         ++ pStmts t e cs
                         ++ pRecvs t e rest
 
   pStmts : String -> String -> List EStmt -> String 
   pStmts t e [] = "" 
-  pStmts t e (ESVar x :: ss) = t ++ x ++ " " ++ (eF ss e) ++ pStmts t e ss 
+  pStmts t e (ESVar x :: ss) = t ++ (pVar x) ++ " " ++ (eF ss e) ++ pStmts t e ss 
   pStmts t e (ESCst c :: ss) = t ++ c ++ " " ++ (eF ss e) ++ pStmts t e ss 
-  pStmts t e (ESApp fn args::ss) = t ++ fn ++ "( " ++ pStmts "" " , " args ++ " ) " ++  (eF ss e) ++ pStmts t e ss 
+  pStmts t e (ESApp fn args::ss) = 
+    if fn == "Return" then 
+        t ++ pStmts "" " , " args ++  (eF ss e) ++ pStmts t e ss 
+
+     else
+        t ++ (pFun fn) ++ "( " ++ pStmts "" " , " args ++ " ) " ++  (eF ss e) ++ pStmts t e ss 
+  pStmts t e (ESInfixApp t1 str t2 :: ss) = 
+    if str == "::" then 
+      t 
+      ++ "["
+      ++ pStmts t e [t1]
+      ++ " "
+      ++ "|" 
+      ++ " "
+      ++ pStmts t e [t2]
+      ++ "]"
+      ++ (eF ss e)
+      ++ pStmts t e ss
+       else 
+         t 
+      ++ pStmts t e [t1]
+      ++ " "
+      ++ str 
+      ++ " "
+      ++ pStmts t e [t2]
+      ++ (eF ss e)
+      ++ pStmts t e ss
   pStmts t e (ESString s::ss)  = t ++ "\"" ++ s ++ "\"" ++ (eF ss e) ++ pStmts t e ss
   pStmts t e (ESMatchOp pats st :: ss) = t 
-                                          ++ pPats pats
+                                          ++ pPats " , " pats
                                           ++ " = "
                                           ++ pStmts t e [st] 
                                           ++ (eF ss e) ++ pStmts t e ss
+  pStmts t e (ESMatchVar n rhs :: ss ) = t 
+                                          ++ n
+                                          ++ " = "
+                                          ++ pStmts t e [rhs] 
+                                          ++ (eF ss e) ++ pStmts t e ss
+
+
   pStmts t e (ESMacMod ::ss) = t ++ "?MODULE" ++ (eF ss e) ++ pStmts t e ss 
   pStmts t e (ESList sts :: ss) = t ++  "[ "
                                ++ pStmts t " , " sts 
@@ -119,21 +197,99 @@ mutual
                              ++ t 
                              ++ "end"
                              ++ pStmts t e ss 
-  pStmts t e (ESSend m s :: ss) = t ++ m ++ " ! " ++ pStmts "" "" [s] ++ (eF ss e) ++ pStmts t e ss 
+  pStmts t e (ESSend m s :: ss) = t ++ pStmts "" "" [m] ++ " ! " ++ pStmts "" "" [s] ++ (eF ss e) ++ pStmts t e ss 
+  pStmts t e (EBracket ter :: ss) = t ++ " ( "
+                                 ++ (pStmts t e [ter])
+                                 ++ " ) "
+                                 ++ (eF ss e)
+                                 ++ pStmts t e ss 
+  pStmts t e (ESeq t1 t2 :: ss) =
+           t ++ "lists:seq( "
+        ++ (pStmts t e [t1])
+        ++ " , "
+        ++ (pStmts t e [t2])
+        ++ " ) "
+        ++ pStmts t e ss  
+  pStmts t e (ELam p rhs :: ss) = 
+         t ++ "fun ( "
+      ++ pPats " , " p
+      ++ " ) -> "
+      ++ pStmts t e [rhs] 
+      ++ " end "
+      ++ (eF ss e)
+      ++ pStmts t e ss 
+  pStmts t e (EList ts :: ss) = 
+            t ++ "["
+         ++ pStmts "" "," ts
+         ++ "]"
+         ++ (eF ss e) 
+         ++ pStmts t e ss 
+  pStmts t e (EPair t1 t2 :: ss) = 
+         t ++ "{"
+         ++ pStmts "" e t1
+         ++ ","
+         ++ pStmts "" e t2
+         ++ pStmts "" "," ss 
+         ++ "}"
+         ++ (eF ss e) 
+         ++ pStmts t e ss 
+  pStmts t e (EUnit :: ss) =
+    "{}"
+    ++ (eF ss e)
+    ++ pStmts t e ss
 
-  pPats : List EPat -> String 
-  pPats [] = ""
-  pPats (EPVar n::EPVar n2::pats) = n ++ " , " ++ n2 ++ pPats pats
-  pPats (EPVar n :: pats) = n ++ " " ++ pPats pats  
+  pPats : String -> List EPat -> String 
+  pPats e [] = ""
+  -- pPats e (EPVar n::EPVar n2::pats) = n ++ " , " ++ n2 ++ pPats pats
+  pPats e (EPVar n :: pats) = n ++ (eP pats e) ++ pPats e pats  
+  pPats e (EPCst c :: pats) = c ++ (eP pats e) ++ pPats e pats 
+  pPats e (EPBracket p :: pats) = "(" ++ (pPats e p) ++ ")" ++ (eP pats e) ++ pPats e pats
+  pPats e (EPInfixApp p1 str p2 :: pats) = 
+     if str == "::" then 
+      "["
+      ++ (pPats e p1)
+      ++ "|"
+      ++ (pPats e p2)
+      ++ "]"
+      ++ (eP pats e)
+      ++ pPats e pats
+     else 
+      (pPats e p1)
+      ++ str
+      ++ (pPats e p2)
+  pPats e (EPPair t1 t2 :: pats) = 
+    "{"
+    ++ (pPats e t1)
+    ++ ","
+    ++ (pPats e t2)
+    ++ "}"
+    ++ (eP pats e)
+    ++ pPats e pats
+  pPats e (EPUnit :: pats) =
+    "{}"
+    ++ (eP pats e)
+    ++ pPats e pats
+  pPats e (EPList [] :: pats) = 
+    "[]"
+    ++ (eP pats e)
+    ++ pPats e pats
+  pPats e (EPList xs :: pats) = "pPats not implemented"
 
   pClauses : String -> List (List EPat, List EStmt) -> String 
   pClauses n [] = ""
-  pClauses n ((pats, stmts)::cs) =  n ++ " ( "
-                                 ++ pPats pats
+  pClauses n ((pats, stmts)::[]) =  n ++ " ( "
+                                 ++ pPats " , " pats
                                  ++ " ) "
                                  ++ " -> \n"
                                  ++ pStmts "\t" ",\n" stmts
                                  ++ ".\n"
+                                 
+  pClauses n ((pats, stmts)::cs) =  n ++ " ( "
+                                 ++ pPats " , " pats
+                                 ++ " ) "
+                                 ++ " -> \n"
+                                 ++ pStmts "\t" ",\n" stmts
+                                 ++ ";\n"
                                  ++ pClauses n cs
 
   pDecs : List EDecl -> String 
@@ -150,14 +306,14 @@ mutual
 -- IR Generation -- Names
 
 Env : Type
-Env = List String
+Env = List (String, String)
 
 prelude : String -> EStmt
 prelude "printLn"  = ESVar "io:format" -- N.B. newlines not preserved
 prelude "putStrLn" = ESVar "io:format"
 prelude "putStr"   = ESVar "io:format"
 prelude "print"    = ESVar "io:format"
-prelude "Halt"     = ESApp "exit" [ESVar "halt"]
+prelude "Halt"     = ESVar "halt"
 prelude str        = ESVar str
 
 toEVarName : String -> String
@@ -166,10 +322,11 @@ toEVarName str =
     StrNil => assert_total (idris_crash "toEVarName: impossible empty string")
     StrCons x xs => strCons (toUpper x) xs
 
+
 lookup : Env -> String -> EStmt
 lookup [] str = prelude str
-lookup (x :: xs) str =
-  if str == x then ESVar (toEVarName x) else lookup xs str
+lookup ((x,y) :: xs) str =
+  if str == x then ESVar (toEVarName y) else lookup xs str
 
 getNameStrFrmName : Env -> Name.Name -> ErrorOr String
 getNameStrFrmName env n =
@@ -210,10 +367,26 @@ getNameFrmClause env (MkImpossible fc lhs) =
 
 genEPats : Env -> PTerm -> ErrorOr (List EPat, Env)
 genEPats env (PRef fc n) = do
-  n' <- getNameStrFrmName env n
-  pure ([EPVar (toEVarName n')], n' :: env)
-genEPats env (PApp fc (PRef _ _) x) =
-  genEPats env x
+  "Z" <- getNameStrFrmName env n
+    | n' => pure ([EPVar (toEVarName n')], (n',n') :: env)
+  pure ([EPVar "0"], ("Z","0") :: env)
+genEPats env (PApp fc (PRef _ nm) (PRef _ nm2)) = do 
+  "S" <- getNameStrFrmName env nm 
+    | n => do  
+              -- nm1 <- getNameStrFrmName env nm
+              "Z" <- getNameStrFrmName env nm2 
+                | nm2 => pure ([EPVar ((toEVarName nm2))], (nm2,nm2) :: env)
+              pure ([EPVar "0"], ("Z","0") :: env)
+
+
+  nm2' <- getNameStrFrmName env nm2 
+               --env' <- rewriteN nm2' (nm2++"-1")
+  pure ([EPVar (toEVarName nm2')], (nm2',(nm2'++"-1")) :: env)
+genEPats env (PApp fc (PRef _ nm) x) = -- do 
+ -- "S" <- getNameStrFrmName env nm 
+ --   | n => do  (x', env' ) <- genEPats env x
+ --              pure (((EPVar (toEVarName "S")) :: x'), env')
+  genEPats env x 
 genEPats env (PApp fc f x) = do
   (xs, env')  <- genEPats env f
   (ys, env'') <- genEPats env' x
@@ -221,8 +394,26 @@ genEPats env (PApp fc f x) = do
 genEPats env (PPair fc l r) = do
   (xs, env') <- genEPats env l
   (ys, env'') <- genEPats env' r
-  pure (xs ++ ys, env'')
-genEPats env p = error $ "genEPats: unimplemeted -- " ++ show p
+  pure ([EPPair xs ys], env'')
+genEPats env (PPrimVal fc c) = do
+    pure ([EPCst (show c)], env)
+genEPats env (PBracketed fc t) = do 
+  (t', env') <- genEPats env t 
+  pure ([EPBracket t'], env')
+genEPats env (POp f opFC str t1 t2) = do
+    (t1', env') <- genEPats env t1
+    (t2', env'') <- genEPats env' t2 
+    pure ([EPInfixApp t1' (show str) t2'], env'')
+genEPats env (PDPair fu op t1 t2 t3) = do
+      (t1, env') <- genEPats env t1 
+      (t2, env'') <- genEPats env' t3 
+      pure ([EPPair t1 t2], env'')
+genEPats env (PUnit _) =
+  pure ([EPUnit], env)
+genEPats env (PList _ _ []) = 
+  pure ([EPList []], env)
+
+genEPats env p = error $ "genEPats: unimplemented -- " ++ show p
 
 genEPatsTop : PTerm -> ErrorOr (List EPat, Env)
 genEPatsTop (PRef fc n) = Just ([], []) -- no arguments
@@ -256,14 +447,28 @@ mutual
     x' <- getNameStrFrmName env x
     case displayName fn of
       (Nothing, "Recv") => do
-        (rest, env') <- genEStmtsDo (x' :: env) dss
+        (rest, env') <- genEStmtsDo ((x',x') :: env) dss
         pure ([ESRecv [(EPVar (toEVarName x'), rest)]], env')
       _ => do
-        (rhs', env') <- genEStmt (x' :: env) rhs
+        (rhs', env') <- genEStmt ((x',x') :: env) rhs
         (rest, env'') <- genEStmtsDo env' dss
-        pure (rhs' :: rest, env'')
+        pure (rhs' :: rest, env'')    
   genEStmtsDo env (DoBind fc nfc x rhs :: dss) = do
-    error $ "genEStmtsDo: unimplemented -- DoBind"
+    x' <- getNameStrFrmName env x
+    (e@(ESApp "spawn" _), env') <- genSpawn env rhs -- SPAWN
+       | (rhs', env') => do -- <- genEStmt ((x',x')::env) rhs
+             (rest, env'') <- genEStmtsDo ((x',x') :: env') dss
+             pure (ESMatchVar (toEVarName x') rhs' :: rest, env'')
+    (rest, env'') <- genEStmtsDo ((x',x') :: env') dss
+    pure (ESMatchVar (toEVarName x') e :: rest, env'')
+   {- (e@(ESApp "spawn" _), env'') <- genSpawn env' rhs -- SPAWN
+      | (e, env'') => do
+        (rest, env''') <- genEStmtsDo env'' dss
+        pure (ESMatchOp [x,y] e :: rest, env''')
+    (rest, env''') <- genEStmtsDo env'' dss
+    pure (ESMatchOp [x] e :: rest, env''')
+    -}
+    -- error $ "genEStmtsDo: unimplemented -- DoBind"
   genEStmtsDo env (DoBindPat _ _ _ _ :: dss) =
     error $ "genEStmtsDo: unimplemented -- DoBindPat"
   genEStmtsDo env (DoLet _ _ _ _ _ _ :: dss) =
@@ -299,6 +504,37 @@ mutual
     genEStmtsDo env dss
   genEStmts env (PPrimVal fc c) = do
     pure ([ESCst (show c)], env)
+
+  genEStmts env (PPair fc t1 t2) = do
+    (t1, env') <- genEStmts env t1 
+    (t2, env'') <- genEStmts env' t2
+    pure ([EPair t1 t2], env'')
+
+  genEStmts env (PBracketed fc t1) = do 
+    (t1', env') <- genEStmt env t1 
+    pure ([EBracket t1'], env')
+  genEStmts env (PNamedApp fc p1 name p2) = error $ "genEStmts: PNamedApp unimplemented -- "  ++ show name
+  genEStmts env (POp f opFC str t1 t2) = do
+    (t1', env') <- genEStmt env t1 
+    (t2', env'') <- genEStmt env' t2 
+    pure ([ESInfixApp t1' (show str) t2'], env'')
+  genEStmts env (PRange fc t1 mt2 t3) = do
+     (t1', env') <- genEStmt env t1 
+     (t3', env'') <- genEStmt env' t3
+     pure ([ESeq t1' t3'], env'') 
+  genEStmts env (PLam fc r pinf pat args scope) = do
+     (pat', env') <- genEPats env pat 
+     (rhs, env'') <- genEStmt env' scope 
+     pure ([ELam pat' rhs], env'') 
+  genEStmts env (PList fu ni li) = do 
+    ts <- mapM (\x => genEStmt env x) (map snd li)
+    pure ([EList (map fst ts)], env)
+  genEStmts env (PDPair fu op t1 t2 t3) = do
+      (t1, env') <- genEStmts env t1 
+      (t2, env'') <- genEStmts env' t3 
+      pure ([EPair t1 t2], env'')
+  genEStmts env (PUnit _) =
+    pure ([EUnit], env)
   genEStmts env tm = error $ "genEStmts: unimplemented -- "  ++ show tm
 
   genEStmt : Env -> PTerm -> ErrorOr (EStmt, Env)
@@ -313,15 +549,18 @@ mutual
       (Nothing, "Spawn") => do
         pStr <- getNameStmtFrmName env p
         Just (ESApp "spawn" [ESMacMod, pStr, ESList [ESVar "chan", ESSelf]], env)
+      (Nothing, "rem") => error $ "rem!!"
       _ => genEStmt env tm
   genSpawn env tm = genEStmt env tm
 
   genSend : Env -> PTerm -> ErrorOr (List EStmt, Env)
-  genSend env tm@(PApp _ (PApp _ (PRef _ fn) (PRef _ ch)) msg) = 
+  -- genSend env tm@(PApp _ (PApp _ (PRef _ fn) (PRef _ ch)) msg) = 
+  genSend env tm@(PApp _ (PApp _ (PRef _ fn) t) msg) = 
     do
     "Send" <- getNameStrFrmName env fn
       | fn' => genEStmts env tm
-    ch' <- getNameStrFrmName env ch
+    -- ch' <- getNameStrFrmName env ch
+    (ch', env') <- genEStmt env t
     (msg', env') <- genEStmt env msg
     pure ([ESSend ch' msg'], env)
   genSend env tm = genEStmts env tm
@@ -365,8 +604,21 @@ main : IO ()
 main = do
   -- let fName = "Main5.idr"
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "Main5")
-  let fName = "ParseEx.idr"
-  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParseEx")
+  -- let fName = "ParseEx.idr"
+  -- let fName = "SumEuler.idr"
+
+  -- let fName = "ParSkel.idr"
+
+  -- let fName = "ParSumEuler.idr"
+
+  let fName = "MatMul.idr"
+
+  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParseEx")
+  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "SumEuler")
+  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSkel")
+  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSumEuler")
+
+  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "MatMul")
 
   Right rawSrc <- readFile fName
     | Left err => printLn err
