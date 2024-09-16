@@ -69,6 +69,7 @@ data EStmt : Type where
   EList : List EStmt -> EStmt
   EPair : List EStmt -> List EStmt -> EStmt
   EUnit : EStmt
+  EComprehension : EStmt -> List EStmt -> EStmt
 
 data EDecl : Type where
   EDNil : EDecl
@@ -126,117 +127,159 @@ mutual
       "foldl" => "lists:foldl"
       "hd" => "hd"
       "tl" => "tl"
+      "||" => "or"
+      "==" => "=="
+      "+" => "+"
+      "foldr" => "lists:foldr"
+      "takeWhile" => "lists:takewhile"
+      "minus" => "utils:minus"
+      "not" => "not"
+      "zipIt" => "lists:zip"
+      "app" => "lists:append"
+
       fn => "?MODULE:" ++ fn
 
   pVar : String -> String 
   pVar fun = 
     case fun of
       "Nat" => "nat"
+      "True" => "true"
+      "False" => "false"
+      "andB" => "fun(X,Y) -> X and Y end"
       fn => fn
 
-  pRecvs : String -> String -> List (EPat, List EStmt) -> String 
-  pRecvs t e [] = ""
-  pRecvs t e ((p,cs) :: rest) = pPats " , " [p] ++ " -> " 
-                        ++ pStmts t e cs
-                        ++ pRecvs t e rest
+  pRecvs : Bool -> String -> String -> List (EPat, List EStmt) -> String 
+  pRecvs b t e [] = ""
+  pRecvs b t e ((p,cs) :: rest) = pPats " , " [p] ++ " -> " 
+                        ++ pStmts b t e cs
+                        ++ pRecvs b t e rest
 
-  pStmts : String -> String -> List EStmt -> String 
-  pStmts t e [] = "" 
-  pStmts t e (ESVar x :: ss) = t ++ (pVar x) ++ " " ++ (eF ss e) ++ pStmts t e ss 
-  pStmts t e (ESCst c :: ss) = t ++ c ++ " " ++ (eF ss e) ++ pStmts t e ss 
-  pStmts t e (ESApp fn args::ss) = 
+  pStmts : Bool -> String -> String -> List EStmt -> String 
+  pStmts b t e [] = "" 
+  pStmts b t e (ESVar x :: ss) = t ++ (pVar x) ++ " " ++ (eF ss e) ++ pStmts b t e ss 
+  pStmts b t e (ESCst c :: ss) = t ++ c ++ " " ++ (eF ss e) ++ pStmts b t e ss 
+  pStmts b t e (ESApp fn args::ss) = 
     if fn == "Return" then 
-        t ++ pStmts "" " , " args ++  (eF ss e) ++ pStmts t e ss 
+        t ++ pStmts b "" " , " args ++  (eF ss e) ++ pStmts b t e ss 
 
      else
-        t ++ (pFun fn) ++ "( " ++ pStmts "" " , " args ++ " ) " ++  (eF ss e) ++ pStmts t e ss 
-  pStmts t e (ESInfixApp t1 str t2 :: ss) = 
+        t ++ (pFun fn) ++ "( " ++ pStmts b "" " , " args ++ " ) " ++  (eF ss e) ++ pStmts b t e ss 
+  pStmts b t e (ESInfixApp t1 str t2 :: ss) = 
     if str == "::" then 
       t 
       ++ "["
-      ++ pStmts t e [t1]
+      ++ pStmts b "" e [t1]
       ++ " "
       ++ "|" 
       ++ " "
-      ++ pStmts t e [t2]
+      ++ pStmts b "" e [t2]
       ++ "]"
       ++ (eF ss e)
-      ++ pStmts t e ss
+      ++ pStmts b t e ss
+       else if str == "++" then 
+      t 
+      ++ "lists:append("
+      ++ pStmts b "" e [t1]
+      ++ " "
+      ++ "," 
+      ++ " "
+      ++ pStmts b "" e [t2]
+      ++ ")"
+      ++ (eF ss e)
+      ++ pStmts b t e ss
        else 
          t 
-      ++ pStmts t e [t1]
+      ++ pStmts b "" e [t1]
       ++ " "
-      ++ str 
+      ++ (pFun str)
       ++ " "
-      ++ pStmts t e [t2]
+      ++ pStmts b "" e [t2]
       ++ (eF ss e)
-      ++ pStmts t e ss
-  pStmts t e (ESString s::ss)  = t ++ "\"" ++ s ++ "\"" ++ (eF ss e) ++ pStmts t e ss
-  pStmts t e (ESMatchOp pats st :: ss) = t 
+      ++ pStmts b t e ss
+  pStmts b t e (ESString s::ss)  = t ++ "\"" ++ s ++ "\"" ++ (eF ss e) ++ pStmts b t e ss
+  pStmts True t e (ESMatchOp pats st :: ss) = t 
+                                          ++ pPats " , " pats
+                                          ++ " <- "
+                                          ++ pStmts True t e [st] 
+                                          ++ (eF ss e) ++ pStmts True t e ss
+  pStmts False t e (ESMatchOp pats st :: ss) = t 
                                           ++ pPats " , " pats
                                           ++ " = "
-                                          ++ pStmts t e [st] 
-                                          ++ (eF ss e) ++ pStmts t e ss
-  pStmts t e (ESMatchVar n rhs :: ss ) = t 
+                                          ++ pStmts False t e [st] 
+                                          ++ (eF ss e) ++ pStmts False t e ss
+  pStmts True t e (ESMatchVar n rhs :: ss ) = t 
+                                          ++ n
+                                          ++ " <- "
+                                          ++ pStmts True t e [rhs] 
+                                          ++ (eF ss e) ++ pStmts True t e ss
+  pStmts b t e (ESMatchVar n rhs :: ss ) = t 
                                           ++ n
                                           ++ " = "
-                                          ++ pStmts t e [rhs] 
-                                          ++ (eF ss e) ++ pStmts t e ss
+                                          ++ pStmts b t e [rhs] 
+                                          ++ (eF ss e) ++ pStmts b t e ss
 
-
-  pStmts t e (ESMacMod ::ss) = t ++ "?MODULE" ++ (eF ss e) ++ pStmts t e ss 
-  pStmts t e (ESList sts :: ss) = t ++  "[ "
-                               ++ pStmts t " , " sts 
+  pStmts b t e (ESMacMod ::ss) = t ++ "?MODULE" ++ (eF ss e) ++ pStmts b t e ss 
+  pStmts b t e (ESList sts :: ss) = t ++  "[ "
+                               ++ pStmts b t " , " sts 
                                ++ " ] "
-                               ++ (eF ss e) ++ pStmts t e ss 
-  pStmts t e (ESSelf  :: ss) = t ++ "self() " ++ (eF ss e) ++ pStmts t e ss 
-  pStmts t e (ESRecv cs :: ss) = t ++ "receive" ++ "\n\t\t"
-                                 ++ pRecvs (t++"\t") e cs
+                               ++ (eF ss e) ++ pStmts b t e ss 
+  pStmts b t e (ESSelf  :: ss) = t ++ "self() " ++ (eF ss e) ++ pStmts b t e ss 
+  pStmts b t e (ESRecv cs :: ss) = t ++ "receive" ++ "\n\t\t"
+                                 ++ pRecvs b (t++"\t") e cs
                              ++ (eF ss e) 
                              ++ "\n"
                              ++ t 
                              ++ "end"
-                             ++ pStmts t e ss 
-  pStmts t e (ESSend m s :: ss) = t ++ pStmts "" "" [m] ++ " ! " ++ pStmts "" "" [s] ++ (eF ss e) ++ pStmts t e ss 
-  pStmts t e (EBracket ter :: ss) = t ++ " ( "
-                                 ++ (pStmts t e [ter])
+                             ++ pStmts b t e ss 
+  pStmts b t e (ESSend m s :: ss) = t ++ pStmts b "" "" [m] ++ " ! " ++ pStmts b "" "" [s] ++ (eF ss e) ++ pStmts b t e ss 
+  pStmts b t e (EBracket ter :: ss) = t ++ " ( "
+                                 ++ (pStmts b t e [ter])
                                  ++ " ) "
                                  ++ (eF ss e)
-                                 ++ pStmts t e ss 
-  pStmts t e (ESeq t1 t2 :: ss) =
+                                 ++ pStmts b t e ss 
+  pStmts b t e (ESeq t1 t2 :: ss) =
            t ++ "lists:seq( "
-        ++ (pStmts t e [t1])
+        ++ (pStmts b t e [t1])
         ++ " , "
-        ++ (pStmts t e [t2])
+        ++ (pStmts b t e [t2])
         ++ " ) "
-        ++ pStmts t e ss  
-  pStmts t e (ELam p rhs :: ss) = 
+        ++ (eF ss e)
+        ++ pStmts b t e ss  
+  pStmts b t e (ELam p rhs :: ss) = 
          t ++ "fun ( "
       ++ pPats " , " p
       ++ " ) -> "
-      ++ pStmts t e [rhs] 
+      ++ pStmts b t e [rhs] 
       ++ " end "
       ++ (eF ss e)
-      ++ pStmts t e ss 
-  pStmts t e (EList ts :: ss) = 
+      ++ pStmts b t e ss 
+  pStmts b t e (EList ts :: ss) = 
             t ++ "["
-         ++ pStmts "" "," ts
+         ++ pStmts b "" "," ts
          ++ "]"
          ++ (eF ss e) 
-         ++ pStmts t e ss 
-  pStmts t e (EPair t1 t2 :: ss) = 
+         ++ pStmts b t e ss 
+  pStmts b t e (EPair t1 t2 :: ss) = 
          t ++ "{"
-         ++ pStmts "" e t1
+         ++ pStmts b "" e t1
          ++ ","
-         ++ pStmts "" e t2
-         ++ pStmts "" "," ss 
+         ++ pStmts b "" e t2
+       --   ++ pStmts b "" "," ss 
          ++ "}"
          ++ (eF ss e) 
-         ++ pStmts t e ss 
-  pStmts t e (EUnit :: ss) =
+         ++ pStmts b t e ss 
+  pStmts b t e (EUnit :: ss) =
     "{}"
     ++ (eF ss e)
-    ++ pStmts t e ss
+    ++ pStmts b t e ss
+  pStmts b t e (EComprehension term gens :: ss) = 
+    "["
+    ++ pStmts b "" "" [term]
+    ++ " || "
+    ++ pStmts True "" "," gens
+    ++ "]"
+    ++ (eF ss e)
+    ++ pStmts b t e ss 
 
   pPats : String -> List EPat -> String 
   pPats e [] = ""
@@ -281,14 +324,14 @@ mutual
                                  ++ pPats " , " pats
                                  ++ " ) "
                                  ++ " -> \n"
-                                 ++ pStmts "\t" ",\n" stmts
+                                 ++ pStmts False "\t" ",\n" stmts
                                  ++ ".\n"
                                  
   pClauses n ((pats, stmts)::cs) =  n ++ " ( "
                                  ++ pPats " , " pats
                                  ++ " ) "
                                  ++ " -> \n"
-                                 ++ pStmts "\t" ",\n" stmts
+                                 ++ pStmts False "\t" ",\n" stmts
                                  ++ ";\n"
                                  ++ pClauses n cs
 
@@ -535,6 +578,11 @@ mutual
       pure ([EPair t1 t2], env'')
   genEStmts env (PUnit _) =
     pure ([EUnit], env)
+  genEStmts env (PComprehension fc t gens) = do
+
+      (gens', env') <- genEStmtsDo env gens 
+      (t', env'') <- genEStmt env' t 
+      pure ([EComprehension t' gens'], env'')
   genEStmts env tm = error $ "genEStmts: unimplemented -- "  ++ show tm
 
   genEStmt : Env -> PTerm -> ErrorOr (EStmt, Env)
@@ -611,14 +659,18 @@ main = do
 
   -- let fName = "ParSumEuler.idr"
 
-  let fName = "MatMul.idr"
+  -- let fName = "MatMul.idr"
+
+  let fName = "Queens2.idr"
 
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParseEx")
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "SumEuler")
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSkel")
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSumEuler")
 
-  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "MatMul")
+  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "MatMul")
+
+  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "Queens2")
 
   Right rawSrc <- readFile fName
     | Left err => printLn err
