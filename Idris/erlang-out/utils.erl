@@ -41,3 +41,5 @@ takeEach(N, [X|Xs]) ->
 
 unshuffle(N, Xs) -> 
     [ takeEach(N, (drop(I, Xs))) || I <- lists:seq(0, (N-1))].
+
+s (N) -> N + 1. 

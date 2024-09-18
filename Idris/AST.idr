@@ -136,6 +136,7 @@ mutual
       "not" => "not"
       "zipIt" => "lists:zip"
       "app" => "lists:append"
+      "S" => "utils:s"
 
       fn => "?MODULE:" ++ fn
 
@@ -159,7 +160,7 @@ mutual
   pStmts b t e (ESVar x :: ss) = t ++ (pVar x) ++ " " ++ (eF ss e) ++ pStmts b t e ss 
   pStmts b t e (ESCst c :: ss) = t ++ c ++ " " ++ (eF ss e) ++ pStmts b t e ss 
   pStmts b t e (ESApp fn args::ss) = 
-    if fn == "Return" then 
+    if fn == "Pure" || fn == "Return" then 
         t ++ pStmts b "" " , " args ++  (eF ss e) ++ pStmts b t e ss 
 
      else
@@ -655,22 +656,22 @@ main = do
   -- let fName = "ParseEx.idr"
   -- let fName = "SumEuler.idr"
 
-  -- let fName = "ParSkel.idr"
+  let fName = "ParSkel.idr"
 
   -- let fName = "ParSumEuler.idr"
 
   -- let fName = "MatMul.idr"
 
-  let fName = "Queens2.idr"
+  -- let fName = "Queens2.idr"
 
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParseEx")
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "SumEuler")
-  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSkel")
+  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSkel")
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSumEuler")
 
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "MatMul")
 
-  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "Queens2")
+  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "Queens2")
 
   Right rawSrc <- readFile fName
     | Left err => printLn err
