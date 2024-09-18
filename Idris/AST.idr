@@ -70,6 +70,7 @@ data EStmt : Type where
   EPair : List EStmt -> List EStmt -> EStmt
   EUnit : EStmt
   EComprehension : EStmt -> List EStmt -> EStmt
+  ECase : EStmt -> List (List EPat, List EStmt) -> EStmt
 
 data EDecl : Type where
   EDNil : EDecl
@@ -118,6 +119,7 @@ mutual
       "length" => "length"
       "spawn" => "spawn"
       "Nat" => "nat"
+      "MsgT" => "msgt"
       "fChan" => "utils:fst"
       "sChan" => "utils:snd"
       "chunk" => "utils:n_length_chunks"
@@ -144,6 +146,7 @@ mutual
   pVar fun = 
     case fun of
       "Nat" => "nat"
+      "MsgT" => "msgt"
       "True" => "true"
       "False" => "false"
       "andB" => "fun(X,Y) -> X and Y end"
@@ -281,6 +284,15 @@ mutual
     ++ "]"
     ++ (eF ss e)
     ++ pStmts b t e ss 
+  pStmts b t e (ECase term clauses :: ss) = 
+    "case "
+    ++ pStmts b "" "" [term] 
+    ++ "of\n"
+    ++ pClauses "\t" clauses
+    ++ "end"
+    ++ (eF ss e)
+    ++ pStmts b t e ss  
+
 
   pPats : String -> List EPat -> String 
   pPats e [] = ""
@@ -326,7 +338,7 @@ mutual
                                  ++ " ) "
                                  ++ " -> \n"
                                  ++ pStmts False "\t" ",\n" stmts
-                                 ++ ".\n"
+                                 ++ "\n"
                                  
   pClauses n ((pats, stmts)::cs) =  n ++ " ( "
                                  ++ pPats " , " pats
@@ -339,7 +351,7 @@ mutual
   pDecs : List EDecl -> String 
   pDecs [] = ""
   pDecs (EDNil :: decs) = pDecs decs 
-  pDecs (EDFun n cs :: decs) =  pClauses n cs ++ "\n" ++ pDecs decs
+  pDecs (EDFun n cs :: decs) =  pClauses n cs ++ ".\n" ++ pDecs decs
 
   pMod : EMod -> String 
   pMod (EM name decs) =  "-module(" ++ name ++ ")." ++ "\n"
@@ -358,6 +370,8 @@ prelude "putStrLn" = ESVar "io:format"
 prelude "putStr"   = ESVar "io:format"
 prelude "print"    = ESVar "io:format"
 prelude "Halt"     = ESVar "halt"
+prelude "MEnd"     = ESVar "mend"
+prelude "Msg"      = ESVar "msg"
 prelude str        = ESVar str
 
 toEVarName : String -> String
@@ -412,7 +426,9 @@ getNameFrmClause env (MkImpossible fc lhs) =
 genEPats : Env -> PTerm -> ErrorOr (List EPat, Env)
 genEPats env (PRef fc n) = do
   "Z" <- getNameStrFrmName env n
-    | n' => pure ([EPVar (toEVarName n')], (n',n') :: env)
+    | n' => case n' of 
+              "MEnd" => pure ([EPVar "mend"], ("MEnd","mend") :: env)
+              n'' => pure ([EPVar (toEVarName n'')], (n'',n'') :: env)
   pure ([EPVar "0"], ("Z","0") :: env)
 genEPats env (PApp fc (PRef _ nm) (PRef _ nm2)) = do 
   "S" <- getNameStrFrmName env nm 
@@ -459,9 +475,20 @@ genEPats env (PList _ _ []) =
 
 genEPats env p = error $ "genEPats: unimplemented -- " ++ show p
 
-genEPatsTop : PTerm -> ErrorOr (List EPat, Env)
-genEPatsTop (PRef fc n) = Just ([], []) -- no arguments
-genEPatsTop p = genEPats [] p
+genEPatsTop : Env -> PTerm -> ErrorOr (List EPat, Env)
+genEPatsTop env (PRef fc n) = do
+  "mend" <- getNameStrFrmName env n
+    | n' => pure ([], env)
+  pure ([EPVar "mend"], ("mend","mend") :: env) -- no arguments
+genEPatsTop env (PApp fc (PRef _ nm) (PRef _ nm2)) = do 
+  "msg" <- getNameStrFrmName env nm 
+    | n => do  
+           -- nm1 <- getNameStrFrmName env nm
+              pure ([],env)
+  nm2 <- getNameStrFrmName env nm2 
+  pure ([EPPair [EPVar "msg"] [EPVar (toEVarName nm2)] ], (nm2,nm2) :: env)
+            -- pure ([EPVar "0"], ("Z","0") :: env)
+genEPatsTop env p = genEPats env p
 
 -------------------------------------------------------------------------------
 -- IR Generation -- Terms/Expressions/Statements
@@ -497,6 +524,16 @@ mutual
         (rhs', env') <- genEStmt ((x',x') :: env) rhs
         (rest, env'') <- genEStmtsDo env' dss
         pure (rhs' :: rest, env'')    
+  genEStmtsDo env (DoBind fc nfc x rhs@(PApp _ (PApp _ (PRef _ fn) (PRef x2 ty)) ch) :: dss) = do
+    x' <- getNameStrFrmName env x
+    case displayName fn of
+      (Nothing, "Recv") => do
+        (rest, env') <- genEStmtsDo ((x',x') :: env) dss
+        pure ([ESRecv [(EPVar (toEVarName x'), rest)]], env')
+      _ => do
+        (rhs', env') <- genEStmt env rhs 
+        (rest, env'') <- genEStmtsDo ((x',x') :: env') dss
+        pure (ESMatchVar (toEVarName x') rhs' :: rest, env'') 
   genEStmtsDo env (DoBind fc nfc x rhs :: dss) = do
     x' <- getNameStrFrmName env x
     (e@(ESApp "spawn" _), env') <- genSpawn env rhs -- SPAWN
@@ -537,7 +574,9 @@ mutual
     (ESApp fn xs, env')  <- genEStmt env f
       | (ESVar fn, env') => do
         (x', env'') <- genEStmt env' x
-        pure ([ESApp fn [x']], env'')
+        case fn of 
+          "msg" => do pure ([EPair [ESVar "msg"] [x']], env')
+          _ => do pure ([ESApp fn [x']], env'')
       | f' => error $ "TODO: " ++ show f'
     (x', env') <- genEStmt env x
     pure ([ESApp fn (xs ++ [x'])], env')
@@ -580,10 +619,16 @@ mutual
   genEStmts env (PUnit _) =
     pure ([EUnit], env)
   genEStmts env (PComprehension fc t gens) = do
-
       (gens', env') <- genEStmtsDo env gens 
       (t', env'') <- genEStmt env' t 
       pure ([EComprehension t' gens'], env'')
+  genEStmts env (PCase fc opts t cls) = do
+      (t1, env') <- genEStmt env t 
+      cls <- mapM (genEClause env') cls
+      pure ([ECase t1 (trim cls)], env')
+
+
+
   genEStmts env tm = error $ "genEStmts: unimplemented -- "  ++ show tm
 
   genEStmt : Env -> PTerm -> ErrorOr (EStmt, Env)
@@ -610,32 +655,38 @@ mutual
       | fn' => genEStmts env tm
     -- ch' <- getNameStrFrmName env ch
     (ch', env') <- genEStmt env t
-    (msg', env') <- genEStmt env msg
-    pure ([ESSend ch' msg'], env)
+    (msg', env'') <- genEStmt env' msg
+    pure ([ESSend ch' msg'], env'')
   genSend env tm = genEStmts env tm
 
 
 -------------------------------------------------------------------------------
 -- IR Generation -- Clauses/Statements
 
-genEClause : PClause -> ErrorOr (List EPat, List EStmt)
-genEClause (MkPatClause fc lhs rhs []) = do
-  (pats, env) <- genEPatsTop lhs
-  (stmts, _) <- genEStmts env rhs
-  Just (pats, stmts)
-genEClause c = error $ "genEClause: unimplemented -- " ++ show c
+  genEClause : Env -> PClause -> ErrorOr (List EPat, List EStmt, Env)
+  genEClause env (MkPatClause fc lhs rhs []) = do
+    (pats, env') <- genEPatsTop env lhs
+    (stmts, env'') <- genEStmts env' rhs
+    Just (pats, stmts, env'')
+  genEClause e c = error $ "genEClause: unimplemented -- " ++ show c
 
 -------------------------------------------------------------------------------
 -- IR Generation -- Declarations
+  trim :  List (List EPat, (List EStmt, Env)) ->  List (List EPat, List EStmt)
+  trim [] = []
+  trim ((pats, (stmts, env)) :: rest) = (pats, stmts) :: trim rest
+
 
 genEDecl : PDecl -> ErrorOr EDecl
 genEDecl (PDef fc cs@(c :: _)) = do
   dn <- getNameFrmClause [] c
-  body <- mapM genEClause cs
-  pure (EDFun dn body) -- FIXME -- Parameters
+  body <- mapM (genEClause []) cs
+  pure (EDFun dn (trim body)) -- FIXME -- Parameters
 -- 
 genEDecl (PClaim fc rc v fopts ty) =
   Just EDNil -- we don't care for type signatures
+genEDecl (PData fc doc wd m p) = 
+  Just EDNil -- we don't care for data types
 genEDecl d = error $ "genEDecl: unimplemented -- " ++ show d
 
 -------------------------------------------------------------------------------

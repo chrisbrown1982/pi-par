@@ -104,6 +104,7 @@ Process = ProcessM () (Live []) End
 public export 
 fChan : (a, b) -> a 
 
+public export
 sChan : (a, b) -> b
 
 public export

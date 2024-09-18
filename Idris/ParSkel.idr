@@ -8,7 +8,7 @@ import public Data.Vect
 import public Decidable.Equality
 
 data MsgT : Type where 
-      End : MsgT 
+      MEnd : MsgT 
       Msg : Nat -> MsgT
 
 
@@ -60,34 +60,59 @@ roundRobin :
             ()
             (Live chs)
             (Live chs)
-roundRobin msgT [] x y = Pure ()
+roundRobin msgT [] y [] = Pure ()
+roundRobin msgT [] chs ((m ** c) :: chs2) =
+      do Send c MEnd 
+         roundRobin msgT [] chs chs2 
+         Pure ()
 roundRobin msgT (ms::msgs) [] chs2 = roundRobin msgT (ms::msgs) chs2 chs2 
 roundRobin msgT (ms::msgs) ((m ** c)::chs) chs2 = 
       do Send c ms 
          roundRobin msgT msgs chs chs2 
          Pure ()
 
+public export
+roundRobinRec : 
+      -- {len : Nat}
+      {chs : Vect n (t ** StChanTy t)}
+      -> (nMsgs : Nat)
+      -> (chs2 :  Vect len (m : Nat ** (InChan m)))
+      -> (chs3 : Vect len2 (m : Nat ** (InChan m)))
+      -> ProcessM 
+         (List MsgT)
+         (Live chs)
+         (Live chs)
+roundRobinRec Z [] chs2 = roundRobinRec Z chs2 chs2 
+roundRobinRec Z ((m**c)::chs) chs2 = 
+      do m1 <- Recv MsgT c 
+         Pure (m1 :: [])
+roundRobinRec (S n) [] chs2 = roundRobinRec n chs2 chs2 
+roundRobinRec (S n) ((m ** c)::chs) chs2 = 
+      do m1 <- Recv MsgT c 
+         msgs <- roundRobinRec n chs chs2 
+         Pure (m1 :: msgs)
+
 
 public export
-recN : {chs : Vect n (t ** StChanTy t)}
+recNChan : {chs : Vect n (t ** StChanTy t)}
     -> (msgTy : Type)
     -> (inChs : Vect len (m : Nat ** InChan m))
     -> ProcessM 
             (List msgTy) -- (m ** stIdxMsgTyIn chs m n))
             (Live chs) 
             (Live chs)
-recN ty [] = Pure []
-recN ty ((m ** c) :: chs) = 
-    do m1 <- Recv c
-       msgs <- recN ty chs
+recNChan ty [] = Pure []
+recNChan ty ((m ** c) :: chs) = 
+    do m1 <- Recv ty c
+       msgs <- recNChan ty chs
        Pure (m1 :: msgs)
 
 
-p :  (pIn : InChan Z)
+p :      (pIn : InChan Z)
       -> (pOut : OutChan (S Z))
       -> Spawned {m = ProcessM} Nat Nat
 p pIn pOut = do
-                    x <- Recv pIn
+                    x <- Recv Nat pIn
                     Send pOut 42
                     Halt
 
@@ -96,7 +121,7 @@ test =
     do 
         c <- Spawn Nat Nat p
         Send (fChan c) 42
-        v <- Recv c
+        v <- Recv Nat (sChan c)
         Halt
 
 
@@ -133,30 +158,33 @@ farm4 inTy outTy nw w input =
     do
         res <- spawnN 0 4 inTy outTy w
         sendN (convertChans inTy res input)
-        msgs <- recN outTy (inChans res)
+        msgs <- recNChan outTy (inChans res)
         Return msgs
 
 
 pRR :  (pIn : InChan Z)
       -> (pOut : OutChan (S Z))
-      -> Spawned {m = ProcessM} Nat Nat
+      -> Spawned {m = ProcessM} MsgT MsgT
 pRR pIn pOut = do
-                    x <- Recv pIn
-                    Send pOut x
-                    pRR pIn pOut 
-                    Halt
+                    x <- Recv MsgT pIn
+                    case x of 
+                        MEnd => do -- Send pOut MEnd 
+                                   Halt
+                        Msg m => do Send pOut (Msg (m + 100))
+                                    y <- pRR pIn pOut 
+                                    Pure ()
 
 farm4RR : (nW : MsgT)
    ->  (w : (pIn : InChan Z)
          -> (pOut : OutChan (S Z))
          -> Spawned {m = ProcessM} MsgT MsgT)
    ->  (input : Vect 4 MsgT)
-   ->  ProcessM (List Nat) (Live []) End
+   ->  ProcessM (List MsgT) (Live []) End
 farm4RR nw w input = 
     do
         res <- spawnN 0 4 MsgT MsgT pRR
         roundRobin MsgT input (convertChansRR res) (convertChansRR res)
-        msgs <- recN MsgT (inChans res)
+        msgs <- roundRobinRec (length input) (inChans res) (inChans res)
         Return msgs
 
 {-
