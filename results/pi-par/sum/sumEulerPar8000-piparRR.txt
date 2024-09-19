@@ -1,0 +1,560 @@
+SumEuler: [{n,1},
+           {min,3544952},
+           {max,3544952},
+           {med,3544952},
+           {mean,3544952.0},
+           {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+SumEuler: [{n,1},
+           {min,3491348},
+           {max,3491348},
+           {med,3491348},
+           {mean,3491348.0},
+           {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+SumEuler: [{n,1},
+           {min,3542693},
+           {max,3542693},
+           {med,3542693},
+           {mean,3542693.0},
+           {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+SumEuler: [{n,1},
+           {min,3529892},
+           {max,3529892},
+           {med,3529892},
+           {mean,3529892.0},
+           {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+SumEuler: [{n,1},
+           {min,3524095},
+           {max,3524095},
+           {med,3524095},
+           {mean,3524095.0},
+           {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+SumEuler: [{n,1},
+           {min,1899380},
+           {max,1899380},
+           {med,1899380},
+           {mean,1899380.0},
+           {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+SumEuler: [{n,1},
+           {min,2001272},
+           {max,2001272},
+           {med,2001272},
+           {mean,2001272.0},
+           {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+SumEuler: [{n,1},
+           {min,1878766},
+           {max,1878766},
+           {med,1878766},
+           {mean,1878766.0},
+           {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+SumEuler: [{n,1},
+           {min,1954191},
+           {max,1954191},
+           {med,1954191},
+           {mean,1954191.0},
+           {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+SumEuler: [{n,1},
+           {min,2018093},
+           {max,2018093},
+           {med,2018093},
+           {mean,2018093.0},
+           {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+SumEuler: [{n,1},
+           {min,1348403},
+           {max,1348403},
+           {med,1348403},
+           {mean,1348403.0},
+           {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+SumEuler: [{n,1},
+           {min,1259386},
+           {max,1259386},
+           {med,1259386},
+           {mean,1259386.0},
+           {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+SumEuler: [{n,1},
+           {min,1253668},
+           {max,1253668},
+           {med,1253668},
+           {mean,1253668.0},
+           {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+SumEuler: [{n,1},
+           {min,1253393},
+           {max,1253393},
+           {med,1253393},
+           {mean,1253393.0},
+           {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+SumEuler: [{n,1},
+           {min,1335107},
+           {max,1335107},
+           {med,1335107},
+           {mean,1335107.0},
+           {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+SumEuler: [{n,1},
+           {min,1002493},
+           {max,1002493},
+           {med,1002493},
+           {mean,1002493.0},
+           {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+SumEuler: [{n,1},
+           {min,947764},
+           {max,947764},
+           {med,947764},
+           {mean,947764.0},
+           {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+SumEuler: [{n,1},
+           {min,997408},
+           {max,997408},
+           {med,997408},
+           {mean,997408.0},
+           {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+SumEuler: [{n,1},
+           {min,1007048},
+           {max,1007048},
+           {med,1007048},
+           {mean,1007048.0},
+           {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+SumEuler: [{n,1},
+           {min,1173091},
+           {max,1173091},
+           {med,1173091},
+           {mean,1173091.0},
+           {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+SumEuler: [{n,1},
+           {min,887955},
+           {max,887955},
+           {med,887955},
+           {mean,887955.0},
+           {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+SumEuler: [{n,1},
+           {min,829228},
+           {max,829228},
+           {med,829228},
+           {mean,829228.0},
+           {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+SumEuler: [{n,1},
+           {min,746046},
+           {max,746046},
+           {med,746046},
+           {mean,746046.0},
+           {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+SumEuler: [{n,1},
+           {min,852132},
+           {max,852132},
+           {med,852132},
+           {mean,852132.0},
+           {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+SumEuler: [{n,1},
+           {min,808481},
+           {max,808481},
+           {med,808481},
+           {mean,808481.0},
+           {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+SumEuler: [{n,1},
+           {min,785194},
+           {max,785194},
+           {med,785194},
+           {mean,785194.0},
+           {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+SumEuler: [{n,1},
+           {min,762240},
+           {max,762240},
+           {med,762240},
+           {mean,762240.0},
+           {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+SumEuler: [{n,1},
+           {min,709770},
+           {max,709770},
+           {med,709770},
+           {mean,709770.0},
+           {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+SumEuler: [{n,1},
+           {min,696487},
+           {max,696487},
+           {med,696487},
+           {mean,696487.0},
+           {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+SumEuler: [{n,1},
+           {min,737632},
+           {max,737632},
+           {med,737632},
+           {mean,737632.0},
+           {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+SumEuler: [{n,1},
+           {min,545030},
+           {max,545030},
+           {med,545030},
+           {mean,545030.0},
+           {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+SumEuler: [{n,1},
+           {min,655408},
+           {max,655408},
+           {med,655408},
+           {mean,655408.0},
+           {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+SumEuler: [{n,1},
+           {min,607121},
+           {max,607121},
+           {med,607121},
+           {mean,607121.0},
+           {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+SumEuler: [{n,1},
+           {min,583894},
+           {max,583894},
+           {med,583894},
+           {mean,583894.0},
+           {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+SumEuler: [{n,1},
+           {min,668988},
+           {max,668988},
+           {med,668988},
+           {mean,668988.0},
+           {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+SumEuler: [{n,1},
+           {min,624775},
+           {max,624775},
+           {med,624775},
+           {mean,624775.0},
+           {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+SumEuler: [{n,1},
+           {min,556689},
+           {max,556689},
+           {med,556689},
+           {mean,556689.0},
+           {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+SumEuler: [{n,1},
+           {min,622423},
+           {max,622423},
+           {med,622423},
+           {mean,622423.0},
+           {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+SumEuler: [{n,1},
+           {min,596183},
+           {max,596183},
+           {med,596183},
+           {mean,596183.0},
+           {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+SumEuler: [{n,1},
+           {min,562096},
+           {max,562096},
+           {med,562096},
+           {mean,562096.0},
+           {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+SumEuler: [{n,1},
+           {min,550723},
+           {max,550723},
+           {med,550723},
+           {mean,550723.0},
+           {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+SumEuler: [{n,1},
+           {min,558198},
+           {max,558198},
+           {med,558198},
+           {mean,558198.0},
+           {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+SumEuler: [{n,1},
+           {min,570565},
+           {max,570565},
+           {med,570565},
+           {mean,570565.0},
+           {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+SumEuler: [{n,1},
+           {min,546389},
+           {max,546389},
+           {med,546389},
+           {mean,546389.0},
+           {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+SumEuler: [{n,1},
+           {min,544443},
+           {max,544443},
+           {med,544443},
+           {mean,544443.0},
+           {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+SumEuler: [{n,1},
+           {min,514091},
+           {max,514091},
+           {med,514091},
+           {mean,514091.0},
+           {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+SumEuler: [{n,1},
+           {min,497839},
+           {max,497839},
+           {med,497839},
+           {mean,497839.0},
+           {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+SumEuler: [{n,1},
+           {min,523421},
+           {max,523421},
+           {med,523421},
+           {mean,523421.0},
+           {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+SumEuler: [{n,1},
+           {min,522675},
+           {max,522675},
+           {med,522675},
+           {mean,522675.0},
+           {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+SumEuler: [{n,1},
+           {min,535960},
+           {max,535960},
+           {med,535960},
+           {mean,535960.0},
+           {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+SumEuler: [{n,1},
+           {min,482653},
+           {max,482653},
+           {med,482653},
+           {mean,482653.0},
+           {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+SumEuler: [{n,1},
+           {min,481072},
+           {max,481072},
+           {med,481072},
+           {mean,481072.0},
+           {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+SumEuler: [{n,1},
+           {min,486555},
+           {max,486555},
+           {med,486555},
+           {mean,486555.0},
+           {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+SumEuler: [{n,1},
+           {min,487421},
+           {max,487421},
+           {med,487421},
+           {mean,487421.0},
+           {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+SumEuler: [{n,1},
+           {min,446948},
+           {max,446948},
+           {med,446948},
+           {mean,446948.0},
+           {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+SumEuler: [{n,1},
+           {min,460709},
+           {max,460709},
+           {med,460709},
+           {mean,460709.0},
+           {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+SumEuler: [{n,1},
+           {min,449584},
+           {max,449584},
+           {med,449584},
+           {mean,449584.0},
+           {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+SumEuler: [{n,1},
+           {min,463169},
+           {max,463169},
+           {med,463169},
+           {mean,463169.0},
+           {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+SumEuler: [{n,1},
+           {min,455451},
+           {max,455451},
+           {med,455451},
+           {mean,455451.0},
+           {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+SumEuler: [{n,1},
+           {min,463357},
+           {max,463357},
+           {med,463357},
+           {mean,463357.0},
+           {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+SumEuler: [{n,1},
+           {min,430768},
+           {max,430768},
+           {med,430768},
+           {mean,430768.0},
+           {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+SumEuler: [{n,1},
+           {min,420645},
+           {max,420645},
+           {med,420645},
+           {mean,420645.0},
+           {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+SumEuler: [{n,1},
+           {min,425229},
+           {max,425229},
+           {med,425229},
+           {mean,425229.0},
+           {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+SumEuler: [{n,1},
+           {min,429062},
+           {max,429062},
+           {med,429062},
+           {mean,429062.0},
+           {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+SumEuler: [{n,1},
+           {min,425335},
+           {max,425335},
+           {med,425335},
+           {mean,425335.0},
+           {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+SumEuler: [{n,1},
+           {min,399260},
+           {max,399260},
+           {med,399260},
+           {mean,399260.0},
+           {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+SumEuler: [{n,1},
+           {min,389317},
+           {max,389317},
+           {med,389317},
+           {mean,389317.0},
+           {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+SumEuler: [{n,1},
+           {min,399410},
+           {max,399410},
+           {med,399410},
+           {mean,399410.0},
+           {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+SumEuler: [{n,1},
+           {min,405438},
+           {max,405438},
+           {med,405438},
+           {mean,405438.0},
+           {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+SumEuler: [{n,1},
+           {min,403280},
+           {max,403280},
+           {med,403280},
+           {mean,403280.0},
+           {std_dev,0.0}]
+Done with examples on 28 cores.
+------
