@@ -139,6 +139,7 @@ mutual
       "zipIt" => "lists:zip"
       "app" => "lists:append"
       "S" => "utils:s"
+      "rem" => "rem"
 
       fn => "?MODULE:" ++ fn
 
@@ -483,8 +484,8 @@ genEPatsTop env (PRef fc n) = do
 genEPatsTop env (PApp fc (PRef _ nm) (PRef _ nm2)) = do 
   "msg" <- getNameStrFrmName env nm 
     | n => do  
-           -- nm1 <- getNameStrFrmName env nm
-              pure ([],env)
+              nm2' <- getNameStrFrmName env nm2
+              pure ([EPVar (toEVarName nm2')], (nm2', nm2') :: env)
   nm2 <- getNameStrFrmName env nm2 
   pure ([EPPair [EPVar "msg"] [EPVar (toEVarName nm2)] ], (nm2,nm2) :: env)
             -- pure ([EPVar "0"], ("Z","0") :: env)
@@ -707,9 +708,9 @@ main = do
   -- let fName = "ParseEx.idr"
   -- let fName = "SumEuler.idr"
 
-  let fName = "ParSkel.idr"
+  -- let fName = "ParSkel.idr"
 
-  -- let fName = "ParSumEuler.idr"
+  let fName = "ParSumEuler2.idr"
 
   -- let fName = "MatMul.idr"
 
@@ -717,8 +718,8 @@ main = do
 
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParseEx")
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "SumEuler")
-  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSkel")
-  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSumEuler")
+  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSkel")
+  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSumEuler2")
 
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "MatMul")
 

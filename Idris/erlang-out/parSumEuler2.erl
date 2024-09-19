@@ -101,5 +101,11 @@ farm4RR ( Nw , Input )  ->
         Res =   ?MODULE:spawnN( 0  , Nw  , msgt  , msgt  , pRR  ) ,
         ?MODULE:roundRobin( msgt  , Input  ,  ( ?MODULE:convertChansRR( Res  )  )  ) ,
         Msgs =  ?MODULE:roundRobinRec(  ( length( Input  )  )  ,  ( ?MODULE:inChans( Res  )  )  ) ,
-        Msgs
+        lists:sum(Msgs)
 .
+
+run( Nw, Size) ->
+      erlang:system_flag(schedulers_online, Nw),
+      L = ?MODULE:mkList(Size),
+      io:format("SumEuler: ~p~n", [sk_profile:benchmark(fun ?MODULE:farm4RR/2, [Nw, L], 1)]),
+      io:format("Done with examples on ~p cores.~n------~n", [X]).
