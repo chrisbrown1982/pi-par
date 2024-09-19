@@ -1,4 +1,4 @@
-module ParMatMul
+module ParQueens
 
 import ParLib
 
@@ -9,7 +9,7 @@ import public Decidable.Equality
 
 data MsgT : Type where 
       MEnd : MsgT 
-      Msg :  (List Nat) -> MsgT
+      Msg :  Nat -> MsgT
 
 
 public export
@@ -132,8 +132,6 @@ test =
         v <- Recv Nat (sChan c)
         Halt
 
-
-
 convertChans : (t : Type) 
             -> Vect len (m : Nat ** (OutChan m, InChan (S m)))
             -> (msgs : Vect len t)
@@ -153,63 +151,49 @@ inChans : Vect len (m : Nat ** (OutChan m, InChan (S m))) -> Vect len (n : Nat *
 inChans [] = []
 inChans ((m ** i)::chs) = ((S m) ** sChan i) :: inChans chs
 
-
-
 hd : List a -> a 
+andB : Bool -> Bool -> Bool
+zipIt : List Nat -> List Nat -> List (Nat, Nat)
+app : List Nat -> List Nat -> List Nat
 
-tl : List a -> List a
+check : (Nat, Nat) -> (Nat,Nat) -> Bool 
+check (c,l) (i,j) = (l == j) || ((c+l) == (i+j)) || ((minus c l) == (minus i j))
 
-zip1 : List a -> List a -> List (a, a)
+safe : List Nat -> Nat -> Bool 
+safe p n = 
+    foldr andB True ([ not (check (i,j) (length p + 1,n)) | (i,j) <- (zipIt [1..length p]  p)])
 
-transpose1 : List (List a) -> List (List a)
-transpose1 ( [] :: n) = [] 
-transpose1 b = 
-    ( map (\x => hd x) b) :: transpose1 (map (\x => tl x) b)
+rainhas2 : Nat -> Nat -> Nat -> List (List Nat)
+rainhas2 Z linha numero = [[]]
+rainhas2 m linha numero = 
+    [ app p [n] | p <- rainhas2 (minus m 1) linha numero, n <- ([linha .. numero] ++ [1..minus linha 1]), safe p n]
 
-red : Nat -> (Nat,Nat) -> Nat 
-red sum pair = 
-    (fst pair) * (snd pair) + sum 
+prainhas : Nat -> Nat -> List (List Nat)
+prainhas numero linha = rainhas2 numero linha numero 
 
-dot_product : List Nat -> List Nat -> Nat 
-dot_product a b = 
-    foldl red 0 (zip1 a b)
+search : Nat -> Nat -> List (List Nat)
+search numero n = takeWhile (\a => hd a == n) (prainhas numero n)
 
-multiply_row_by_col : List Nat -> List (List Nat) -> (List Nat) 
-multiply_row_by_col row [] = []
-multiply_row_by_col row (col_head :: col_rest) = 
-    (dot_product row col_head) :: (multiply_row_by_col row col_rest)
+rainhas : Nat -> List (List (List Nat))
+rainhas n = map (\x => search n x) [1..n]
 
-multiply_internal : List (List Nat) -> List (List Nat) -> List (List Nat)
-multiply_internal [] b = [] 
-multiply_internal (head::rest) b = 
-    (multiply_row_by_col head b) :: (multiply_internal rest b) 
-
-multiply : List (List Nat) -> List (List Nat) -> List (List Nat)
-multiply a b = multiply_internal a (transpose1 b)
-
-mkMsg : List (List Nat) -> List MsgT
-mkMsg [] = [MEnd]
-mkMsg (x::xs) = (Msg x) :: mkMsg xs
-
-pRR :  List (List Nat)
-    -> (pIn : InChan Z)
+pRR :  (pIn : InChan Z)
     -> (pOut : OutChan (S Z))
     -> Spawned {m = ProcessM} MsgT MsgT
-pRR matB pIn pOut = do
+pRR pIn pOut = do
         x <- Recv MsgT pIn
         case x of 
-            Msg m => do Send pOut (multiply_internal m matB)
-                        y <- pRR matB pIn pOut 
+            Msg m => do Send pOut (search 5 m)
+                        y <- pRR pIn pOut 
                         Pure ()
             MEnd => Halt
                                                                   
 farm4RR : (nW : Nat)
       ->  (input : Vect 4 MsgT)
-      -> List (List Nat)
       ->  ProcessM (List MsgT) (Live []) End
-farm4RR nw input matBT = 
+farm4RR nw input = 
     do
-        res <- spawnN 0 4 MsgT MsgT (pRR matBT)
+        res <- spawnN 0 4 MsgT MsgT pRR
         roundRobin MsgT input (convertChansRR res)
         msgs <- roundRobinRec (minus (length input) 1) (inChans res)
         Return msgs
