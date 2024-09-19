@@ -21,3 +21,8 @@ search ( Numero , N )  ->
 rainhas ( N )  -> 
 	lists:map(  ( fun ( X ) -> ?MODULE:search( N  , X  )  end  )  , lists:seq( 1  , N  )  ) .
 
+run(N) ->
+          io:format("Queens: ~p~n", [sk_profile:benchmark(fun ?MODULE:rainhas/1, [N], 1)]),
+          io:format("finished~n").
+
+

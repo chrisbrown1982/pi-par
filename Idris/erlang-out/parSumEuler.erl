@@ -1,4 +1,4 @@
--module(example3).
+-module(parSumEuler).
 -compile(export_all).
 spawnN ( N , 0 , ToTy , FrmTy , P )  -> 
 	[];
@@ -46,7 +46,7 @@ inChans ( ([{M,I}|Chs]) )  ->
 	[	{ ( M  + 1  ) ,I } | 	?MODULE:inChans( Chs  ) ].
 
 farm4 ( InTy , OutTy , Nw , W , Input )  -> 
-	Res = 	?MODULE:spawnN( 4  , InTy  , OutTy  , W  ) ,
+	Res = 	?MODULE:spawnN( Nw  , InTy  , OutTy  , W  ) ,
 	?MODULE:sendN(  ( ?MODULE:convertChans( InTy  , Res  , Input  )  )  ) ,
 	Msgs = 	?MODULE:recN( OutTy  ,  ( ?MODULE:inChans( Res  )  )  ) ,
 	Msgs .
@@ -95,10 +95,16 @@ worker ( PIn , POut )  ->
 		halt 
 	end.
 
-farmTest (  )  -> 
-	Res = 	?MODULE:spawnN( 0  , 4  , nat  , nat  , worker  ) ,
+farmTest (Nw, Size  )  -> 
+	Res = 	?MODULE:spawnN( 0  , Nw  , nat  , nat  , eW  ) ,
    % L =  utils:n_length_chunks(  ( ?MODULE:mkList( 10000  )  )  , 2500 ) ,
-	?MODULE:sendN(  ( ?MODULE:convertChans( nat  , Res  ,   [[35],[35],[35],[35]] )  )  ) ,
+        L = utils:unshuffle(Nw, ?MODULE:mkList(Size)),
+	?MODULE:sendN(  ( ?MODULE:convertChans( nat  , Res  , L )  )  ) ,
 	Msgs = 	?MODULE:recN( nat  ,  ( ?MODULE:inChans( Res  )  )  ) ,
 	% io:format("~w", [Msgs]).
     Msgs. 
+
+run_examples(X, Y) ->
+  erlang:system_flag(schedulers_online, X),
+  io:format("SumEuler: ~p~n", [sk_profile:benchmark(fun ?MODULE:farmTest/2, [X,Y], 1)]),
+  io:format("Done with examples on ~p cores.~n------~n", [X]).
