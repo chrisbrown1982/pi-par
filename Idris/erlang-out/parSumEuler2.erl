@@ -1,4 +1,4 @@
--module(rr).
+-module(parSumEuler2).
 -compile(export_all).
 
 spawnN ( N , 0 , ToTy , FrmTy , P )  ->
@@ -104,7 +104,7 @@ farm4RR ( Nw , Input )  ->
         lists:sum(Msgs)
 .
 
-run( Nw, Size) ->
+run_examples( Nw, Size) ->
       erlang:system_flag(schedulers_online, Nw),
       L = ?MODULE:mkList(Size),
       io:format("SumEuler: ~p~n", [sk_profile:benchmark(fun ?MODULE:farm4RR/2, [Nw, L], 1)]),
