@@ -15,7 +15,11 @@ sendN ( ([{M,{T,{C,Msg}}}|Cs]) )  ->
         ?MODULE:sendN( Cs  ) ,
         {}
 .
-roundRobin ( MsgT , [] , Y )  ->
+roundRobin ( MsgT , [] , [] )  ->
+        {};
+roundRobin ( MsgT , [] , ([{M,C}|Chs]) )  ->
+        C  ! mend ,
+        ?MODULE:roundRobin( msgt  , [] , Chs  ) ,
         {};
 roundRobin ( MsgT , ([M|Ms]) , [] )  ->
         {};
@@ -81,6 +85,11 @@ relPrime ( X , Y )  ->
 mkList ( N )  ->
         lists:seq(      1  ,    N  )
 .
+mkMsg ( [] )  ->
+        [mend ];
+mkMsg ( ([X|Xs]) )  ->
+        [{msg ,X } | ?MODULE:mkMsg( Xs  ) ]
+.
 euler ( N )  ->
         length(  ( lists:filter(  ( fun ( X ) -> ?MODULE:relPrime( N  , X  )  end  )  ,  ( ?MODULE:mkList( N  )  )  )  )  )
 .
@@ -90,22 +99,26 @@ sumEuler ( N )  ->
 pRR ( PIn , POut )  ->
         receive
                 X -> case X of
-         ( M )  ->
+         ( {msg,M} )  ->
         POut  !  ( ?MODULE:euler( M  )  ) ,
         Y =     ?MODULE:pRR( PIn  , POut  ) ,
-        {}
+        {};
+         ( mend )  ->
+         io:fwrite("ending...~n"),
+        eos
 end
         end
 .
 farm4RR ( Nw , Input )  ->
         Res =   ?MODULE:spawnN( 0  , Nw  , msgt  , msgt  , pRR  ) ,
         ?MODULE:roundRobin( msgt  , Input  ,  ( ?MODULE:convertChansRR( Res  )  )  ) ,
-        Msgs =  ?MODULE:roundRobinRec(  ( length( Input  )  )  ,  ( ?MODULE:inChans( Res  )  )  ) ,
-        lists:sum(Msgs)
+        Msgs =  ?MODULE:roundRobinRec(  ( length( Input  ) - 1 )  ,  ( ?MODULE:inChans( Res  )  )  ) ,
+        Msgs
 .
+
 
 run_examples( Nw, Size) ->
       erlang:system_flag(schedulers_online, Nw),
-      L = ?MODULE:mkList(Size),
+      L = ?MODULE:mkMsg(?MODULE:mkList(Size)),
       io:format("SumEuler: ~p~n", [sk_profile:benchmark(fun ?MODULE:farm4RR/2, [Nw, L], 1)]),
       io:format("Done with examples on ~p cores.~n------~n", [Nw]).
