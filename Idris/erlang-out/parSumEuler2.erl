@@ -104,7 +104,6 @@ pRR ( PIn , POut )  ->
         Y =     ?MODULE:pRR( PIn  , POut  ) ,
         {};
          ( mend )  ->
-         io:fwrite("ending...~n"),
         eos
 end
         end
@@ -113,7 +112,7 @@ farm4RR ( Nw , Input )  ->
         Res =   ?MODULE:spawnN( 0  , Nw  , msgt  , msgt  , pRR  ) ,
         ?MODULE:roundRobin( msgt  , Input  ,  ( ?MODULE:convertChansRR( Res  )  )  ) ,
         Msgs =  ?MODULE:roundRobinRec(  ( length( Input  ) - 1 )  ,  ( ?MODULE:inChans( Res  )  )  ) ,
-        Msgs
+        lists:sum(Msgs)
 .
 
 
