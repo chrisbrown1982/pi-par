@@ -117,3 +117,9 @@ farm4RR ( Nw , Size )  ->
         Msgs =  ?MODULE:roundRobinRec(  ( utils:minus(  Size    , 1  )  )  ,  ( ?MODULE:inChans( Res  )  )  ) ,
         Msgs
 .
+
+run(Nw, Size) ->
+	erlang:system_flag(schedulers_online, Nw),
+	io:format("Queens: ~p~n", [sk_profile:benchmark(fun ?MODULE:farm4RR/2, [Nw, Size], 1)]),
+	io:format("Done with examples on ~p cores.~n--------~n", [Nw]).
+
