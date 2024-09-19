@@ -132,6 +132,7 @@ mutual
       "||" => "or"
       "==" => "=="
       "+" => "+"
+      "*" => "*"
       "foldr" => "lists:foldr"
       "takeWhile" => "lists:takewhile"
       "minus" => "utils:minus"
@@ -710,18 +711,18 @@ main = do
 
   -- let fName = "ParSkel.idr"
 
-  let fName = "ParSumEuler2.idr"
+  -- let fName = "ParSumEuler2.idr"
 
-  -- let fName = "MatMul.idr"
+  let fName = "ParMatMul.idr"
 
   -- let fName = "Queens2.idr"
 
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParseEx")
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "SumEuler")
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSkel")
-  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSumEuler2")
+  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSumEuler2")
 
-  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "MatMul")
+  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParMatMul")
 
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "Queens2")
 
