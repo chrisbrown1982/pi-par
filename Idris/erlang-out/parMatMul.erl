@@ -120,3 +120,13 @@ farm4RR ( Nw , Input , MatBT )  ->
         Msgs =  ?MODULE:roundRobinRec(  ( utils:minus(  ( length( Input  )  )  , 1  )  )  ,  ( ?MODULE:inChans( Res  )  )  ) ,
         Msgs
 .
+
+
+run( Nw, Size) ->
+	erlang:system_flag(schedulers_online, Nw),
+	MatA =  parMatMul:mkMsg(lists:duplicate(100, lists:seq(1,100))),
+	MatB = parMatMul:transpose1(lists:duplicate(100, lists:seq(1,100))),
+	io:format("MatMul ~p~n", [sk_profile:benchmark(fun ?MODULE:farm4RR/3, [Nw, MatA, MatB], 1)]),
+	io:format("Done with examples on ~p cores.~n--------~n", [Nw]).
+
+
