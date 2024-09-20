@@ -1,0 +1,2 @@
+erl -pa erl_img2/erl_img2/erl_img/_build/default/lib/erl_img/ebin/ ../../../../skel/ebin/
+
