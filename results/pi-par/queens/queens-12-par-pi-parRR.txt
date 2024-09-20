@@ -1,0 +1,560 @@
+Queens: [{n,1},
+         {min,74576045},
+         {max,74576045},
+         {med,74576045},
+         {mean,74576045.0},
+         {std_dev,0.0}]
+Done with examples on 2 cores.
+--------
+Queens: [{n,1},
+         {min,73358408},
+         {max,73358408},
+         {med,73358408},
+         {mean,73358408.0},
+         {std_dev,0.0}]
+Done with examples on 2 cores.
+--------
+Queens: [{n,1},
+         {min,75197329},
+         {max,75197329},
+         {med,75197329},
+         {mean,75197329.0},
+         {std_dev,0.0}]
+Done with examples on 2 cores.
+--------
+Queens: [{n,1},
+         {min,71378711},
+         {max,71378711},
+         {med,71378711},
+         {mean,71378711.0},
+         {std_dev,0.0}]
+Done with examples on 2 cores.
+--------
+Queens: [{n,1},
+         {min,75432419},
+         {max,75432419},
+         {med,75432419},
+         {mean,75432419.0},
+         {std_dev,0.0}]
+Done with examples on 2 cores.
+--------
+Queens: [{n,1},
+         {min,42772388},
+         {max,42772388},
+         {med,42772388},
+         {mean,42772388.0},
+         {std_dev,0.0}]
+Done with examples on 4 cores.
+--------
+Queens: [{n,1},
+         {min,41580101},
+         {max,41580101},
+         {med,41580101},
+         {mean,41580101.0},
+         {std_dev,0.0}]
+Done with examples on 4 cores.
+--------
+Queens: [{n,1},
+         {min,40818453},
+         {max,40818453},
+         {med,40818453},
+         {mean,40818453.0},
+         {std_dev,0.0}]
+Done with examples on 4 cores.
+--------
+Queens: [{n,1},
+         {min,40663600},
+         {max,40663600},
+         {med,40663600},
+         {mean,4.06636e7},
+         {std_dev,0.0}]
+Done with examples on 4 cores.
+--------
+Queens: [{n,1},
+         {min,41809125},
+         {max,41809125},
+         {med,41809125},
+         {mean,41809125.0},
+         {std_dev,0.0}]
+Done with examples on 4 cores.
+--------
+Queens: [{n,1},
+         {min,35182015},
+         {max,35182015},
+         {med,35182015},
+         {mean,35182015.0},
+         {std_dev,0.0}]
+Done with examples on 6 cores.
+--------
+Queens: [{n,1},
+         {min,32972908},
+         {max,32972908},
+         {med,32972908},
+         {mean,32972908.0},
+         {std_dev,0.0}]
+Done with examples on 6 cores.
+--------
+Queens: [{n,1},
+         {min,29033858},
+         {max,29033858},
+         {med,29033858},
+         {mean,29033858.0},
+         {std_dev,0.0}]
+Done with examples on 6 cores.
+--------
+Queens: [{n,1},
+         {min,28801165},
+         {max,28801165},
+         {med,28801165},
+         {mean,28801165.0},
+         {std_dev,0.0}]
+Done with examples on 6 cores.
+--------
+Queens: [{n,1},
+         {min,28529337},
+         {max,28529337},
+         {med,28529337},
+         {mean,28529337.0},
+         {std_dev,0.0}]
+Done with examples on 6 cores.
+--------
+Queens: [{n,1},
+         {min,34653111},
+         {max,34653111},
+         {med,34653111},
+         {mean,34653111.0},
+         {std_dev,0.0}]
+Done with examples on 8 cores.
+--------
+Queens: [{n,1},
+         {min,35364621},
+         {max,35364621},
+         {med,35364621},
+         {mean,35364621.0},
+         {std_dev,0.0}]
+Done with examples on 8 cores.
+--------
+Queens: [{n,1},
+         {min,32952050},
+         {max,32952050},
+         {med,32952050},
+         {mean,32952050.0},
+         {std_dev,0.0}]
+Done with examples on 8 cores.
+--------
+Queens: [{n,1},
+         {min,34320549},
+         {max,34320549},
+         {med,34320549},
+         {mean,34320549.0},
+         {std_dev,0.0}]
+Done with examples on 8 cores.
+--------
+Queens: [{n,1},
+         {min,33952248},
+         {max,33952248},
+         {med,33952248},
+         {mean,33952248.0},
+         {std_dev,0.0}]
+Done with examples on 8 cores.
+--------
+Queens: [{n,1},
+         {min,36296010},
+         {max,36296010},
+         {med,36296010},
+         {mean,36296010.0},
+         {std_dev,0.0}]
+Done with examples on 10 cores.
+--------
+Queens: [{n,1},
+         {min,38288139},
+         {max,38288139},
+         {med,38288139},
+         {mean,38288139.0},
+         {std_dev,0.0}]
+Done with examples on 10 cores.
+--------
+Queens: [{n,1},
+         {min,28324317},
+         {max,28324317},
+         {med,28324317},
+         {mean,28324317.0},
+         {std_dev,0.0}]
+Done with examples on 10 cores.
+--------
+Queens: [{n,1},
+         {min,37109835},
+         {max,37109835},
+         {med,37109835},
+         {mean,37109835.0},
+         {std_dev,0.0}]
+Done with examples on 10 cores.
+--------
+Queens: [{n,1},
+         {min,36713691},
+         {max,36713691},
+         {med,36713691},
+         {mean,36713691.0},
+         {std_dev,0.0}]
+Done with examples on 10 cores.
+--------
+Queens: [{n,1},
+         {min,28136633},
+         {max,28136633},
+         {med,28136633},
+         {mean,28136633.0},
+         {std_dev,0.0}]
+Done with examples on 12 cores.
+--------
+Queens: [{n,1},
+         {min,28688389},
+         {max,28688389},
+         {med,28688389},
+         {mean,28688389.0},
+         {std_dev,0.0}]
+Done with examples on 12 cores.
+--------
+Queens: [{n,1},
+         {min,28185472},
+         {max,28185472},
+         {med,28185472},
+         {mean,28185472.0},
+         {std_dev,0.0}]
+Done with examples on 12 cores.
+--------
+Queens: [{n,1},
+         {min,27855942},
+         {max,27855942},
+         {med,27855942},
+         {mean,27855942.0},
+         {std_dev,0.0}]
+Done with examples on 12 cores.
+--------
+Queens: [{n,1},
+         {min,23774248},
+         {max,23774248},
+         {med,23774248},
+         {mean,23774248.0},
+         {std_dev,0.0}]
+Done with examples on 12 cores.
+--------
+Queens: [{n,1},
+         {min,28456081},
+         {max,28456081},
+         {med,28456081},
+         {mean,28456081.0},
+         {std_dev,0.0}]
+Done with examples on 14 cores.
+--------
+Queens: [{n,1},
+         {min,17676887},
+         {max,17676887},
+         {med,17676887},
+         {mean,17676887.0},
+         {std_dev,0.0}]
+Done with examples on 14 cores.
+--------
+Queens: [{n,1},
+         {min,17928635},
+         {max,17928635},
+         {med,17928635},
+         {mean,17928635.0},
+         {std_dev,0.0}]
+Done with examples on 14 cores.
+--------
+Queens: [{n,1},
+         {min,23662380},
+         {max,23662380},
+         {med,23662380},
+         {mean,23662380.0},
+         {std_dev,0.0}]
+Done with examples on 14 cores.
+--------
+Queens: [{n,1},
+         {min,29310876},
+         {max,29310876},
+         {med,29310876},
+         {mean,29310876.0},
+         {std_dev,0.0}]
+Done with examples on 14 cores.
+--------
+Queens: [{n,1},
+         {min,29168914},
+         {max,29168914},
+         {med,29168914},
+         {mean,29168914.0},
+         {std_dev,0.0}]
+Done with examples on 16 cores.
+--------
+Queens: [{n,1},
+         {min,28802130},
+         {max,28802130},
+         {med,28802130},
+         {mean,28802130.0},
+         {std_dev,0.0}]
+Done with examples on 16 cores.
+--------
+Queens: [{n,1},
+         {min,28563495},
+         {max,28563495},
+         {med,28563495},
+         {mean,28563495.0},
+         {std_dev,0.0}]
+Done with examples on 16 cores.
+--------
+Queens: [{n,1},
+         {min,28943530},
+         {max,28943530},
+         {med,28943530},
+         {mean,28943530.0},
+         {std_dev,0.0}]
+Done with examples on 16 cores.
+--------
+Queens: [{n,1},
+         {min,28869536},
+         {max,28869536},
+         {med,28869536},
+         {mean,28869536.0},
+         {std_dev,0.0}]
+Done with examples on 16 cores.
+--------
+Queens: [{n,1},
+         {min,30099524},
+         {max,30099524},
+         {med,30099524},
+         {mean,30099524.0},
+         {std_dev,0.0}]
+Done with examples on 18 cores.
+--------
+Queens: [{n,1},
+         {min,28325593},
+         {max,28325593},
+         {med,28325593},
+         {mean,28325593.0},
+         {std_dev,0.0}]
+Done with examples on 18 cores.
+--------
+Queens: [{n,1},
+         {min,28782272},
+         {max,28782272},
+         {med,28782272},
+         {mean,28782272.0},
+         {std_dev,0.0}]
+Done with examples on 18 cores.
+--------
+Queens: [{n,1},
+         {min,28486684},
+         {max,28486684},
+         {med,28486684},
+         {mean,28486684.0},
+         {std_dev,0.0}]
+Done with examples on 18 cores.
+--------
+Queens: [{n,1},
+         {min,29007839},
+         {max,29007839},
+         {med,29007839},
+         {mean,29007839.0},
+         {std_dev,0.0}]
+Done with examples on 18 cores.
+--------
+Queens: [{n,1},
+         {min,29357016},
+         {max,29357016},
+         {med,29357016},
+         {mean,29357016.0},
+         {std_dev,0.0}]
+Done with examples on 20 cores.
+--------
+Queens: [{n,1},
+         {min,24660612},
+         {max,24660612},
+         {med,24660612},
+         {mean,24660612.0},
+         {std_dev,0.0}]
+Done with examples on 20 cores.
+--------
+Queens: [{n,1},
+         {min,24294079},
+         {max,24294079},
+         {med,24294079},
+         {mean,24294079.0},
+         {std_dev,0.0}]
+Done with examples on 20 cores.
+--------
+Queens: [{n,1},
+         {min,29081229},
+         {max,29081229},
+         {med,29081229},
+         {mean,29081229.0},
+         {std_dev,0.0}]
+Done with examples on 20 cores.
+--------
+Queens: [{n,1},
+         {min,29986950},
+         {max,29986950},
+         {med,29986950},
+         {mean,29986950.0},
+         {std_dev,0.0}]
+Done with examples on 20 cores.
+--------
+Queens: [{n,1},
+         {min,25023324},
+         {max,25023324},
+         {med,25023324},
+         {mean,25023324.0},
+         {std_dev,0.0}]
+Done with examples on 22 cores.
+--------
+Queens: [{n,1},
+         {min,28269973},
+         {max,28269973},
+         {med,28269973},
+         {mean,28269973.0},
+         {std_dev,0.0}]
+Done with examples on 22 cores.
+--------
+Queens: [{n,1},
+         {min,28977668},
+         {max,28977668},
+         {med,28977668},
+         {mean,28977668.0},
+         {std_dev,0.0}]
+Done with examples on 22 cores.
+--------
+Queens: [{n,1},
+         {min,31427026},
+         {max,31427026},
+         {med,31427026},
+         {mean,31427026.0},
+         {std_dev,0.0}]
+Done with examples on 22 cores.
+--------
+Queens: [{n,1},
+         {min,17597181},
+         {max,17597181},
+         {med,17597181},
+         {mean,17597181.0},
+         {std_dev,0.0}]
+Done with examples on 22 cores.
+--------
+Queens: [{n,1},
+         {min,18081521},
+         {max,18081521},
+         {med,18081521},
+         {mean,18081521.0},
+         {std_dev,0.0}]
+Done with examples on 24 cores.
+--------
+Queens: [{n,1},
+         {min,30085542},
+         {max,30085542},
+         {med,30085542},
+         {mean,30085542.0},
+         {std_dev,0.0}]
+Done with examples on 24 cores.
+--------
+Queens: [{n,1},
+         {min,17563065},
+         {max,17563065},
+         {med,17563065},
+         {mean,17563065.0},
+         {std_dev,0.0}]
+Done with examples on 24 cores.
+--------
+Queens: [{n,1},
+         {min,30237431},
+         {max,30237431},
+         {med,30237431},
+         {mean,30237431.0},
+         {std_dev,0.0}]
+Done with examples on 24 cores.
+--------
+Queens: [{n,1},
+         {min,17889263},
+         {max,17889263},
+         {med,17889263},
+         {mean,17889263.0},
+         {std_dev,0.0}]
+Done with examples on 24 cores.
+--------
+Queens: [{n,1},
+         {min,30503898},
+         {max,30503898},
+         {med,30503898},
+         {mean,30503898.0},
+         {std_dev,0.0}]
+Done with examples on 26 cores.
+--------
+Queens: [{n,1},
+         {min,27083052},
+         {max,27083052},
+         {med,27083052},
+         {mean,27083052.0},
+         {std_dev,0.0}]
+Done with examples on 26 cores.
+--------
+Queens: [{n,1},
+         {min,29887044},
+         {max,29887044},
+         {med,29887044},
+         {mean,29887044.0},
+         {std_dev,0.0}]
+Done with examples on 26 cores.
+--------
+Queens: [{n,1},
+         {min,29998992},
+         {max,29998992},
+         {med,29998992},
+         {mean,29998992.0},
+         {std_dev,0.0}]
+Done with examples on 26 cores.
+--------
+Queens: [{n,1},
+         {min,28389092},
+         {max,28389092},
+         {med,28389092},
+         {mean,28389092.0},
+         {std_dev,0.0}]
+Done with examples on 26 cores.
+--------
+Queens: [{n,1},
+         {min,27941768},
+         {max,27941768},
+         {med,27941768},
+         {mean,27941768.0},
+         {std_dev,0.0}]
+Done with examples on 28 cores.
+--------
+Queens: [{n,1},
+         {min,31129967},
+         {max,31129967},
+         {med,31129967},
+         {mean,31129967.0},
+         {std_dev,0.0}]
+Done with examples on 28 cores.
+--------
+Queens: [{n,1},
+         {min,18801566},
+         {max,18801566},
+         {med,18801566},
+         {mean,18801566.0},
+         {std_dev,0.0}]
+Done with examples on 28 cores.
+--------
+Queens: [{n,1},
+         {min,23777269},
+         {max,23777269},
+         {med,23777269},
+         {mean,23777269.0},
+         {std_dev,0.0}]
+Done with examples on 28 cores.
+--------
+Queens: [{n,1},
+         {min,28074009},
+         {max,28074009},
+         {med,28074009},
+         {mean,28074009.0},
+         {std_dev,0.0}]
+Done with examples on 28 cores.
+--------
