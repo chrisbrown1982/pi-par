@@ -709,22 +709,22 @@ main = do
   -- let fName = "ParseEx.idr"
   -- let fName = "SumEuler.idr"
 
-  -- let fName = "ParSkel.idr"
+  let fName = "ParSkel.idr"
 
   -- let fName = "ParSumEuler2.idr"
 
   -- let fName = "ParMatMul.idr"
 
-  let fName = "ParQueens.idr"
+  -- let fName = "ParQueens.idr"
 
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParseEx")
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "SumEuler")
-  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSkel")
+  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSkel")
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParSumEuler2")
 
   -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParMatMul")
 
-  let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParQueens")
+  -- let srcLoc = PhysicalIdrSrc (mkModuleIdent Nothing "ParQueens")
 
   Right rawSrc <- readFile fName
     | Left err => printLn err

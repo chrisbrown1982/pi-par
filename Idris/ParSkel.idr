@@ -13,7 +13,7 @@ data MsgT : Type where
 
 
 public export
-spawnN : {n : Nat}
+spawnN : (n : Nat)
       -> {chs : Vect n (t ** StChanTy t)}
       -> (num : Nat)
       -> (toTy : Type)
@@ -25,11 +25,11 @@ spawnN : {n : Nat}
             (Vect num (m ** (OutChan m, InChan (S m))))
             (Live chs)
             (SpawnSFN num chs toTy frmTy)
-spawnN Z toTy frmTy p = Pure []
-spawnN (S num) toTy frmTy p = 
+spawnN n Z toTy frmTy p = Pure []
+spawnN n (S num) toTy frmTy p = 
   do
     s <- Spawn toTy frmTy p 
-    r <- spawnN num toTy frmTy p 
+    r <- spawnN (n+2) num toTy frmTy p 
     Pure ((n ** s) :: r)
 
 
@@ -115,7 +115,7 @@ pipeMessages ((m ** inc) :: ics) ((m2 ** oc) :: ocs) =
          case m1 of 
             MEnd => do Send oc MEnd 
                        pipeMessages ics ocs 
-            Msg msg => do  Send oc msg
+            Msg msg => do  Send oc (Msg msg)
                            pipeMessages (ics ++ [(m ** inc)]) (ocs ++ [(m2 ** oc)])
         
 
@@ -184,7 +184,7 @@ farm4 : (inTy : Type)
    ->  ProcessM (List outTy) (Live []) End
 farm4 inTy outTy nw w input = 
     do
-        res <- spawnN 4 inTy outTy w
+        res <- spawnN 0 4 inTy outTy w
         sendN (convertChans inTy res input)
         msgs <- recNChan outTy (inChans res)
         Return msgs
@@ -210,11 +210,36 @@ farm4RR : (nW : MsgT)
    ->  ProcessM (List MsgT) (Live []) End
 farm4RR nw w input = 
     do
-        res <- spawnN 4 MsgT MsgT pRR
+        res <- spawnN 0 4 MsgT MsgT pRR
         roundRobin MsgT input (convertChansRR res) 
         msgs <- roundRobinRec (length input) (inChans res)
         Return msgs
 
+
+
+s1 :  (pIn : InChan Z)
+   -> (pOut : OutChan (S Z))
+   -> Spawned {m = ProcessM} MsgT MsgT
+s1 pIn pOut = do
+                 x <- Recv MsgT pIn
+                 case x of 
+                     MEnd => do -- Send pOut MEnd 
+                                 Send pOut MEnd 
+                                 Halt 
+                     Msg m => do Send pOut (Msg (m + 10))
+                                 y <- s1 pIn pOut 
+                                 Pure ()
+  
+s2 :  (pIn : InChan Z)
+   -> (pOut : OutChan (S Z))
+   -> Spawned {m = ProcessM} MsgT MsgT
+s2 pIn pOut = do
+                  x <- Recv MsgT pIn
+                  case x of 
+                        MEnd =>  do Halt 
+                        Msg m => do Send pOut (Msg (m + 10))
+                                    y <- s2 pIn pOut 
+                                    Pure ()
 
 pipe : (nW1 : Nat)
    ->  (s1 : (pIn : InChan Z)
@@ -227,8 +252,8 @@ pipe : (nW1 : Nat)
    ->  (input : Vect 4 MsgT)
    ->  ProcessM (List MsgT) (Live []) End
 pipe nW1 s1 nW2 s2 input = do
-      resS1 <- spawnN 4 MsgT MsgT s1
-      resS2 <- spawnN 4 MsgT MsgT s2 
+      resS1 <- spawnN 0 4 MsgT MsgT s1
+      resS2 <- spawnN 8 4 MsgT MsgT s2 
 
       roundRobin MsgT input (convertChansRR resS1)
 
