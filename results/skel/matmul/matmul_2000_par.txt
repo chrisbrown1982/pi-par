@@ -1,0 +1,490 @@
+MatMulPar : [{n,1},
+             {min,348630875},
+             {max,348630875},
+             {med,348630875},
+             {mean,348630875.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,348737329},
+             {max,348737329},
+             {med,348737329},
+             {mean,348737329.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,349804995},
+             {max,349804995},
+             {med,349804995},
+             {mean,349804995.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,345716102},
+             {max,345716102},
+             {med,345716102},
+             {mean,345716102.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,350276768},
+             {max,350276768},
+             {med,350276768},
+             {mean,350276768.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,181971722},
+             {max,181971722},
+             {med,181971722},
+             {mean,181971722.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,182955805},
+             {max,182955805},
+             {med,182955805},
+             {mean,182955805.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,181483590},
+             {max,181483590},
+             {med,181483590},
+             {mean,181483590.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,183529647},
+             {max,183529647},
+             {med,183529647},
+             {mean,183529647.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,197012383},
+             {max,197012383},
+             {med,197012383},
+             {mean,197012383.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,139110776},
+             {max,139110776},
+             {med,139110776},
+             {mean,139110776.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,137227096},
+             {max,137227096},
+             {med,137227096},
+             {mean,137227096.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,137170300},
+             {max,137170300},
+             {med,137170300},
+             {mean,1.371703e8},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,130359440},
+             {max,130359440},
+             {med,130359440},
+             {mean,130359440.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,135173996},
+             {max,135173996},
+             {med,135173996},
+             {mean,135173996.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,104872177},
+             {max,104872177},
+             {med,104872177},
+             {mean,104872177.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,104815581},
+             {max,104815581},
+             {med,104815581},
+             {mean,104815581.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,104711996},
+             {max,104711996},
+             {med,104711996},
+             {mean,104711996.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,104738768},
+             {max,104738768},
+             {med,104738768},
+             {mean,104738768.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,103730865},
+             {max,103730865},
+             {med,103730865},
+             {mean,103730865.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,83745840},
+             {max,83745840},
+             {med,83745840},
+             {mean,83745840.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,85578073},
+             {max,85578073},
+             {med,85578073},
+             {mean,85578073.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,85456537},
+             {max,85456537},
+             {med,85456537},
+             {mean,85456537.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,83894340},
+             {max,83894340},
+             {med,83894340},
+             {mean,83894340.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,84806423},
+             {max,84806423},
+             {med,84806423},
+             {mean,84806423.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,72003255},
+             {max,72003255},
+             {med,72003255},
+             {mean,72003255.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,71716031},
+             {max,71716031},
+             {med,71716031},
+             {mean,71716031.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,72329346},
+             {max,72329346},
+             {med,72329346},
+             {mean,72329346.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,71563718},
+             {max,71563718},
+             {med,71563718},
+             {mean,71563718.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,71346401},
+             {max,71346401},
+             {med,71346401},
+             {mean,71346401.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,63344918},
+             {max,63344918},
+             {med,63344918},
+             {mean,63344918.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,62764703},
+             {max,62764703},
+             {med,62764703},
+             {mean,62764703.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,62443775},
+             {max,62443775},
+             {med,62443775},
+             {mean,62443775.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,63266324},
+             {max,63266324},
+             {med,63266324},
+             {mean,63266324.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,62709564},
+             {max,62709564},
+             {med,62709564},
+             {mean,62709564.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,56395554},
+             {max,56395554},
+             {med,56395554},
+             {mean,56395554.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,55987276},
+             {max,55987276},
+             {med,55987276},
+             {mean,55987276.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,56146019},
+             {max,56146019},
+             {med,56146019},
+             {mean,56146019.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,56287998},
+             {max,56287998},
+             {med,56287998},
+             {mean,56287998.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,55951830},
+             {max,55951830},
+             {med,55951830},
+             {mean,55951830.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,50744946},
+             {max,50744946},
+             {med,50744946},
+             {mean,50744946.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,50665406},
+             {max,50665406},
+             {med,50665406},
+             {mean,50665406.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,51509871},
+             {max,51509871},
+             {med,51509871},
+             {mean,51509871.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,51264836},
+             {max,51264836},
+             {med,51264836},
+             {mean,51264836.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,50557262},
+             {max,50557262},
+             {med,50557262},
+             {mean,50557262.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,47093516},
+             {max,47093516},
+             {med,47093516},
+             {mean,47093516.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,47495958},
+             {max,47495958},
+             {med,47495958},
+             {mean,47495958.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,46873219},
+             {max,46873219},
+             {med,46873219},
+             {mean,46873219.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,47636280},
+             {max,47636280},
+             {med,47636280},
+             {mean,47636280.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,47297215},
+             {max,47297215},
+             {med,47297215},
+             {mean,47297215.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,43950177},
+             {max,43950177},
+             {med,43950177},
+             {mean,43950177.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,43908245},
+             {max,43908245},
+             {med,43908245},
+             {mean,43908245.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,44049048},
+             {max,44049048},
+             {med,44049048},
+             {mean,44049048.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,43844436},
+             {max,43844436},
+             {med,43844436},
+             {mean,43844436.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,43864421},
+             {max,43864421},
+             {med,43864421},
+             {mean,43864421.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,41680400},
+             {max,41680400},
+             {med,41680400},
+             {mean,4.16804e7},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,41432114},
+             {max,41432114},
+             {med,41432114},
+             {mean,41432114.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,41475588},
+             {max,41475588},
+             {med,41475588},
+             {mean,41475588.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,41537924},
+             {max,41537924},
+             {med,41537924},
+             {mean,41537924.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,41051491},
+             {max,41051491},
+             {med,41051491},
+             {mean,41051491.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,39796903},
+             {max,39796903},
+             {med,39796903},
+             {mean,39796903.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,39511022},
+             {max,39511022},
+             {med,39511022},
+             {mean,39511022.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,39423076},
+             {max,39423076},
+             {med,39423076},
+             {mean,39423076.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,38959008},
+             {max,38959008},
+             {med,38959008},
+             {mean,38959008.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,39426689},
+             {max,39426689},
+             {med,39426689},
+             {mean,39426689.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,37946980},
+             {max,37946980},
+             {med,37946980},
+             {mean,37946980.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,38263527},
+             {max,38263527},
+             {med,38263527},
+             {mean,38263527.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,38286714},
+             {max,38286714},
+             {med,38286714},
+             {mean,38286714.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,37869799},
+             {max,37869799},
+             {med,37869799},
+             {mean,37869799.0},
+             {std_dev,0.0}]
+Done
+MatMulPar : [{n,1},
+             {min,37906465},
+             {max,37906465},
+             {med,37906465},
+             {mean,37906465.0},
+             {std_dev,0.0}]
+Done
