@@ -1,0 +1,35 @@
+MatMulSeq: [{n,1},
+            {min,48133998},
+            {max,48133998},
+            {med,48133998},
+            {mean,48133998.0},
+            {std_dev,0.0}]
+Done
+MatMulSeq: [{n,1},
+            {min,48305415},
+            {max,48305415},
+            {med,48305415},
+            {mean,48305415.0},
+            {std_dev,0.0}]
+Done
+MatMulSeq: [{n,1},
+            {min,48903393},
+            {max,48903393},
+            {med,48903393},
+            {mean,48903393.0},
+            {std_dev,0.0}]
+Done
+MatMulSeq: [{n,1},
+            {min,48588935},
+            {max,48588935},
+            {med,48588935},
+            {mean,48588935.0},
+            {std_dev,0.0}]
+Done
+MatMulSeq: [{n,1},
+            {min,48783532},
+            {max,48783532},
+            {med,48783532},
+            {mean,48783532.0},
+            {std_dev,0.0}]
+Done
