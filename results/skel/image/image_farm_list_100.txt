@@ -1,0 +1,491 @@
+Image Merge [{n,1},
+             {min,42713361},
+             {max,42713361},
+             {med,42713361},
+             {mean,42713361.0},
+             {std_dev,0.0}]
+Done on 2 cores 
+.Image Merge [{n,1},
+             {min,41559480},
+             {max,41559480},
+             {med,41559480},
+             {mean,41559480.0},
+             {std_dev,0.0}]
+Done on 2 cores 
+.Image Merge [{n,1},
+             {min,41855923},
+             {max,41855923},
+             {med,41855923},
+             {mean,41855923.0},
+             {std_dev,0.0}]
+Done on 2 cores 
+.Image Merge [{n,1},
+             {min,41551621},
+             {max,41551621},
+             {med,41551621},
+             {mean,41551621.0},
+             {std_dev,0.0}]
+Done on 2 cores 
+.Image Merge [{n,1},
+             {min,42848102},
+             {max,42848102},
+             {med,42848102},
+             {mean,42848102.0},
+             {std_dev,0.0}]
+Done on 2 cores 
+.Image Merge [{n,1},
+             {min,23220189},
+             {max,23220189},
+             {med,23220189},
+             {mean,23220189.0},
+             {std_dev,0.0}]
+Done on 4 cores 
+.Image Merge [{n,1},
+             {min,23509222},
+             {max,23509222},
+             {med,23509222},
+             {mean,23509222.0},
+             {std_dev,0.0}]
+Done on 4 cores 
+.Image Merge [{n,1},
+             {min,23367146},
+             {max,23367146},
+             {med,23367146},
+             {mean,23367146.0},
+             {std_dev,0.0}]
+Done on 4 cores 
+.Image Merge [{n,1},
+             {min,22885264},
+             {max,22885264},
+             {med,22885264},
+             {mean,22885264.0},
+             {std_dev,0.0}]
+Done on 4 cores 
+.Image Merge [{n,1},
+             {min,23352620},
+             {max,23352620},
+             {med,23352620},
+             {mean,23352620.0},
+             {std_dev,0.0}]
+Done on 4 cores 
+.Image Merge [{n,1},
+             {min,16464047},
+             {max,16464047},
+             {med,16464047},
+             {mean,16464047.0},
+             {std_dev,0.0}]
+Done on 6 cores 
+.Image Merge [{n,1},
+             {min,16378464},
+             {max,16378464},
+             {med,16378464},
+             {mean,16378464.0},
+             {std_dev,0.0}]
+Done on 6 cores 
+.Image Merge [{n,1},
+             {min,16585103},
+             {max,16585103},
+             {med,16585103},
+             {mean,16585103.0},
+             {std_dev,0.0}]
+Done on 6 cores 
+.Image Merge [{n,1},
+             {min,16933467},
+             {max,16933467},
+             {med,16933467},
+             {mean,16933467.0},
+             {std_dev,0.0}]
+Done on 6 cores 
+.Image Merge [{n,1},
+             {min,16903380},
+             {max,16903380},
+             {med,16903380},
+             {mean,16903380.0},
+             {std_dev,0.0}]
+Done on 6 cores 
+.Image Merge [{n,1},
+             {min,13761405},
+             {max,13761405},
+             {med,13761405},
+             {mean,13761405.0},
+             {std_dev,0.0}]
+Done on 8 cores 
+.Image Merge [{n,1},
+             {min,13442287},
+             {max,13442287},
+             {med,13442287},
+             {mean,13442287.0},
+             {std_dev,0.0}]
+Done on 8 cores 
+.Image Merge [{n,1},
+             {min,13254849},
+             {max,13254849},
+             {med,13254849},
+             {mean,13254849.0},
+             {std_dev,0.0}]
+Done on 8 cores 
+.Image Merge [{n,1},
+             {min,13667973},
+             {max,13667973},
+             {med,13667973},
+             {mean,13667973.0},
+             {std_dev,0.0}]
+Done on 8 cores 
+.Image Merge [{n,1},
+             {min,13507392},
+             {max,13507392},
+             {med,13507392},
+             {mean,13507392.0},
+             {std_dev,0.0}]
+Done on 8 cores 
+.Image Merge [{n,1},
+             {min,10697207},
+             {max,10697207},
+             {med,10697207},
+             {mean,10697207.0},
+             {std_dev,0.0}]
+Done on 10 cores 
+.Image Merge [{n,1},
+             {min,10726216},
+             {max,10726216},
+             {med,10726216},
+             {mean,10726216.0},
+             {std_dev,0.0}]
+Done on 10 cores 
+.Image Merge [{n,1},
+             {min,10936731},
+             {max,10936731},
+             {med,10936731},
+             {mean,10936731.0},
+             {std_dev,0.0}]
+Done on 10 cores 
+.Image Merge [{n,1},
+             {min,11059262},
+             {max,11059262},
+             {med,11059262},
+             {mean,11059262.0},
+             {std_dev,0.0}]
+Done on 10 cores 
+.Image Merge [{n,1},
+             {min,11153064},
+             {max,11153064},
+             {med,11153064},
+             {mean,11153064.0},
+             {std_dev,0.0}]
+Done on 10 cores 
+.Image Merge [{n,1},
+             {min,10520643},
+             {max,10520643},
+             {med,10520643},
+             {mean,10520643.0},
+             {std_dev,0.0}]
+Done on 12 cores 
+.Image Merge [{n,1},
+             {min,10651646},
+             {max,10651646},
+             {med,10651646},
+             {mean,10651646.0},
+             {std_dev,0.0}]
+Done on 12 cores 
+.Image Merge [{n,1},
+             {min,10348611},
+             {max,10348611},
+             {med,10348611},
+             {mean,10348611.0},
+             {std_dev,0.0}]
+Done on 12 cores 
+.Image Merge [{n,1},
+             {min,10391944},
+             {max,10391944},
+             {med,10391944},
+             {mean,10391944.0},
+             {std_dev,0.0}]
+Done on 12 cores 
+.Image Merge [{n,1},
+             {min,10706443},
+             {max,10706443},
+             {med,10706443},
+             {mean,10706443.0},
+             {std_dev,0.0}]
+Done on 12 cores 
+.Image Merge [{n,1},
+             {min,9558160},
+             {max,9558160},
+             {med,9558160},
+             {mean,9558160.0},
+             {std_dev,0.0}]
+Done on 14 cores 
+.Image Merge [{n,1},
+             {min,9936645},
+             {max,9936645},
+             {med,9936645},
+             {mean,9936645.0},
+             {std_dev,0.0}]
+Done on 14 cores 
+.Image Merge [{n,1},
+             {min,9421794},
+             {max,9421794},
+             {med,9421794},
+             {mean,9421794.0},
+             {std_dev,0.0}]
+Done on 14 cores 
+.Image Merge [{n,1},
+             {min,10269399},
+             {max,10269399},
+             {med,10269399},
+             {mean,10269399.0},
+             {std_dev,0.0}]
+Done on 14 cores 
+.Image Merge [{n,1},
+             {min,9600976},
+             {max,9600976},
+             {med,9600976},
+             {mean,9600976.0},
+             {std_dev,0.0}]
+Done on 14 cores 
+.Image Merge [{n,1},
+             {min,9449224},
+             {max,9449224},
+             {med,9449224},
+             {mean,9449224.0},
+             {std_dev,0.0}]
+Done on 16 cores 
+.Image Merge [{n,1},
+             {min,9718013},
+             {max,9718013},
+             {med,9718013},
+             {mean,9718013.0},
+             {std_dev,0.0}]
+Done on 16 cores 
+.Image Merge [{n,1},
+             {min,9763782},
+             {max,9763782},
+             {med,9763782},
+             {mean,9763782.0},
+             {std_dev,0.0}]
+Done on 16 cores 
+.Image Merge [{n,1},
+             {min,9787023},
+             {max,9787023},
+             {med,9787023},
+             {mean,9787023.0},
+             {std_dev,0.0}]
+Done on 16 cores 
+.Image Merge [{n,1},
+             {min,9626663},
+             {max,9626663},
+             {med,9626663},
+             {mean,9626663.0},
+             {std_dev,0.0}]
+Done on 16 cores 
+.Image Merge [{n,1},
+             {min,8860020},
+             {max,8860020},
+             {med,8860020},
+             {mean,8860020.0},
+             {std_dev,0.0}]
+Done on 18 cores 
+.Image Merge [{n,1},
+             {min,10659079},
+             {max,10659079},
+             {med,10659079},
+             {mean,10659079.0},
+             {std_dev,0.0}]
+Done on 18 cores 
+.Image Merge [{n,1},
+             {min,9385040},
+             {max,9385040},
+             {med,9385040},
+             {mean,9385040.0},
+             {std_dev,0.0}]
+Done on 18 cores 
+.Image Merge [{n,1},
+             {min,9799522},
+             {max,9799522},
+             {med,9799522},
+             {mean,9799522.0},
+             {std_dev,0.0}]
+Done on 18 cores 
+.Image Merge [{n,1},
+             {min,9134415},
+             {max,9134415},
+             {med,9134415},
+             {mean,9134415.0},
+             {std_dev,0.0}]
+Done on 18 cores 
+.Image Merge [{n,1},
+             {min,11268749},
+             {max,11268749},
+             {med,11268749},
+             {mean,11268749.0},
+             {std_dev,0.0}]
+Done on 20 cores 
+.Image Merge [{n,1},
+             {min,11189263},
+             {max,11189263},
+             {med,11189263},
+             {mean,11189263.0},
+             {std_dev,0.0}]
+Done on 20 cores 
+.Image Merge [{n,1},
+             {min,10957177},
+             {max,10957177},
+             {med,10957177},
+             {mean,10957177.0},
+             {std_dev,0.0}]
+Done on 20 cores 
+.Image Merge [{n,1},
+             {min,10352267},
+             {max,10352267},
+             {med,10352267},
+             {mean,10352267.0},
+             {std_dev,0.0}]
+Done on 20 cores 
+.Image Merge [{n,1},
+             {min,12188135},
+             {max,12188135},
+             {med,12188135},
+             {mean,12188135.0},
+             {std_dev,0.0}]
+Done on 20 cores 
+.Image Merge [{n,1},
+             {min,11618952},
+             {max,11618952},
+             {med,11618952},
+             {mean,11618952.0},
+             {std_dev,0.0}]
+Done on 22 cores 
+.Image Merge [{n,1},
+             {min,11688797},
+             {max,11688797},
+             {med,11688797},
+             {mean,11688797.0},
+             {std_dev,0.0}]
+Done on 22 cores 
+.Image Merge [{n,1},
+             {min,11753840},
+             {max,11753840},
+             {med,11753840},
+             {mean,11753840.0},
+             {std_dev,0.0}]
+Done on 22 cores 
+.Image Merge [{n,1},
+             {min,12641634},
+             {max,12641634},
+             {med,12641634},
+             {mean,12641634.0},
+             {std_dev,0.0}]
+Done on 22 cores 
+.Image Merge [{n,1},
+             {min,12188296},
+             {max,12188296},
+             {med,12188296},
+             {mean,12188296.0},
+             {std_dev,0.0}]
+Done on 22 cores 
+.Image Merge [{n,1},
+             {min,13175388},
+             {max,13175388},
+             {med,13175388},
+             {mean,13175388.0},
+             {std_dev,0.0}]
+Done on 24 cores 
+.Image Merge [{n,1},
+             {min,13770419},
+             {max,13770419},
+             {med,13770419},
+             {mean,13770419.0},
+             {std_dev,0.0}]
+Done on 24 cores 
+.Image Merge [{n,1},
+             {min,13130180},
+             {max,13130180},
+             {med,13130180},
+             {mean,13130180.0},
+             {std_dev,0.0}]
+Done on 24 cores 
+.Image Merge [{n,1},
+             {min,14586976},
+             {max,14586976},
+             {med,14586976},
+             {mean,14586976.0},
+             {std_dev,0.0}]
+Done on 24 cores 
+.Image Merge [{n,1},
+             {min,15061845},
+             {max,15061845},
+             {med,15061845},
+             {mean,15061845.0},
+             {std_dev,0.0}]
+Done on 24 cores 
+.Image Merge [{n,1},
+             {min,14130924},
+             {max,14130924},
+             {med,14130924},
+             {mean,14130924.0},
+             {std_dev,0.0}]
+Done on 26 cores 
+.Image Merge [{n,1},
+             {min,13196990},
+             {max,13196990},
+             {med,13196990},
+             {mean,13196990.0},
+             {std_dev,0.0}]
+Done on 26 cores 
+.Image Merge [{n,1},
+             {min,13818939},
+             {max,13818939},
+             {med,13818939},
+             {mean,13818939.0},
+             {std_dev,0.0}]
+Done on 26 cores 
+.Image Merge [{n,1},
+             {min,14245983},
+             {max,14245983},
+             {med,14245983},
+             {mean,14245983.0},
+             {std_dev,0.0}]
+Done on 26 cores 
+.Image Merge [{n,1},
+             {min,14466169},
+             {max,14466169},
+             {med,14466169},
+             {mean,14466169.0},
+             {std_dev,0.0}]
+Done on 26 cores 
+.Image Merge [{n,1},
+             {min,14262356},
+             {max,14262356},
+             {med,14262356},
+             {mean,14262356.0},
+             {std_dev,0.0}]
+Done on 28 cores 
+.Image Merge [{n,1},
+             {min,15330882},
+             {max,15330882},
+             {med,15330882},
+             {mean,15330882.0},
+             {std_dev,0.0}]
+Done on 28 cores 
+.Image Merge [{n,1},
+             {min,13733967},
+             {max,13733967},
+             {med,13733967},
+             {mean,13733967.0},
+             {std_dev,0.0}]
+Done on 28 cores 
+.Image Merge [{n,1},
+             {min,13615640},
+             {max,13615640},
+             {med,13615640},
+             {mean,13615640.0},
+             {std_dev,0.0}]
+Done on 28 cores 
+.Image Merge [{n,1},
+             {min,14168932},
+             {max,14168932},
+             {med,14168932},
+             {mean,14168932.0},
+             {std_dev,0.0}]
+Done on 28 cores 
+.

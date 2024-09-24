@@ -182,7 +182,8 @@ convertMerge({R, R2, F1, F2, Name}) ->
   
     Result = lists:zipwith(fun(L1,L2) -> mergeTwo(L1, L2) end, WhiteR, R2_p),
 
-    {Result, length(R), Name}.
+    {Result, length(R), Name};
+convertMerge(X) -> io:format("~p~n", [X]).
 
 %%------------------------------------------------------------------------------
 %% Interface Functions
@@ -192,11 +193,20 @@ convertMerge({R, R2, F1, F2, Name}) ->
 merge(X) ->
     [convertMerge(readImage(Y)) || Y <- imageList(X)].
 
--spec mergeFarm(non_neg_integer()) -> [{[list()], integer(), string()}].
 
-mergeFarm(X) ->
-    skel:do([{farm, [{seq, fun (Y) -> convertMerge(readImage(Y)) end}],
-               ?NW}],imageList(X)).
+run(X) ->
+	io:format("Image Merge ~p~n", [sk_profile:benchmark(fun ?MODULE:merge/1, [X], 1)]).
+
+
+runFarm(Nw, X) ->
+    erlang:system_flag(schedulers_online, Nw),
+    io:format("Image Merge ~p~n", [sk_profile:benchmark(fun ?MODULE:mergeFarm/2, [Nw, X], 1)]),
+    io:format("Done on ~p cores ~n.", [Nw]).  
+				   
+				   
+
+mergeFarm(Nw, X) ->
+    skel:do([{farm, [{seq, fun (Y) -> convertMerge(readImage(Y)) end}],Nw}],imageList(X)).
 
 -spec mergeFarmPipe(non_neg_integer()) -> [{[list()], integer(), string()}].
 
@@ -205,12 +215,16 @@ mergeFarmPipe(X) ->
 			     {seq, fun ?MODULE:convertMerge/1}]}], ?NW}],
 	    imageList(X)).
 
--spec mergePipeFarm(non_neg_integer()) -> [{[list()], integer(), string()}].
 
-mergePipeFarm(X) ->
-    skel:do([{pipe, [{farm, [{seq, fun ?MODULE:readImage/1}], ?NW}, 
-		     {farm, [{seq, fun ?MODULE:convertMerge/1}], ?NW}]}],
+mergePipeFarm(Nw1, Nw2, X) ->
+    skel:do([{pipe, [{farm, [{seq, fun ?MODULE:readImage/1}], Nw1}, 
+		     {farm, [{seq, fun ?MODULE:convertMerge/1}], Nw2}]}],
 	    imageList(X)).
+
+runPipe(Nw1, Nw2, X) -> 
+    erlang:system_flag(schedulers_online, Nw1 + Nw2),
+    io:format("Image Merge Pipe on ~p ~p ~p~n", [Nw1, Nw2, sk_profile:benchmark(fun ?MODULE:mergePipeFarm/3, [Nw1, Nw2, X], 1)]),
+    io:format("Done on ~p and ~p cores ~n.", [Nw1, Nw2]).
 
 start() ->
     application:load(sasl),

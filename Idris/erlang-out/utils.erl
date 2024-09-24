@@ -43,3 +43,9 @@ unshuffle(N, Xs) ->
     [ takeEach(N, (drop(I, Xs))) || I <- lists:seq(0, (N-1))].
 
 s (N) -> N + 1. 
+
+mkMsg ([] )  ->
+        [mend ];
+mkMsg ( ([X|Xs]) )  ->
+        [{msg ,X } | ?MODULE:mkMsg( Xs  ) ].
+
