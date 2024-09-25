@@ -17,8 +17,8 @@ sendN ( ([{M,{T,{C,Msg}}}|Cs]) )  ->
 roundRobin ( MsgT , [] , [] )  -> 
 	{};
 roundRobin ( MsgT , [] , ([{M,C}|Chs]) )  -> 
-	C  ! mend ,
-	?MODULE:roundRobin( msgt  , [] , Chs  ) ,
+	%C  ! mend ,
+	%?MODULE:roundRobin( msgt  , [] , Chs  ) ,
 	{};
 roundRobin ( MsgT , ([M|Ms]) , [] )  -> 
 	{};
@@ -33,7 +33,8 @@ roundRobinRec ( (N) , [] )  ->
 	[];
 roundRobinRec ( (N) , ([{M,C}|Chs]) )  -> 
 	receive
-		M1 -> 		Msgs = 		?MODULE:roundRobinRec( N-1  ,  ( lists:append(Chs  , [{M ,C }]) )  ) ,
+		M1 -> 	 
+		 	Msgs = 		?MODULE:roundRobinRec( N-1  ,  ( lists:append(Chs  , [{M ,C }]) )  ) ,
 		 ( [M1  | Msgs ] ) 
 	end
 .
@@ -44,27 +45,27 @@ pipeMessages ( ([{M,Inc}|Ics]) , [] )  ->
 pipeMessages ( ([{M,Inc}|Ics]) , ([{M2,Oc}|Ocs]) )  -> 
 	receive
 		M1 -> case M1 of
-	 ( mend )  -> 
-	Oc  ! mend ,
-	?MODULE:pipeMessages( Ics  , Ocs  ) ;
 	 ( {msg,Msg} )  -> 
 	Oc  !  ( {msg ,Msg } ) ,
-	?MODULE:pipeMessages(  ( lists:append(Ics  , [{M ,Inc }]) )  ,  ( lists:append(Ocs  , [{M2 ,Oc }]) )  ) 
+	?MODULE:pipeMessages(  ( lists:append(Ics  , [{M ,Inc }]) )  ,  ( lists:append(Ocs  , [{M2 ,Oc }]) )  ) ;
+	         ( mend )  -> 
+        Oc  ! mend ,
+        ?MODULE:pipeMessages( Ics  , Ocs  ) 
 end
 	end
 .
 
-pipeMessages2 ( [] )  ->
+pipeMessages2 ( 0, [] )  ->
         {};
-pipeMessages2 ( ([{M2,Oc}|Ocs]) )  ->
+pipeMessages2 ( N, ([{M2,Oc}|Ocs]) )  ->
         receive
                 M1 -> case M1 of
-         ( mend )  ->
-        Oc  ! mend ,
-        ?MODULE:pipeMessages2( Ocs  ) ;
          ( {msg,Msg} )  ->
         Oc  !  ( {msg ,Msg } ) ,
-        ?MODULE:pipeMessages2(  ( lists:append(Ocs  , [{M2 ,Oc }]) )  )
+        ?MODULE:pipeMessages2( N-1,  ( lists:append(Ocs  , [{M2 ,Oc }]) )  )
+	     %    ( mend )  ->
+        %Oc  ! mend ,
+        %?MODULE:pipeMessages2( Ocs  ) 
 end
         end
 .
@@ -124,7 +125,6 @@ iW ( PIn , POut )  ->
         	
 	eos ;
 	 ( {msg,M} )  ->
-	io:format("~p~n", [M]),
 	POut  !  ( {msg , ( list_merge:convertMerge(list_merge:readImage(M  ))) } ) ,
 
 	Y = 	?MODULE:iW( PIn  , POut  ) ,
@@ -140,52 +140,60 @@ mkMsg ( ([X|Xs]) )  ->
 
 mergeFarm ( Nw ,X )  -> 
 	Images = mkMsg(list_merge:imageList(X)),
-	Res = 	?MODULE:spawnN( 0  , Nw  , msgt  , msgt  , iW  ) ,
+	Res = 	?MODULE:spawnN( 0  , Nw  , msgt  , msgt  , iW, self()  ) ,
 	?MODULE:roundRobin( msgt  , Images  ,  ( ?MODULE:convertChansRR( Res  )  )  ) ,
 	Msgs = 	?MODULE:roundRobinRec(  ( length( Images  ) -1  )  ,  ( ?MODULE:inChans( Res  )  )  ) ,
 	Msgs 
 .
+
+runFarm( Nw, X) -> 
+	erlang:system_flag(schedulers_online, Nw), 
+	io:format("Image Merge Farm ~p~n", [sk_profile:benchmark(fun ?MODULE:mergeFarm/2, [Nw, X], 1)]),
+	io:format("Done on ~p cores ~n", [Nw]).
+
 s1 ( PIn , POut )  -> 
 	receive
 		X -> case X of
-	 ( mend )  -> 
-	POut  ! mend ,
-	eos ;
 	 ( {msg,M} )  ->
  %io:format("S1: ~p~n", [M]),
 	M2 = list_merge:readImage(M),
 	POut  !  ( {msg , ( M2 ) } ) ,
 	Y = 	?MODULE:s1( PIn  , POut  ) ,
-	{}
+	{};
+	( mend) -> 
+		POut ! mend, 
+		eos
 end
 	end
 .
 s2 ( PIn , POut )  -> 
 	receive
 		X -> case X of
-	 ( mend )  -> 
-	eos ;
 	 ( {msg,{T1, T2, T3, T4, T5}} ) -> 
 	%io:format("S2: ~p~n", [M]),
 	M2 = list_merge:convertMerge({T1, T2, T3, T4, T5}),
-  %      io:format("S2: ~p~n", [M2]),
 	POut  !  ( {msg2 , ( M2 ) } ) ,
 	Y = 	?MODULE:s2( PIn  , POut  ) ,
-	{}
+	{};
+	( mend ) -> 
+		eos
 end
 	end
 .
 mergePipeFarm ( NW1 , NW2 , X )  -> 
-	erlang:system_flag(schedulers_online, NW1+NW2+1),
+	erlang:system_flag(schedulers_online, 56),
 	Images = mkMsg(list_merge:imageList(X)),
-	io:format("~p~n", [Images]),
 	ResS2 = 	?MODULE:spawnN( 0  , NW2	  , msgt  , msgt  , s2, self()  ) ,
-	P = spawn(?MODULE,pipeMessages2, [?MODULE:outChans( ResS2)]) ,
+	P = spawn(?MODULE,pipeMessages2, [ X, ?MODULE:outChans( ResS2)]) ,
 	ResS1 = 	?MODULE:spawnN( 8  , NW1  , msgt  , msgt  , s1, P  ) ,
 	?MODULE:roundRobin( msgt  , Images  ,  ( ?MODULE:convertChansRR( ResS1  )  )  ) ,
-	Msgs = 	?MODULE:roundRobinRec(  ( length( Images  )   )  ,  ( ?MODULE:inChans( ResS2  )  )  ) ,
+	Msgs = 	?MODULE:roundRobinRec(  X     ,  ( ?MODULE:inChans( ResS2  )  )  ) ,
 	Msgs 
 .
+
+runPipe(Nw1, Nw2, X) ->
+   	io:format("Image Merge Pipe on ~p ~p ~p ~n", [Nw1, Nw2, sk_profile:benchmark(fun ?MODULE:mergePipeFarm/3, [Nw1, Nw2, X], 1)]),
+	io:format("Done on ~p and ~p cores ~n." , [Nw1, Nw2]).
 
 
 t1 ( PIn , POut )  ->

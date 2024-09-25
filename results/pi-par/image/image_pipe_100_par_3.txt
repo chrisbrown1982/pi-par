@@ -1,0 +1,36 @@
+Image Merge Pipe on 28 28 [{n,1},
+                           {min,14581209},
+                           {max,14581209},
+                           {med,14581209},
+                           {mean,14581209.0},
+                           {std_dev,0.0}] 
+Done on 28 and 28 cores 
+.Image Merge Pipe on 28 28 [{n,1},
+                           {min,13437026},
+                           {max,13437026},
+                           {med,13437026},
+                           {mean,13437026.0},
+                           {std_dev,0.0}] 
+Done on 28 and 28 cores 
+.Image Merge Pipe on 28 28 [{n,1},
+                           {min,14300659},
+                           {max,14300659},
+                           {med,14300659},
+                           {mean,14300659.0},
+                           {std_dev,0.0}] 
+Done on 28 and 28 cores 
+.Image Merge Pipe on 28 28 [{n,1},
+                           {min,14087806},
+                           {max,14087806},
+                           {med,14087806},
+                           {mean,14087806.0},
+                           {std_dev,0.0}] 
+Done on 28 and 28 cores 
+.Image Merge Pipe on 28 28 [{n,1},
+                           {min,14968858},
+                           {max,14968858},
+                           {med,14968858},
+                           {mean,14968858.0},
+                           {std_dev,0.0}] 
+Done on 28 and 28 cores 
+.

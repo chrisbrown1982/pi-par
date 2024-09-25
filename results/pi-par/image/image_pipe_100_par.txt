@@ -1,0 +1,493 @@
+Image Merge Pipe on 2 2 [{n,1},
+                         {min,42423677},
+                         {max,42423677},
+                         {med,42423677},
+                         {mean,42423677.0},
+                         {std_dev,0.0}] 
+Done on 2 and 2 cores 
+.Image Merge Pipe on 2 2 [{n,1},
+                         {min,42909718},
+                         {max,42909718},
+                         {med,42909718},
+                         {mean,42909718.0},
+                         {std_dev,0.0}] 
+Done on 2 and 2 cores 
+.Image Merge Pipe on 2 2 [{n,1},
+                         {min,42550598},
+                         {max,42550598},
+                         {med,42550598},
+                         {mean,42550598.0},
+                         {std_dev,0.0}] 
+Done on 2 and 2 cores 
+.Image Merge Pipe on 2 2 [{n,1},
+                         {min,41701157},
+                         {max,41701157},
+                         {med,41701157},
+                         {mean,41701157.0},
+                         {std_dev,0.0}] 
+Done on 2 and 2 cores 
+.Image Merge Pipe on 2 2 [{n,1},
+                         {min,42301488},
+                         {max,42301488},
+                         {med,42301488},
+                         {mean,42301488.0},
+                         {std_dev,0.0}] 
+Done on 2 and 2 cores 
+.Image Merge Pipe on 2 4 [{n,1},
+                         {min,41489995},
+                         {max,41489995},
+                         {med,41489995},
+                         {mean,41489995.0},
+                         {std_dev,0.0}] 
+Done on 2 and 4 cores 
+.Image Merge Pipe on 2 4 [{n,1},
+                         {min,43066455},
+                         {max,43066455},
+                         {med,43066455},
+                         {mean,43066455.0},
+                         {std_dev,0.0}] 
+Done on 2 and 4 cores 
+.Image Merge Pipe on 2 4 [{n,1},
+                         {min,44482265},
+                         {max,44482265},
+                         {med,44482265},
+                         {mean,44482265.0},
+                         {std_dev,0.0}] 
+Done on 2 and 4 cores 
+.Image Merge Pipe on 2 4 [{n,1},
+                         {min,42274143},
+                         {max,42274143},
+                         {med,42274143},
+                         {mean,42274143.0},
+                         {std_dev,0.0}] 
+Done on 2 and 4 cores 
+.Image Merge Pipe on 2 4 [{n,1},
+                         {min,43237147},
+                         {max,43237147},
+                         {med,43237147},
+                         {mean,43237147.0},
+                         {std_dev,0.0}] 
+Done on 2 and 4 cores 
+.Image Merge Pipe on 2 6 [{n,1},
+                         {min,43935337},
+                         {max,43935337},
+                         {med,43935337},
+                         {mean,43935337.0},
+                         {std_dev,0.0}] 
+Done on 2 and 6 cores 
+.Image Merge Pipe on 2 6 [{n,1},
+                         {min,41808996},
+                         {max,41808996},
+                         {med,41808996},
+                         {mean,41808996.0},
+                         {std_dev,0.0}] 
+Done on 2 and 6 cores 
+.Image Merge Pipe on 2 6 [{n,1},
+                         {min,44516248},
+                         {max,44516248},
+                         {med,44516248},
+                         {mean,44516248.0},
+                         {std_dev,0.0}] 
+Done on 2 and 6 cores 
+.Image Merge Pipe on 2 6 [{n,1},
+                         {min,42541577},
+                         {max,42541577},
+                         {med,42541577},
+                         {mean,42541577.0},
+                         {std_dev,0.0}] 
+Done on 2 and 6 cores 
+.Image Merge Pipe on 2 6 [{n,1},
+                         {min,42369891},
+                         {max,42369891},
+                         {med,42369891},
+                         {mean,42369891.0},
+                         {std_dev,0.0}] 
+Done on 2 and 6 cores 
+.Image Merge Pipe on 2 8 [{n,1},
+                         {min,43808521},
+                         {max,43808521},
+                         {med,43808521},
+                         {mean,43808521.0},
+                         {std_dev,0.0}] 
+Done on 2 and 8 cores 
+.Image Merge Pipe on 2 8 [{n,1},
+                         {min,42681163},
+                         {max,42681163},
+                         {med,42681163},
+                         {mean,42681163.0},
+                         {std_dev,0.0}] 
+Done on 2 and 8 cores 
+.Image Merge Pipe on 2 8 [{n,1},
+                         {min,42118426},
+                         {max,42118426},
+                         {med,42118426},
+                         {mean,42118426.0},
+                         {std_dev,0.0}] 
+Done on 2 and 8 cores 
+.Image Merge Pipe on 2 8 [{n,1},
+                         {min,41789458},
+                         {max,41789458},
+                         {med,41789458},
+                         {mean,41789458.0},
+                         {std_dev,0.0}] 
+Done on 2 and 8 cores 
+.Image Merge Pipe on 2 8 [{n,1},
+                         {min,41658545},
+                         {max,41658545},
+                         {med,41658545},
+                         {mean,41658545.0},
+                         {std_dev,0.0}] 
+Done on 2 and 8 cores 
+.Image Merge Pipe on 2 10 [{n,1},
+                          {min,43617954},
+                          {max,43617954},
+                          {med,43617954},
+                          {mean,43617954.0},
+                          {std_dev,0.0}] 
+Done on 2 and 10 cores 
+.Image Merge Pipe on 2 10 [{n,1},
+                          {min,43048841},
+                          {max,43048841},
+                          {med,43048841},
+                          {mean,43048841.0},
+                          {std_dev,0.0}] 
+Done on 2 and 10 cores 
+.Image Merge Pipe on 2 10 [{n,1},
+                          {min,41954516},
+                          {max,41954516},
+                          {med,41954516},
+                          {mean,41954516.0},
+                          {std_dev,0.0}] 
+Done on 2 and 10 cores 
+.Image Merge Pipe on 2 10 [{n,1},
+                          {min,43837363},
+                          {max,43837363},
+                          {med,43837363},
+                          {mean,43837363.0},
+                          {std_dev,0.0}] 
+Done on 2 and 10 cores 
+.Image Merge Pipe on 2 10 [{n,1},
+                          {min,43823110},
+                          {max,43823110},
+                          {med,43823110},
+                          {mean,43823110.0},
+                          {std_dev,0.0}] 
+Done on 2 and 10 cores 
+.Image Merge Pipe on 2 12 [{n,1},
+                          {min,43475367},
+                          {max,43475367},
+                          {med,43475367},
+                          {mean,43475367.0},
+                          {std_dev,0.0}] 
+Done on 2 and 12 cores 
+.Image Merge Pipe on 2 12 [{n,1},
+                          {min,43288120},
+                          {max,43288120},
+                          {med,43288120},
+                          {mean,43288120.0},
+                          {std_dev,0.0}] 
+Done on 2 and 12 cores 
+.Image Merge Pipe on 2 12 [{n,1},
+                          {min,42776232},
+                          {max,42776232},
+                          {med,42776232},
+                          {mean,42776232.0},
+                          {std_dev,0.0}] 
+Done on 2 and 12 cores 
+.Image Merge Pipe on 2 12 [{n,1},
+                          {min,41880480},
+                          {max,41880480},
+                          {med,41880480},
+                          {mean,41880480.0},
+                          {std_dev,0.0}] 
+Done on 2 and 12 cores 
+.Image Merge Pipe on 2 12 [{n,1},
+                          {min,42623224},
+                          {max,42623224},
+                          {med,42623224},
+                          {mean,42623224.0},
+                          {std_dev,0.0}] 
+Done on 2 and 12 cores 
+.Image Merge Pipe on 2 14 [{n,1},
+                          {min,43415222},
+                          {max,43415222},
+                          {med,43415222},
+                          {mean,43415222.0},
+                          {std_dev,0.0}] 
+Done on 2 and 14 cores 
+.Image Merge Pipe on 2 14 [{n,1},
+                          {min,42383627},
+                          {max,42383627},
+                          {med,42383627},
+                          {mean,42383627.0},
+                          {std_dev,0.0}] 
+Done on 2 and 14 cores 
+.Image Merge Pipe on 2 14 [{n,1},
+                          {min,42344348},
+                          {max,42344348},
+                          {med,42344348},
+                          {mean,42344348.0},
+                          {std_dev,0.0}] 
+Done on 2 and 14 cores 
+.Image Merge Pipe on 2 14 [{n,1},
+                          {min,42732056},
+                          {max,42732056},
+                          {med,42732056},
+                          {mean,42732056.0},
+                          {std_dev,0.0}] 
+Done on 2 and 14 cores 
+.Image Merge Pipe on 2 14 [{n,1},
+                          {min,41930810},
+                          {max,41930810},
+                          {med,41930810},
+                          {mean,41930810.0},
+                          {std_dev,0.0}] 
+Done on 2 and 14 cores 
+.Image Merge Pipe on 2 16 [{n,1},
+                          {min,43343078},
+                          {max,43343078},
+                          {med,43343078},
+                          {mean,43343078.0},
+                          {std_dev,0.0}] 
+Done on 2 and 16 cores 
+.Image Merge Pipe on 2 16 [{n,1},
+                          {min,43497712},
+                          {max,43497712},
+                          {med,43497712},
+                          {mean,43497712.0},
+                          {std_dev,0.0}] 
+Done on 2 and 16 cores 
+.Image Merge Pipe on 2 16 [{n,1},
+                          {min,42859112},
+                          {max,42859112},
+                          {med,42859112},
+                          {mean,42859112.0},
+                          {std_dev,0.0}] 
+Done on 2 and 16 cores 
+.Image Merge Pipe on 2 16 [{n,1},
+                          {min,43298238},
+                          {max,43298238},
+                          {med,43298238},
+                          {mean,43298238.0},
+                          {std_dev,0.0}] 
+Done on 2 and 16 cores 
+.Image Merge Pipe on 2 16 [{n,1},
+                          {min,44438381},
+                          {max,44438381},
+                          {med,44438381},
+                          {mean,44438381.0},
+                          {std_dev,0.0}] 
+Done on 2 and 16 cores 
+.Image Merge Pipe on 2 18 [{n,1},
+                          {min,43289920},
+                          {max,43289920},
+                          {med,43289920},
+                          {mean,43289920.0},
+                          {std_dev,0.0}] 
+Done on 2 and 18 cores 
+.Image Merge Pipe on 2 18 [{n,1},
+                          {min,43459593},
+                          {max,43459593},
+                          {med,43459593},
+                          {mean,43459593.0},
+                          {std_dev,0.0}] 
+Done on 2 and 18 cores 
+.Image Merge Pipe on 2 18 [{n,1},
+                          {min,42686554},
+                          {max,42686554},
+                          {med,42686554},
+                          {mean,42686554.0},
+                          {std_dev,0.0}] 
+Done on 2 and 18 cores 
+.Image Merge Pipe on 2 18 [{n,1},
+                          {min,42488404},
+                          {max,42488404},
+                          {med,42488404},
+                          {mean,42488404.0},
+                          {std_dev,0.0}] 
+Done on 2 and 18 cores 
+.Image Merge Pipe on 2 18 [{n,1},
+                          {min,43612068},
+                          {max,43612068},
+                          {med,43612068},
+                          {mean,43612068.0},
+                          {std_dev,0.0}] 
+Done on 2 and 18 cores 
+.Image Merge Pipe on 2 20 [{n,1},
+                          {min,41106761},
+                          {max,41106761},
+                          {med,41106761},
+                          {mean,41106761.0},
+                          {std_dev,0.0}] 
+Done on 2 and 20 cores 
+.Image Merge Pipe on 2 20 [{n,1},
+                          {min,42139933},
+                          {max,42139933},
+                          {med,42139933},
+                          {mean,42139933.0},
+                          {std_dev,0.0}] 
+Done on 2 and 20 cores 
+.Image Merge Pipe on 2 20 [{n,1},
+                          {min,43002754},
+                          {max,43002754},
+                          {med,43002754},
+                          {mean,43002754.0},
+                          {std_dev,0.0}] 
+Done on 2 and 20 cores 
+.Image Merge Pipe on 2 20 [{n,1},
+                          {min,41803858},
+                          {max,41803858},
+                          {med,41803858},
+                          {mean,41803858.0},
+                          {std_dev,0.0}] 
+Done on 2 and 20 cores 
+.Image Merge Pipe on 2 20 [{n,1},
+                          {min,42608622},
+                          {max,42608622},
+                          {med,42608622},
+                          {mean,42608622.0},
+                          {std_dev,0.0}] 
+Done on 2 and 20 cores 
+.Image Merge Pipe on 2 22 [{n,1},
+                          {min,41720370},
+                          {max,41720370},
+                          {med,41720370},
+                          {mean,41720370.0},
+                          {std_dev,0.0}] 
+Done on 2 and 22 cores 
+.Image Merge Pipe on 2 22 [{n,1},
+                          {min,41665374},
+                          {max,41665374},
+                          {med,41665374},
+                          {mean,41665374.0},
+                          {std_dev,0.0}] 
+Done on 2 and 22 cores 
+.Image Merge Pipe on 2 22 [{n,1},
+                          {min,42522388},
+                          {max,42522388},
+                          {med,42522388},
+                          {mean,42522388.0},
+                          {std_dev,0.0}] 
+Done on 2 and 22 cores 
+.Image Merge Pipe on 2 22 [{n,1},
+                          {min,43659504},
+                          {max,43659504},
+                          {med,43659504},
+                          {mean,43659504.0},
+                          {std_dev,0.0}] 
+Done on 2 and 22 cores 
+.Image Merge Pipe on 2 22 [{n,1},
+                          {min,43318472},
+                          {max,43318472},
+                          {med,43318472},
+                          {mean,43318472.0},
+                          {std_dev,0.0}] 
+Done on 2 and 22 cores 
+.Image Merge Pipe on 2 24 [{n,1},
+                          {min,42615987},
+                          {max,42615987},
+                          {med,42615987},
+                          {mean,42615987.0},
+                          {std_dev,0.0}] 
+Done on 2 and 24 cores 
+.Image Merge Pipe on 2 24 [{n,1},
+                          {min,42228137},
+                          {max,42228137},
+                          {med,42228137},
+                          {mean,42228137.0},
+                          {std_dev,0.0}] 
+Done on 2 and 24 cores 
+.Image Merge Pipe on 2 24 [{n,1},
+                          {min,43494409},
+                          {max,43494409},
+                          {med,43494409},
+                          {mean,43494409.0},
+                          {std_dev,0.0}] 
+Done on 2 and 24 cores 
+.Image Merge Pipe on 2 24 [{n,1},
+                          {min,43604966},
+                          {max,43604966},
+                          {med,43604966},
+                          {mean,43604966.0},
+                          {std_dev,0.0}] 
+Done on 2 and 24 cores 
+.Image Merge Pipe on 2 24 [{n,1},
+                          {min,42698370},
+                          {max,42698370},
+                          {med,42698370},
+                          {mean,42698370.0},
+                          {std_dev,0.0}] 
+Done on 2 and 24 cores 
+.Image Merge Pipe on 2 26 [{n,1},
+                          {min,42769535},
+                          {max,42769535},
+                          {med,42769535},
+                          {mean,42769535.0},
+                          {std_dev,0.0}] 
+Done on 2 and 26 cores 
+.Image Merge Pipe on 2 26 [{n,1},
+                          {min,42247464},
+                          {max,42247464},
+                          {med,42247464},
+                          {mean,42247464.0},
+                          {std_dev,0.0}] 
+Done on 2 and 26 cores 
+.Image Merge Pipe on 2 26 [{n,1},
+                          {min,44181500},
+                          {max,44181500},
+                          {med,44181500},
+                          {mean,4.41815e7},
+                          {std_dev,0.0}] 
+Done on 2 and 26 cores 
+.Image Merge Pipe on 2 26 [{n,1},
+                          {min,42535685},
+                          {max,42535685},
+                          {med,42535685},
+                          {mean,42535685.0},
+                          {std_dev,0.0}] 
+Done on 2 and 26 cores 
+.Image Merge Pipe on 2 26 [{n,1},
+                          {min,43231837},
+                          {max,43231837},
+                          {med,43231837},
+                          {mean,43231837.0},
+                          {std_dev,0.0}] 
+Done on 2 and 26 cores 
+.Image Merge Pipe on 2 28 [{n,1},
+                          {min,43682778},
+                          {max,43682778},
+                          {med,43682778},
+                          {mean,43682778.0},
+                          {std_dev,0.0}] 
+Done on 2 and 28 cores 
+.Image Merge Pipe on 2 28 [{n,1},
+                          {min,41815454},
+                          {max,41815454},
+                          {med,41815454},
+                          {mean,41815454.0},
+                          {std_dev,0.0}] 
+Done on 2 and 28 cores 
+.Image Merge Pipe on 2 28 [{n,1},
+                          {min,43572030},
+                          {max,43572030},
+                          {med,43572030},
+                          {mean,43572030.0},
+                          {std_dev,0.0}] 
+Done on 2 and 28 cores 
+.Image Merge Pipe on 2 28 [{n,1},
+                          {min,41486101},
+                          {max,41486101},
+                          {med,41486101},
+                          {mean,41486101.0},
+                          {std_dev,0.0}] 
+Done on 2 and 28 cores 
+.Image Merge Pipe on 2 28 [{n,1},
+                          {min,41071535},
+                          {max,41071535},
+                          {med,41071535},
+                          {mean,41071535.0},
+                          {std_dev,0.0}] 
+Done on 2 and 28 cores 
+.=INFO REPORT==== 25-Sep-2024::10:00:09.896664 ===
+SIGTERM received - shutting down
+
