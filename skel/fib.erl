@@ -52,3 +52,13 @@ example3(Images) ->
 
 example4(Images) ->
   skel:run([{farm, [{seq, fun ?MODULE:p/1}], 4}, {cluster, [{farm, [{seq, fun ?MODULE:f_prime/1}], 4}], fun ?MODULE:decomp/1, fun ?MODULE:recomp/1}], Images).
+
+example5(NW, Images) ->
+  skel:run([{farm, [{seq, fun(A) -> f(p(A)) end}], NW).
+
+run_fib(NW, NI) ->
+   erlang:system_flag(schedulers_online, NW), 
+   Input = lists:duplicate(NI, xx), 
+   io:format("FIB: ~p~n", [sk_profile:benchmark(fun ?MODULE:run_fib/2, [NW, Input], 1)]),
+   io:format("Done~n").
+

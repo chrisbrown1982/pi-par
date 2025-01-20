@@ -1,0 +1,560 @@
+fib par: [{n,1},
+          {min,71196218},
+          {max,71196218},
+          {med,71196218},
+          {mean,71196218.0},
+          {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+fib par: [{n,1},
+          {min,71318075},
+          {max,71318075},
+          {med,71318075},
+          {mean,71318075.0},
+          {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+fib par: [{n,1},
+          {min,71430032},
+          {max,71430032},
+          {med,71430032},
+          {mean,71430032.0},
+          {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+fib par: [{n,1},
+          {min,71920887},
+          {max,71920887},
+          {med,71920887},
+          {mean,71920887.0},
+          {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+fib par: [{n,1},
+          {min,70893073},
+          {max,70893073},
+          {med,70893073},
+          {mean,70893073.0},
+          {std_dev,0.0}]
+Done with examples on 2 cores.
+------
+fib par: [{n,1},
+          {min,38689639},
+          {max,38689639},
+          {med,38689639},
+          {mean,38689639.0},
+          {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+fib par: [{n,1},
+          {min,38615512},
+          {max,38615512},
+          {med,38615512},
+          {mean,38615512.0},
+          {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+fib par: [{n,1},
+          {min,38567698},
+          {max,38567698},
+          {med,38567698},
+          {mean,38567698.0},
+          {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+fib par: [{n,1},
+          {min,40131559},
+          {max,40131559},
+          {med,40131559},
+          {mean,40131559.0},
+          {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+fib par: [{n,1},
+          {min,38708324},
+          {max,38708324},
+          {med,38708324},
+          {mean,38708324.0},
+          {std_dev,0.0}]
+Done with examples on 4 cores.
+------
+fib par: [{n,1},
+          {min,26221499},
+          {max,26221499},
+          {med,26221499},
+          {mean,26221499.0},
+          {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+fib par: [{n,1},
+          {min,26177428},
+          {max,26177428},
+          {med,26177428},
+          {mean,26177428.0},
+          {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+fib par: [{n,1},
+          {min,26142187},
+          {max,26142187},
+          {med,26142187},
+          {mean,26142187.0},
+          {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+fib par: [{n,1},
+          {min,26504871},
+          {max,26504871},
+          {med,26504871},
+          {mean,26504871.0},
+          {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+fib par: [{n,1},
+          {min,26215958},
+          {max,26215958},
+          {med,26215958},
+          {mean,26215958.0},
+          {std_dev,0.0}]
+Done with examples on 6 cores.
+------
+fib par: [{n,1},
+          {min,19712241},
+          {max,19712241},
+          {med,19712241},
+          {mean,19712241.0},
+          {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+fib par: [{n,1},
+          {min,19354548},
+          {max,19354548},
+          {med,19354548},
+          {mean,19354548.0},
+          {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+fib par: [{n,1},
+          {min,19812267},
+          {max,19812267},
+          {med,19812267},
+          {mean,19812267.0},
+          {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+fib par: [{n,1},
+          {min,19700190},
+          {max,19700190},
+          {med,19700190},
+          {mean,19700190.0},
+          {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+fib par: [{n,1},
+          {min,19842816},
+          {max,19842816},
+          {med,19842816},
+          {mean,19842816.0},
+          {std_dev,0.0}]
+Done with examples on 8 cores.
+------
+fib par: [{n,1},
+          {min,16667427},
+          {max,16667427},
+          {med,16667427},
+          {mean,16667427.0},
+          {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+fib par: [{n,1},
+          {min,17057776},
+          {max,17057776},
+          {med,17057776},
+          {mean,17057776.0},
+          {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+fib par: [{n,1},
+          {min,16688115},
+          {max,16688115},
+          {med,16688115},
+          {mean,16688115.0},
+          {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+fib par: [{n,1},
+          {min,16450902},
+          {max,16450902},
+          {med,16450902},
+          {mean,16450902.0},
+          {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+fib par: [{n,1},
+          {min,16722040},
+          {max,16722040},
+          {med,16722040},
+          {mean,16722040.0},
+          {std_dev,0.0}]
+Done with examples on 10 cores.
+------
+fib par: [{n,1},
+          {min,14202353},
+          {max,14202353},
+          {med,14202353},
+          {mean,14202353.0},
+          {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+fib par: [{n,1},
+          {min,14236779},
+          {max,14236779},
+          {med,14236779},
+          {mean,14236779.0},
+          {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+fib par: [{n,1},
+          {min,13929103},
+          {max,13929103},
+          {med,13929103},
+          {mean,13929103.0},
+          {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+fib par: [{n,1},
+          {min,14158872},
+          {max,14158872},
+          {med,14158872},
+          {mean,14158872.0},
+          {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+fib par: [{n,1},
+          {min,14097661},
+          {max,14097661},
+          {med,14097661},
+          {mean,14097661.0},
+          {std_dev,0.0}]
+Done with examples on 12 cores.
+------
+fib par: [{n,1},
+          {min,12222442},
+          {max,12222442},
+          {med,12222442},
+          {mean,12222442.0},
+          {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+fib par: [{n,1},
+          {min,11407269},
+          {max,11407269},
+          {med,11407269},
+          {mean,11407269.0},
+          {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+fib par: [{n,1},
+          {min,11365716},
+          {max,11365716},
+          {med,11365716},
+          {mean,11365716.0},
+          {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+fib par: [{n,1},
+          {min,11466694},
+          {max,11466694},
+          {med,11466694},
+          {mean,11466694.0},
+          {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+fib par: [{n,1},
+          {min,11532453},
+          {max,11532453},
+          {med,11532453},
+          {mean,11532453.0},
+          {std_dev,0.0}]
+Done with examples on 14 cores.
+------
+fib par: [{n,1},
+          {min,10354371},
+          {max,10354371},
+          {med,10354371},
+          {mean,10354371.0},
+          {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+fib par: [{n,1},
+          {min,10172694},
+          {max,10172694},
+          {med,10172694},
+          {mean,10172694.0},
+          {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+fib par: [{n,1},
+          {min,10064557},
+          {max,10064557},
+          {med,10064557},
+          {mean,10064557.0},
+          {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+fib par: [{n,1},
+          {min,10319309},
+          {max,10319309},
+          {med,10319309},
+          {mean,10319309.0},
+          {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+fib par: [{n,1},
+          {min,10182297},
+          {max,10182297},
+          {med,10182297},
+          {mean,10182297.0},
+          {std_dev,0.0}]
+Done with examples on 16 cores.
+------
+fib par: [{n,1},
+          {min,10005456},
+          {max,10005456},
+          {med,10005456},
+          {mean,10005456.0},
+          {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+fib par: [{n,1},
+          {min,10290404},
+          {max,10290404},
+          {med,10290404},
+          {mean,10290404.0},
+          {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+fib par: [{n,1},
+          {min,10569331},
+          {max,10569331},
+          {med,10569331},
+          {mean,10569331.0},
+          {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+fib par: [{n,1},
+          {min,10180172},
+          {max,10180172},
+          {med,10180172},
+          {mean,10180172.0},
+          {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+fib par: [{n,1},
+          {min,10603596},
+          {max,10603596},
+          {med,10603596},
+          {mean,10603596.0},
+          {std_dev,0.0}]
+Done with examples on 18 cores.
+------
+fib par: [{n,1},
+          {min,9149745},
+          {max,9149745},
+          {med,9149745},
+          {mean,9149745.0},
+          {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+fib par: [{n,1},
+          {min,9295868},
+          {max,9295868},
+          {med,9295868},
+          {mean,9295868.0},
+          {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+fib par: [{n,1},
+          {min,9257957},
+          {max,9257957},
+          {med,9257957},
+          {mean,9257957.0},
+          {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+fib par: [{n,1},
+          {min,10031130},
+          {max,10031130},
+          {med,10031130},
+          {mean,10031130.0},
+          {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+fib par: [{n,1},
+          {min,9520853},
+          {max,9520853},
+          {med,9520853},
+          {mean,9520853.0},
+          {std_dev,0.0}]
+Done with examples on 20 cores.
+------
+fib par: [{n,1},
+          {min,9726759},
+          {max,9726759},
+          {med,9726759},
+          {mean,9726759.0},
+          {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+fib par: [{n,1},
+          {min,8948166},
+          {max,8948166},
+          {med,8948166},
+          {mean,8948166.0},
+          {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+fib par: [{n,1},
+          {min,8778484},
+          {max,8778484},
+          {med,8778484},
+          {mean,8778484.0},
+          {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+fib par: [{n,1},
+          {min,9234454},
+          {max,9234454},
+          {med,9234454},
+          {mean,9234454.0},
+          {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+fib par: [{n,1},
+          {min,9435423},
+          {max,9435423},
+          {med,9435423},
+          {mean,9435423.0},
+          {std_dev,0.0}]
+Done with examples on 22 cores.
+------
+fib par: [{n,1},
+          {min,8280517},
+          {max,8280517},
+          {med,8280517},
+          {mean,8280517.0},
+          {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+fib par: [{n,1},
+          {min,8525649},
+          {max,8525649},
+          {med,8525649},
+          {mean,8525649.0},
+          {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+fib par: [{n,1},
+          {min,8350143},
+          {max,8350143},
+          {med,8350143},
+          {mean,8350143.0},
+          {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+fib par: [{n,1},
+          {min,8867701},
+          {max,8867701},
+          {med,8867701},
+          {mean,8867701.0},
+          {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+fib par: [{n,1},
+          {min,7735113},
+          {max,7735113},
+          {med,7735113},
+          {mean,7735113.0},
+          {std_dev,0.0}]
+Done with examples on 24 cores.
+------
+fib par: [{n,1},
+          {min,7927530},
+          {max,7927530},
+          {med,7927530},
+          {mean,7927530.0},
+          {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+fib par: [{n,1},
+          {min,8155812},
+          {max,8155812},
+          {med,8155812},
+          {mean,8155812.0},
+          {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+fib par: [{n,1},
+          {min,8884074},
+          {max,8884074},
+          {med,8884074},
+          {mean,8884074.0},
+          {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+fib par: [{n,1},
+          {min,8382007},
+          {max,8382007},
+          {med,8382007},
+          {mean,8382007.0},
+          {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+fib par: [{n,1},
+          {min,8094607},
+          {max,8094607},
+          {med,8094607},
+          {mean,8094607.0},
+          {std_dev,0.0}]
+Done with examples on 26 cores.
+------
+fib par: [{n,1},
+          {min,7608406},
+          {max,7608406},
+          {med,7608406},
+          {mean,7608406.0},
+          {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+fib par: [{n,1},
+          {min,6230050},
+          {max,6230050},
+          {med,6230050},
+          {mean,6230050.0},
+          {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+fib par: [{n,1},
+          {min,8063337},
+          {max,8063337},
+          {med,8063337},
+          {mean,8063337.0},
+          {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+fib par: [{n,1},
+          {min,6604013},
+          {max,6604013},
+          {med,6604013},
+          {mean,6604013.0},
+          {std_dev,0.0}]
+Done with examples on 28 cores.
+------
+fib par: [{n,1},
+          {min,7247819},
+          {max,7247819},
+          {med,7247819},
+          {mean,7247819.0},
+          {std_dev,0.0}]
+Done with examples on 28 cores.
+------
